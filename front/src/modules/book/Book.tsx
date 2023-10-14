@@ -11,7 +11,7 @@ export function Book() {
   const [books, setBooks] = useState<IBook[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/books")
+    fetch("http://localhost:3001/api/books")
       .then((response) => response.json())
 
       .then((data) => setBooks(data))
@@ -22,7 +22,7 @@ export function Book() {
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Book Module
+        Administración de Libros
       </Typography>
 
       <Grid container spacing={2}>

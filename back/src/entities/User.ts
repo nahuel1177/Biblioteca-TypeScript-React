@@ -1,9 +1,18 @@
 import mongoose from "mongoose";
+import Role from "./Role";
 
 const User = new mongoose.Schema({
+  name: String,
+  lastaname: String,
   username: String,
-  email: String,
   password: String,
+  email: String,
+
+  role: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Role, // Reference to the Role model
+    required: true,
+  },
   // Add more properties as needed
 });
 

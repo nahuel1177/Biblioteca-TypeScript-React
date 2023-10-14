@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { user } from "../../services/user";
 
 import {
   Button,
@@ -12,23 +13,25 @@ import {
 
 interface IUser {
   username: string;
+  email: string;
   password: string;
 }
 
 export function User() {
   const [users, setUsers] = useState<IUser[]>([]);
-
+  console.log("Paso1");
   useEffect(() => {
-    fetch("http://localhost:3000/api/users")
-      .then((response) => response.json())
-
-      .then((data) => setUsers(data))
-
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchData = async () => {
+      console.log("Entro");
+      const response = await user.getUsers();
+      console.log(response);
+      setUsers(response);
+    };
+    fetchData();
   }, []);
 
   return (
-    <Container>
+  <Container>
 
         <Card>
           <CardContent>
@@ -42,7 +45,6 @@ export function User() {
           </CardContent>
         </Card>
 
-
       <Grid container spacing={2}>
         {users.map((user, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
@@ -53,7 +55,7 @@ export function User() {
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">
-                  Password: {user.password}
+                  Correo: {user.email}
                 </Typography>
                 <Stack direction="row" spacing={2}>
                   <Button variant="contained">Modificación</Button>
