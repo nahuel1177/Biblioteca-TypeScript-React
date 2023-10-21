@@ -30,13 +30,14 @@ const getMemberById = async (req: Request, res: Response) => {
 };
 
 const createMember = async (req: Request, res: Response) => {
-    const { name, lastname, email } = req.body;
+    const { name, lastname, email, status } = req.body;
 
   try {
     const newMember = {
       name,
       lastname,
-      email
+      email,
+      status
     };
 
     console.log("Miembro creado",newMember);

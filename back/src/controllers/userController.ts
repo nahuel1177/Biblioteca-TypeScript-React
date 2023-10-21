@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { userRepository } from "../repositories/userRepository";
 import { roleRepository } from "../repositories/roleRepository";
+import User from "../entities/User"
 
 const getUsers = async (_: Request, res: Response) => {
   try {
@@ -32,9 +33,10 @@ const getUserById = async (req: Request, res: Response) => {
 };
 
 const createUser = async (req: Request, res: Response) => {
-  const {name, lastname, username, email, password, roleId } = req.body;
-  const role = await roleRepository.getRoleById(roleId);
+  const { name, lastname, username, email, password, roleId } = req.body;
   try {
+    
+    const role = await roleRepository.getRoleById(roleId);
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -42,20 +44,22 @@ const createUser = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Role not found' });
     }
     console.log("Hash", hashedPassword)
-    const newUser = {
-      name,
-      lastname,
-      username,
-      email,
+
+    const user = new User({
+      name: name,
+      lastname: lastname,
+      username: username,
+      email: email,
       password: hashedPassword,
       role: role._id
-    };
-    console.log("Creado", newUser)
-    const createdUser = await userRepository.createUser(newUser);
-
-    res.status(201).json(createdUser);
+    });
+  
+    console.log("Creado", user)
+    const createdUser = await userRepository.createUser(user);
+    return res.status(201).json(createdUser);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
