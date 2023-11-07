@@ -1,8 +1,12 @@
 import mongoose from "mongoose";
 
 const Role = new mongoose.Schema({
-  role: String,
+  type: String,
   
+  isDelete: {
+    type: Boolean,
+    default: false,
+  }
   // Add more properties as needed
 });
 

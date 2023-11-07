@@ -33,7 +33,7 @@ export function User() {
   return (
   <Container>
 
-        <Card>
+        <Card style={{ marginTop: '20px' }}>
           <CardContent>
             <Typography variant="h4" gutterBottom>
               Administración de Usuarios
@@ -48,7 +48,7 @@ export function User() {
       <Grid container spacing={2}>
         {users.map((user, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card>
+            <Card style={{ marginTop: '20px' }}>
               <CardContent>
                 <Typography variant="h6" component="div">
                   {user.username}
@@ -57,7 +57,7 @@ export function User() {
                 <Typography variant="body2" color="text.secondary">
                   Correo: {user.email}
                 </Typography>
-                <Stack direction="row" spacing={2}>
+                <Stack direction="row" spacing={2} style={{ marginTop: '20px' }}>
                   <Button variant="contained">Modificación</Button>
                   <Button variant="contained" color="error">
                     Baja

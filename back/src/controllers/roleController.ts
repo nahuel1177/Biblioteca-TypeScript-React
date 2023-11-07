@@ -30,11 +30,11 @@ const getRoleById = async (req: Request, res: Response) => {
 };
 
 const createRole = async (req: Request, res: Response) => {
-  const { role } = req.body;
+  const { type } = req.body;
 
   try {
     const newRole = {
-      role
+      type
     };
 
     console.log("Rol creado:",newRole);
