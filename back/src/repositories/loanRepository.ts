@@ -12,6 +12,10 @@ class LoanRepository {
   async createLoan(newLoan: any) {
     return Loan.create(newLoan);
   }
+
+  async updateLoan(id: string, updatedLoan: any){
+    return Loan.findByIdAndUpdate(id, updatedLoan).exec();
+  }
 }
 
 export const loanRepository = new LoanRepository();

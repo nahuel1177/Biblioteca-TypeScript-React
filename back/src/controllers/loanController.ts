@@ -1,60 +1,46 @@
 import { Request, Response } from "express";
-import { loanRepository } from "../repositories/loanRepository";
-import { bookRepository } from "../repositories/bookRepository";
-import Loan from "../entities/Loan";
-import { memberRepository } from "../repositories/memberRepository";
+import { loanService } from "../services/loanService";
+import { logger } from "../logs/logs";
 
-const getLoans = async (_: Request, res: Response) => {
+export const getLoans = async (_: Request, res: Response) => {
   try {
-    const loans = await loanRepository.getLoans();
-
-    res.status(200).json(loans);
+    const { code, result } = await loanService.getLoans();
+    res.status(code).json(result);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    logger.error(`loan controller - getLoans\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
 
 const getLoanById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
   try {
-    const loan = await loanRepository.getLoanById(id);
-
-    if (!loan) {
-      res.status(404).json({ error: "loan not found" });
-
-      return;
-    }
-
-    res.status(200).json(loan);
+    const { code, result } = await loanService.getLoanById(req);
+    res.status(code).json(result);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    logger.error(`loan controller - getLoansById\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
 
 const createLoan = async (req: Request, res: Response) => {
-  const { memberId, bookId } = req.body; // Assuming you pass member and book IDs in the request body
   try {
-    const member = await memberRepository.getMemberById(memberId);
-    const book = await bookRepository.getBookById(bookId);
-
-    if (!member || !book) {
-      return res.status(400).json({ message: "Member or book not found" });
-    }
-
-    const loan = new Loan({
-      member: member._id,
-      book: book._id,
-      createdAt: new Date(),
-    });
-
-    const createdLoan = await loanRepository.createLoan(loan);
-    return res.status(201).json(createdLoan);
+    const { code, result } = await loanService.createLoan(req);
+    res.status(code).json(result);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    logger.error(`loan controller - createLoan\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
 
-const loan = { getLoans, getLoanById, createLoan };
+const updateLoan = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await loanService.updateLoan(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`loan controller - updateLoan\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
+const loan = { getLoans, getLoanById, createLoan, updateLoan };
 export default loan;

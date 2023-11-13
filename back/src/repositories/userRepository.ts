@@ -12,6 +12,10 @@ class UserRepository {
   async createUser(newUser: any) {
     return User.create(newUser);
   }
+
+  async updateUser(id: string, updatedUser: any){
+    return User.findByIdAndUpdate(id, updatedUser).exec();
+  }
 }
 
 export const userRepository = new UserRepository();

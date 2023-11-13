@@ -12,6 +12,10 @@ class BookRepository {
   async createBook(newBook: any) {
     return Book.create(newBook);
   }
+
+  async updateBook(id: string, updatedBook: any){
+    return Book.findByIdAndUpdate(id, updatedBook).exec();
+  }
 }
 
 export const bookRepository = new BookRepository();

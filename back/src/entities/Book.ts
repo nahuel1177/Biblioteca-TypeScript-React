@@ -4,6 +4,8 @@ const Book = new mongoose.Schema({
   title: String,
   author: String,
   stock: Number,
+  typeOfLoan: Boolean,
+  status: Number,
   // Add more properties as needed
 });
 

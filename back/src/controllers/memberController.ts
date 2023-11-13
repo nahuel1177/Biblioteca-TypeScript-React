@@ -1,53 +1,46 @@
 import { Request, Response } from "express";
-import { memberRepository } from "../repositories/memberRepository";
+import { memberService } from "../services/memberService";
+import { logger } from "../logs/logs";
 
-const getMembers = async (_: Request, res: Response) => {
+export const getMembers = async (_: Request, res: Response) => {
   try {
-    const members = await memberRepository.getMembers();
-
-    res.status(200).json(members);
+    const { code, result } = await memberService.getMembers();
+    res.status(code).json(result);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    logger.error(`member controller - getMembers\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
 
 const getMemberById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
   try {
-    const member = await memberRepository.getMemberById(id);
-
-    if (!member) {
-      res.status(404).json({ error: "Miembro no encontrado" });
-
-      return;
-    }
-
-    res.status(200).json(member);
+    const { code, result } = await memberService.getMemberById(req);
+    res.status(code).json(result);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    logger.error(`member controller - getMemberById\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
 
 const createMember = async (req: Request, res: Response) => {
-    const { name, lastname, email, status } = req.body;
-
   try {
-    const newMember = {
-      name,
-      lastname,
-      email,
-      status
-    };
-
-    console.log("Miembro creado",newMember);
-    const createdMember = await memberRepository.createMember(newMember);
-
-    res.status(201).json(createdMember);
+    const { code, result } = await memberService.createMember(req);
+    res.status(code).json(result);
   } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    logger.error(`member controller - createMember\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
 
-const member = { getMembers, getMemberById, createMember };
+const updateMember = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await memberService.updateMember(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`member controller - updateMember\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
+const member = { getMembers, getMemberById, createMember, updateMember };
 export default member;

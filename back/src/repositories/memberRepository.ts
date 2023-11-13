@@ -12,6 +12,10 @@ class MemberRepository {
   async createMember(newMember: any) {
     return Member.create(newMember);
   }
+
+  async updateMember(id: string, updatedMember: any){
+    return Member.findByIdAndUpdate(id, updatedMember).exec();
+  }
 }
 
 export const memberRepository = new MemberRepository();

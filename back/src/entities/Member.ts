@@ -4,7 +4,7 @@ const Member = new mongoose.Schema({
   name: String,
   lastname: String,
   email: String,
-  status: String,
+  status: Number,
   // Add more properties as needed
 });
 

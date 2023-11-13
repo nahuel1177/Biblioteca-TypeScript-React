@@ -15,13 +15,14 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
-const pages = ["usuarios", "libros", "prestamos"];
-const settings = ["Logout"];
+
 export const LayoutModule = () => {
+  const pages = ["usuarios", "libros", "socios", "prestamos"];
+  const settings = ["Logout"];
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  
+
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -39,7 +40,7 @@ export const LayoutModule = () => {
   };
 
   const handleLogout = () => {
-    navigate("/login");
+    navigate("/");
   };
   return (
     <AppBar position="static">
@@ -61,7 +62,7 @@ export const LayoutModule = () => {
               textDecoration: "none",
             }}
           >
-          BIBLIOTECA
+            BIBLIOTECA
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -163,22 +164,22 @@ export const LayoutModule = () => {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                <Typography textAlign="center">
-                  {setting === "Logout" ? (
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleLogout();
-                      }}
-                    >
-                      {setting}
-                    </a>
-                  ) : (
-                    setting
-                  )}
-                </Typography>
-              </MenuItem>
+                  <Typography textAlign="center">
+                    {setting === "Logout" ? (
+                      <a
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleLogout();
+                        }}
+                      >
+                        {setting}
+                      </a>
+                    ) : (
+                      setting
+                    )}
+                  </Typography>
+                </MenuItem>
               ))}
             </Menu>
           </Box>
@@ -186,4 +187,4 @@ export const LayoutModule = () => {
       </Container>
     </AppBar>
   );
-}
+};

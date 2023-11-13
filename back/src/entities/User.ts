@@ -13,7 +13,9 @@ const User = new mongoose.Schema({
     ref: Role, // Reference to the Role model
     required: true,
   },
+
+  status: Number,
   // Add more properties as needed
 });
 
-export default mongoose.model('User', User);
+export default mongoose.model("User", User);
