@@ -1,8 +1,8 @@
 import User from "../entities/User";
 
 class UserRepository {
-  async getUsers() {
-    return User.find().exec();
+  async getUsers(criteriaOptions?:any) {
+    return User.find({...criteriaOptions}).exec();
   }
 
   async getUserById(id: string) {
@@ -13,8 +13,8 @@ class UserRepository {
     return User.create(newUser);
   }
 
-  async updateUser(id: string, updatedUser: any){
-    return User.findByIdAndUpdate(id, updatedUser).exec();
+  async deleteUser(id: string){
+    return User.findByIdAndUpdate(id, {isActive: false}).exec();
   }
 }
 

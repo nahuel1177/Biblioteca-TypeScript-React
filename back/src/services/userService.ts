@@ -6,7 +6,7 @@ import User from "../entities/User";
 
 class UserService {
   async getUsers() {
-    const users = await userRepository.getUsers();
+    const users = await userRepository.getUsers({isActive:true});
 
     if (!users.length) {
         console.log("ENTRO AL IF")
@@ -51,7 +51,7 @@ class UserService {
   }
 
   async createUser(req: Request) {
-    const { name, lastname, username, email, password, roleId, status } = req.body;
+    const { name, lastname, username, email, password, roleId } = req.body;
     
       
       const role = await roleRepository.getRoleById(roleId);
@@ -76,7 +76,6 @@ class UserService {
         email: email,
         password: hashedPassword,
         role: role._id,
-        status: status
       });
     
       console.log("Creado", user)
@@ -99,10 +98,9 @@ class UserService {
       };
   }
 
-  async updateUser(req: Request) {
+  async deleteUser(req: Request) {
     const { id } = req.params;
-    const {  } = req.body;
-    const updatedUser = await userRepository.updateUser(id,{});
+    const updatedUser = await userRepository.deleteUser(id);
     if (!updatedUser) {
         return {
             code: 200,

@@ -32,9 +32,10 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
-const updateUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response) => {
+  console.log("Entro al controlador: ", req.params)
   try {
-    const { code, result } = await userService.updateUser(req);
+    const { code, result } = await userService.deleteUser(req);
     res.status(code).json(result);
   } catch (error) {
     logger.error(`user controller - updateUser\n ${error}`);
@@ -42,5 +43,5 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-const user = { getUsers, getUserById, createUser, updateUser };
+const user = { getUsers, getUserById, createUser, deleteUser };
 export default user;

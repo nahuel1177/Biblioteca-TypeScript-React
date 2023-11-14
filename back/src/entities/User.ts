@@ -14,7 +14,12 @@ const User = new mongoose.Schema({
     required: true,
   },
 
-  status: Number,
+  isActive: {
+    type: Boolean,
+    default: true,
+  }
+
+
   // Add more properties as needed
 });
 

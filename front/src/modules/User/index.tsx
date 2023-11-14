@@ -24,9 +24,28 @@ export function User() {
     };
     fetchData();
   }, []);
+  // const onClickCreate = async (id: string | undefined) => {
 
-  // const onClickDelete = (e: IUser) => {}
-   
+  // }
+  const onClickDelete = async (id: string | undefined) => {
+    try {
+      if (!id) {
+        return "Id invalido";
+      }
+      console.log("ID de usuario: ",id)
+      const response = await userService.deleteUser(id);
+      if (response.data.success) {
+        const response = await userService.getUsers();
+        setUsers(response.data.result);
+        return "Se elimino el usuario";
+
+      }
+      }catch(error){
+        "No existe eñ usuario"
+
+    }
+  }
+
   return (
     <Container>
       <Card style={{ marginTop: "20px" }}>
@@ -82,7 +101,7 @@ export function User() {
                 >
                   <Button variant="contained">Modificación</Button>
                   <Button
-                    // onClick={() => onClickDelete(user)}
+                    onClick={() => onClickDelete(user._id)}
                     variant="contained"
                     color="error"
                   >
