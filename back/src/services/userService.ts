@@ -51,14 +51,15 @@ class UserService {
   }
 
   async createUser(req: Request) {
-    const { name, lastname, username, email, password, roleId } = req.body;
-    
+    const { name, lastname, username, password, email, roleType } = req.body;
+      console.log("Entro a createUSer: ", roleType)
       
-      const role = await roleRepository.getRoleById(roleId);
-  
+      const role = await roleRepository.getRoleByType(roleType);
+      console.log("despues de await CreateUser")
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       if (!role) {
+        console.log("Entro al IF del createUser")
         return {
             code: 200,
             result: {
@@ -73,8 +74,8 @@ class UserService {
         name: name,
         lastname: lastname,
         username: username,
-        email: email,
         password: hashedPassword,
+        email: email,
         role: role._id,
       });
     

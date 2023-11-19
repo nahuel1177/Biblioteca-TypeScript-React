@@ -67,13 +67,12 @@ class LoanService {
       }
   
       const loan = new Loan({
-        bookId: book._id,
-        memberId: member._id,
-        createdAt: new Date(),
+        book: book._id,
+        member: member._id,
       });
     
       console.log("Creado", loan)
-      const createdLoan = await loanRepository.createLoan(loan);
+      const createdLoan = await loanRepository.createLoan(loan);      
     if (!createdLoan) {
         return {
             code: 500,
@@ -92,12 +91,9 @@ class LoanService {
       };
   }
 
-  async updateLoan(req: Request) {
+  async deleteLoan(req: Request) {
     const { id } = req.params;
-    const { name } = req.body;
-    const updatedLoan = await loanRepository.updateLoan(id, {
-      name,
-    });
+    const updatedLoan = await loanRepository.deleteLoan(id);
     if (!updatedLoan) {
         return {
             code: 200,

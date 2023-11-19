@@ -1,3 +1,4 @@
+//import { consoleTestResultHandler } from "tslint/lib/test";
 import Loan from "../entities/Loan";
 
 class LoanRepository {
@@ -13,8 +14,8 @@ class LoanRepository {
     return Loan.create(newLoan);
   }
 
-  async updateLoan(id: string, updatedLoan: any){
-    return Loan.findByIdAndUpdate(id, updatedLoan).exec();
+  async deleteLoan(id: string){
+    return Loan.findByIdAndUpdate(id).exec();
   }
 }
 

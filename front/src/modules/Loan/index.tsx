@@ -10,6 +10,7 @@ import {
   Autocomplete,
   TextField,
 } from "@mui/material";
+import Add from "@mui/icons-material/Add";
 
 import { ILoan } from "../../interfaces/loanInterface";
 import { memberService } from "../../services/memberService";
@@ -47,7 +48,7 @@ export function Loan() {
     <Container>
       <Card style={{ marginTop: "20px" }}>
         <CardContent>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             Préstamos
           </Typography>
           <Stack spacing={2} sx={{ width: 300 }}>
@@ -73,8 +74,9 @@ export function Loan() {
             variant="contained"
             color="success"
             style={{ marginTop: "20px" }}
+            startIcon={<Add />}
           >
-            Buscar
+            <Typography fontSize={13}>Buscar</Typography>
           </Button>
         </CardContent>
       </Card>
@@ -103,7 +105,7 @@ export function Loan() {
                   style={{ marginTop: "20px" }}
                 >
                   <Button variant="contained" color="error">
-                    Devolución
+                  <Typography fontSize={13}>Devolución</Typography>
                   </Button>
                 </Stack>
               </CardContent>

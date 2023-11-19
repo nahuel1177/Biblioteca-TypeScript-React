@@ -4,7 +4,7 @@ import Book from "../entities/Book";
 
 class BookService {
   async getBooks() {
-    const books = await bookRepository.getBooks();
+    const books = await bookRepository.getBooks({isActive:true});
 
     if (!books.length) {
       console.log("ENTRO AL IF");
@@ -49,13 +49,12 @@ class BookService {
   }
 
   async createBook(req: Request) {
-    const { title, author, stock, typeOfLoan } = req.body;
+    const { title, author, stock } = req.body;
 
     const book = new Book({
       title: title,
       author: author,
       stock: stock,
-      typeOfLoan: typeOfLoan,
     });
 
     console.log("Creado", book);
@@ -78,28 +77,25 @@ class BookService {
     };
   }
 
-  async updateBook(req: Request) {
+  async deleteBook(req: Request) {
     const { id } = req.params;
-    const { name } = req.body;
-    const updatedBook = await bookRepository.updateBook(id, {
-      name,
-    });
+    const updatedBook = await bookRepository.deleteBook(id);
     if (!updatedBook) {
-      return {
-        code: 200,
-        result: {
-          error: "Books was not updated",
-          success: false,
-        },
-      };
+        return {
+            code: 200,
+            result: {
+              error: "Book was not updated",
+              success: false,
+            },
+          };
     }
     return {
-      code: 200,
-      result: {
-        result: updatedBook,
-        success: true,
-      },
-    };
+        code: 200,
+        result: {
+          result: updatedBook,
+          success: true,
+        },
+      };
   }
 }
 export const bookService = new BookService();

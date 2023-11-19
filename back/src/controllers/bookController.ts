@@ -32,9 +32,9 @@ const createBook = async (req: Request, res: Response) => {
   }
 };
 
-const updateBook = async (req: Request, res: Response) => {
+const deleteBook = async (req: Request, res: Response) => {
   try {
-    const { code, result } = await bookService.updateBook(req);
+    const { code, result } = await bookService.deleteBook(req);
     res.status(code).json(result);
   } catch (error) {
     logger.error(`book controller - updateBook\n ${error}`);
@@ -42,5 +42,5 @@ const updateBook = async (req: Request, res: Response) => {
   }
 };
 
-const book = { getBooks, getBookById, createBook, updateBook };
+const book = { getBooks, getBookById, createBook, deleteBook };
 export default book;

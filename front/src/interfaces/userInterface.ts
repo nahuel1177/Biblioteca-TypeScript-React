@@ -4,7 +4,6 @@ export interface IUser {
   lastname?: string;
   username?: string;
   email?: string;
-  status?: number;
 }
 
 export interface IResponse {
@@ -16,10 +15,10 @@ export interface IResponse {
 }
 
 export interface ICreateUser {
-  _id?: string;
-  name?: string;
-  lastname?: string;
-  username?: string;
-  email?: string;
-  status?: number;
+  name: string;
+  lastname: string;
+  username: string;
+  password: string;
+  email: string;
+  roleType: string;
 }

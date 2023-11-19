@@ -12,7 +12,9 @@ import {
   CardContent,
   Stack,
 } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteIcon from "@mui/icons-material/Delete";
+import Add from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
@@ -27,11 +29,28 @@ export function Member() {
     fetchData();
   }, []);
 
+  const onClickDelete = async (id: string | undefined) => {
+    try {
+      if (!id) {
+        return "Id invalido";
+      }
+      console.log("ID de miembro: ", id);
+      const response = await memberService.deleteMember(id);
+      if (response.data.success) {
+        const response = await memberService.getMembers();
+        setMembers(response.data.result);
+        return "Se elimino el miembro";
+      }
+    } catch (error) {
+      ("No existe el miembro");
+    }
+  };
+
   return (
     <Container>
       <Card style={{ marginTop: "20px" }}>
         <CardContent>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             Administración de Socios
           </Typography>
           <Stack spacing={2} sx={{ width: 300 }}>
@@ -54,11 +73,15 @@ export function Member() {
             />
           </Stack>
           <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-            <Button variant="contained" color="success">
-              Nuevo Socio
+            <Button variant="contained" color="success" startIcon={<Add />}>
+              <Typography fontSize={13}>Socio</Typography>
             </Button>
-            <Button variant="contained" color="primary">
-              Buscar
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<SearchIcon />}
+            >
+              <Typography fontSize={13}>Buscar</Typography>
             </Button>
           </Stack>
         </CardContent>
@@ -81,9 +104,16 @@ export function Member() {
                   spacing={2}
                   style={{ marginTop: "20px" }}
                 >
-                  <Button variant="contained">Modificación</Button>
-                  <Button variant="contained" color="error" startIcon={<DeleteIcon />}>
-                    Baja
+                  <Button variant="contained">
+                    <Typography fontSize={13}>Modificación</Typography>
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={() => onClickDelete(member._id)}
+                    startIcon={<DeleteIcon />}
+                  >
+                    <Typography fontSize={13}>Baja</Typography>
                   </Button>
                 </Stack>
               </CardContent>

@@ -4,7 +4,7 @@ import { memberRepository } from "../repositories/memberRepository";
 
 class MemberService {
   async getMembers() {
-    const members = await memberRepository.getMembers();
+    const members = await memberRepository.getMembers({isActive:true});
 
     if (!members.length) {
         console.log("ENTRO AL IF")
@@ -55,7 +55,6 @@ class MemberService {
         name: name,
         lastname: lastname,
         email: email,
-        status: 1,
       });
     
       console.log("Creado", member)
@@ -78,17 +77,14 @@ class MemberService {
       };
   }
 
-  async updateMember(req: Request) {
+  async deleteMember(req: Request) {
     const { id } = req.params;
-    const { name } = req.body;
-    const updatedMember = await memberRepository.updateMember(id, {
-      name,
-    });
-    if (!updatedMember) {
+    const updatedUser = await memberRepository.deleteMember(id);
+    if (!updatedUser) {
         return {
             code: 200,
             result: {
-              error: "Members was not updated",
+              error: "Member was not updated",
               success: false,
             },
           };
@@ -96,7 +92,7 @@ class MemberService {
     return {
         code: 200,
         result: {
-          result: updatedMember,
+          result: updatedUser,
           success: true,
         },
       };

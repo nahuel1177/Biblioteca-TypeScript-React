@@ -2,19 +2,26 @@ import { useState, useEffect } from "react";
 import { userService } from "../../services/userService";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import Add from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
+import EditIcon from "@mui/icons-material/Edit";
+//import CreateIcon from "@mui/icons-material/Create";
+import { useNavigate } from "react-router-dom";
 import { IUser } from "../../interfaces/userInterface";
 import {
-  Button,
   Container,
   Typography,
   Grid,
   Card,
   CardContent,
   Stack,
+  Fab,
 } from "@mui/material";
 
 export function User() {
   const [users, setUsers] = useState<IUser[]>([]);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       const response = await userService.getUsers();
@@ -24,33 +31,34 @@ export function User() {
     };
     fetchData();
   }, []);
-  // const onClickCreate = async (id: string | undefined) => {
 
-  // }
+  const onClickCreate = async () => {
+    navigate('/crear-usuario');
+  };
+  //const onClickSearch = async (id: string | undefined) => {
+
+  //}
   const onClickDelete = async (id: string | undefined) => {
     try {
       if (!id) {
         return "Id invalido";
       }
-      console.log("ID de usuario: ",id)
       const response = await userService.deleteUser(id);
       if (response.data.success) {
         const response = await userService.getUsers();
         setUsers(response.data.result);
         return "Se elimino el usuario";
-
       }
-      }catch(error){
-        "No existe eñ usuario"
-
+    } catch (error) {
+      ("No existe el usuario");
     }
-  }
+  };
 
   return (
     <Container>
       <Card style={{ marginTop: "20px" }}>
         <CardContent>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             Administración de Usuarios
           </Typography>
           <Stack spacing={2} sx={{ width: 300 }}>
@@ -72,13 +80,14 @@ export function User() {
               size="small"
             />
           </Stack>
-          <Button
-            variant="contained"
-            color="success"
-            style={{ marginTop: "20px" }}
-          >
-            Nuevo Usuario
-          </Button>
+          <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
+            <Fab size="small" color="success" onClick={() => onClickCreate}>
+              <Add />
+            </Fab>
+            <Fab color="primary" size="small">
+              <SearchIcon />
+            </Fab>
+          </Stack>
         </CardContent>
       </Card>
 
@@ -99,14 +108,17 @@ export function User() {
                   spacing={2}
                   style={{ marginTop: "20px" }}
                 >
-                  <Button variant="contained">Modificación</Button>
-                  <Button
-                    onClick={() => onClickDelete(user._id)}
-                    variant="contained"
+                  <Fab size="small" color="primary" aria-label="edit">
+                    <EditIcon />
+                  </Fab>
+                  <Fab
+                    size="small"
                     color="error"
+                    aria-label="edit"
+                    onClick={() => onClickDelete(user._id)}
                   >
-                    Baja
-                  </Button>
+                    <DeleteIcon />
+                  </Fab>
                 </Stack>
               </CardContent>
             </Card>

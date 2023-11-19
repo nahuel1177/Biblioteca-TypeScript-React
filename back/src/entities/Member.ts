@@ -4,7 +4,11 @@ const Member = new mongoose.Schema({
   name: String,
   lastname: String,
   email: String,
-  status: Number,
+  
+  isActive: {
+    type: Boolean,
+    default: true,
+  }
   // Add more properties as needed
 });
 

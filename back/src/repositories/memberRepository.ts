@@ -1,8 +1,8 @@
 import Member from "../entities/Member";
 
 class MemberRepository {
-  async getMembers() {
-    return Member.find().exec();
+  async getMembers(criteriaOptions?:any) {
+    return Member.find({...criteriaOptions}).exec();
   }
 
   async getMemberById(id: string) {
@@ -13,8 +13,8 @@ class MemberRepository {
     return Member.create(newMember);
   }
 
-  async updateMember(id: string, updatedMember: any){
-    return Member.findByIdAndUpdate(id, updatedMember).exec();
+  async deleteMember(id: string){
+    return Member.findByIdAndUpdate(id, {isActive: false}).exec();
   }
 }
 

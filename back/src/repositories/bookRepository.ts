@@ -1,8 +1,8 @@
 import Book from "../entities/Book";
 
 class BookRepository {
-  async getBooks() {
-    return Book.find().exec();
+  async getBooks(criteriaOptions?:any) {
+    return Book.find({...criteriaOptions}).exec();
   }
 
   async getBookById(id: string) {
@@ -13,8 +13,8 @@ class BookRepository {
     return Book.create(newBook);
   }
 
-  async updateBook(id: string, updatedBook: any){
-    return Book.findByIdAndUpdate(id, updatedBook).exec();
+  async deleteBook(id: string){
+    return Book.findByIdAndUpdate(id,  {isActive: false}).exec();
   }
 }
 

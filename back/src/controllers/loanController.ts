@@ -32,9 +32,9 @@ const createLoan = async (req: Request, res: Response) => {
   }
 };
 
-const updateLoan = async (req: Request, res: Response) => {
+const deleteLoan = async (req: Request, res: Response) => {
   try {
-    const { code, result } = await loanService.updateLoan(req);
+    const { code, result } = await loanService.deleteLoan(req);
     res.status(code).json(result);
   } catch (error) {
     logger.error(`loan controller - updateLoan\n ${error}`);
@@ -42,5 +42,5 @@ const updateLoan = async (req: Request, res: Response) => {
   }
 };
 
-const loan = { getLoans, getLoanById, createLoan, updateLoan };
+const loan = { getLoans, getLoanById, createLoan, deleteLoan };
 export default loan;

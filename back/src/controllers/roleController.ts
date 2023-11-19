@@ -29,6 +29,24 @@ const getRoleById = async (req: Request, res: Response) => {
   }
 };
 
+const getRoleByType = async (req: Request, res: Response) => {
+  const { type } = req.params;
+
+  try {
+    const role = await roleRepository.getRoleByType(type);
+
+    if (!role) {
+      res.status(404).json({ error: "role not found" });
+
+      return;
+    }
+
+    res.status(200).json(role);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 const createRole = async (req: Request, res: Response) => {
   const { type } = req.body;
 
@@ -46,5 +64,5 @@ const createRole = async (req: Request, res: Response) => {
   }
 };
 
-const role = { getRoles, getRoleById, createRole };
+const role = { getRoles, getRoleById, createRole, getRoleByType };
 export default role;

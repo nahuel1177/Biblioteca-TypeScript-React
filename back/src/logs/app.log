@@ -1,1 +1,99 @@
 
+[2023-11-14T07:19:06.899Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:19:44.806Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:21:53.389Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:24:22.235Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:33.710Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:34.557Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:34.723Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:34.881Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:35.030Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:35.192Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:35.355Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:35.532Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:35.679Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:25:35.845Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:26:11.435Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:26:11.953Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:26:12.433Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:27:46.168Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:32:16.320Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:34:59.709Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:38:44.578Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:40:45.725Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:44:18.380Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:46.306Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:46.825Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:47.477Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:47.983Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:48.167Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:48.336Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:48.502Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:48.664Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:48.826Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:48.983Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:49.145Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:49.322Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:49.478Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:49.609Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:45:49.757Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:53:31.457Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:56:05.137Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:57:10.113Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-14T07:58:33.483Z] error: loan controller - createLoan
+ ValidationError: book: Path `book` is required., member: Path `member` is required.
+[2023-11-19T05:30:07.733Z] error: user controller - createUser
+ CastError: Cast to ObjectId failed for value "" (type string) at path "_id" for model "Role"
+[2023-11-19T05:31:33.947Z] error: user controller - createUser
+ CastError: Cast to ObjectId failed for value "" (type string) at path "_id" for model "Role"
+[2023-11-19T05:34:20.800Z] error: user controller - createUser
+ CastError: Cast to ObjectId failed for value "employee" (type string) at path "_id" for model "Role"
+[2023-11-19T06:11:30.089Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-11-19T06:12:32.758Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-11-19T06:15:28.308Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-11-19T06:18:43.958Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')

@@ -4,8 +4,17 @@ const Book = new mongoose.Schema({
   title: String,
   author: String,
   stock: Number,
-  typeOfLoan: Boolean,
-  status: Number,
+
+  isTaken: {
+    type: Boolean,
+    default: false,
+  },
+  
+  isActive: {
+    type: Boolean,
+    default: true,
+  }
+
   // Add more properties as needed
 });
 

@@ -7,6 +7,7 @@ import { Loan } from "./modules/Loan";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import "./App.css";
+import { CreateUserPage } from "./modules/User/CreateUserPage";
 //import { Home } from "./modules/Home";
 
 
@@ -24,6 +25,7 @@ function App() {
         <Routes>
           {/* <Route path="/" element={<Home />} /> */}
           <Route path="usuarios" element={<User />} />
+          <Route path="crear-usuario" element={<CreateUserPage />}/>
           <Route path="libros" element={<Book />} />
           <Route path="socios" element={<Member/>} />
           <Route path="prestamos" element={<Loan />} />

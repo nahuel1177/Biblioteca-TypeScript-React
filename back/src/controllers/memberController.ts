@@ -32,15 +32,15 @@ const createMember = async (req: Request, res: Response) => {
   }
 };
 
-const updateMember = async (req: Request, res: Response) => {
+const deleteMember = async (req: Request, res: Response) => {
   try {
-    const { code, result } = await memberService.updateMember(req);
+    const { code, result } = await memberService.deleteMember(req);
     res.status(code).json(result);
   } catch (error) {
-    logger.error(`member controller - updateMember\n ${error}`);
+    logger.error(`member controller - deleteMember\n ${error}`);
     res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
 
-const member = { getMembers, getMemberById, createMember, updateMember };
+const member = { getMembers, getMemberById, createMember, deleteMember };
 export default member;

@@ -33,12 +33,11 @@ const createUser = async (req: Request, res: Response) => {
 };
 
 const deleteUser = async (req: Request, res: Response) => {
-  console.log("Entro al controlador: ", req.params)
   try {
     const { code, result } = await userService.deleteUser(req);
     res.status(code).json(result);
   } catch (error) {
-    logger.error(`user controller - updateUser\n ${error}`);
+    logger.error(`user controller - deleteUser\n ${error}`);
     res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
