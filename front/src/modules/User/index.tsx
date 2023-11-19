@@ -18,6 +18,7 @@ import {
   Stack,
   Fab,
 } from "@mui/material";
+//import { CreateUserPage } from "./CreateUserPage";
 
 export function User() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -32,13 +33,13 @@ export function User() {
     fetchData();
   }, []);
 
-  const onClickCreate = async () => {
-    navigate('/crear-usuario');
+  const onCLickCreate = async () => {
+    navigate("/crear-usuario");
   };
   //const onClickSearch = async (id: string | undefined) => {
 
   //}
-  const onClickDelete = async (id: string | undefined) => {
+  async function onClickDelete(id: string | undefined) {
     try {
       if (!id) {
         return "Id invalido";
@@ -52,7 +53,7 @@ export function User() {
     } catch (error) {
       ("No existe el usuario");
     }
-  };
+  }
 
   return (
     <Container>
@@ -81,7 +82,7 @@ export function User() {
             />
           </Stack>
           <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-            <Fab size="small" color="success" onClick={() => onClickCreate}>
+            <Fab size="small" color="success" onClick={() => onCLickCreate()}>
               <Add />
             </Fab>
             <Fab color="primary" size="small">
