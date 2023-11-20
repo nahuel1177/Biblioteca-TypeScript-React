@@ -14,7 +14,7 @@ export interface IResponse {
 }
 
 export interface ICreateBook {
-  name: string;
-  email: string;
-  password: string;
+  title: string;
+  author: string;
+  stock: number;
 }

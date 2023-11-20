@@ -17,8 +17,8 @@ import {
   CardContent,
   Stack,
   Fab,
+  Button,
 } from "@mui/material";
-//import { CreateUserPage } from "./CreateUserPage";
 
 export function User() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -82,12 +82,16 @@ export function User() {
             />
           </Stack>
           <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-            <Fab size="small" color="success" onClick={() => onCLickCreate()}>
-              <Add />
-            </Fab>
-            <Fab color="primary" size="small">
-              <SearchIcon />
-            </Fab>
+            <Button variant="contained" color="success" startIcon={<Add />} onClick={() => onCLickCreate()}>
+              <Typography fontSize={13}>Usuario</Typography>
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<SearchIcon />}
+            >
+              <Typography fontSize={13}>Buscar</Typography>
+            </Button>
           </Stack>
         </CardContent>
       </Card>

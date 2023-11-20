@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 const Role = new mongoose.Schema({
   type: String,
   
-  isDelete: {
+  isActive: {
     type: Boolean,
-    default: false,
+    default: true,
   }
   // Add more properties as needed
 });

@@ -11,13 +11,17 @@ import {
   Card,
   CardContent,
   Stack,
+  Fab,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Add from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/Search";
+import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,6 +32,10 @@ export function Member() {
     };
     fetchData();
   }, []);
+
+  const onCLickCreate = async () => {
+    navigate("/crear-miembro");
+  };
 
   const onClickDelete = async (id: string | undefined) => {
     try {
@@ -73,7 +81,7 @@ export function Member() {
             />
           </Stack>
           <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-            <Button variant="contained" color="success" startIcon={<Add />}>
+            <Button variant="contained" color="success" startIcon={<Add />} onClick={() => onCLickCreate()}>
               <Typography fontSize={13}>Socio</Typography>
             </Button>
             <Button
@@ -104,17 +112,17 @@ export function Member() {
                   spacing={2}
                   style={{ marginTop: "20px" }}
                 >
-                  <Button variant="contained">
-                    <Typography fontSize={13}>Modificación</Typography>
-                  </Button>
-                  <Button
-                    variant="contained"
+                  <Fab size="small" color="primary" aria-label="edit">
+                    <EditIcon />
+                  </Fab>
+                  <Fab
+                    size="small"
                     color="error"
+                    aria-label="edit"
                     onClick={() => onClickDelete(member._id)}
-                    startIcon={<DeleteIcon />}
                   >
-                    <Typography fontSize={13}>Baja</Typography>
-                  </Button>
+                    <DeleteIcon />
+                  </Fab>
                 </Stack>
               </CardContent>
             </Card>

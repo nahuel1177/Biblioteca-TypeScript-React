@@ -15,5 +15,6 @@ export interface IResponse {
 
 export interface ICreateMember {
   name: string;
+  lastname: string;
   email: string;
 }

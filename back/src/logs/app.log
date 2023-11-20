@@ -97,3 +97,5 @@
  TypeError: Cannot read properties of undefined (reading '_id')
 [2023-11-19T06:18:43.958Z] error: user controller - createUser
  TypeError: Cannot read properties of undefined (reading '_id')
+[2023-11-19T23:21:43.842Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')

@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 export const CreateUserPage: React.FC = () => {
 
   const navigate = useNavigate();
-  
+
   // Estado inicial del formulario
   const initialUserState: ICreateUser = {
     name: "",
@@ -57,7 +57,7 @@ export const CreateUserPage: React.FC = () => {
 
   return (
     <Stack>
-      <Container>
+      <Container maxWidth="xs">
         <form onSubmit={handleSubmit}>
           <TextField
             label="Nombre"
@@ -102,7 +102,7 @@ export const CreateUserPage: React.FC = () => {
             type="email"
           />
 
-          {/* <FormControl fullWidth margin="normal">
+          {/*<FormControl fullWidth margin="normal">
                         <InputLabel>Rol</InputLabel>
                         <Select
                             name="roleId"
@@ -113,7 +113,7 @@ export const CreateUserPage: React.FC = () => {
                             <MenuItem value="employee">Usuario</MenuItem>
                             {/* Agrega más roles según sea necesario
                         </Select>
-                    </FormControl> */}
+                    </FormControl>*/}
           <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
             <Button type="submit" variant="contained" color="success">
               <Typography fontSize={13}>Crear Usuario</Typography>
