@@ -3,7 +3,7 @@ import Role from "./Role";
 
 const User = new mongoose.Schema({
   name: String,
-  lastaname: String,
+  lastname: String,
   username: String,
   password: String,
   email: String,

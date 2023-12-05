@@ -3,7 +3,9 @@ export interface IUser {
   name?: string;
   lastname?: string;
   username?: string;
+  password?: string;
   email?: string;
+  roleType?: string;
 }
 
 export interface IResponse {
@@ -21,4 +23,13 @@ export interface ICreateUser {
   password: string;
   email: string;
   roleType: string;
+}
+
+export interface IUpdateUser {
+  _id?: string;
+  name?: string;
+  lastname?: string;
+  username?: string;
+  password?: string;
+  email?: string;
 }

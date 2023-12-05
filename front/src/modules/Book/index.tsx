@@ -9,16 +9,19 @@ import {
   Stack,
   Autocomplete,
   TextField,
+  Fab,
 } from "@mui/material";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
 import Add from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SearchIcon from "@mui/icons-material/Search";
+import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
 
 export function Book() {
   const [books, setBooks] = useState<IBook[]>([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     console.log("Fetch");
     const fetchData = async () => {
@@ -31,6 +34,10 @@ export function Book() {
     };
     fetchData();
   }, []);
+
+  const onCLickCreate = async () => {
+    navigate("/crear-libro");
+  };
 
   const onClickDelete = async (id: string | undefined) => {
     try {
@@ -74,7 +81,7 @@ export function Book() {
             />
           </Stack>
           <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-            <Button variant="contained" color="success" startIcon={<Add />}>
+            <Button variant="contained" color="success" startIcon={<Add />} onClick={() => onCLickCreate()}>
               <Typography fontSize={13}>Libro</Typography>
             </Button>
             <Button
@@ -104,17 +111,17 @@ export function Book() {
                   spacing={2}
                   style={{ marginTop: "20px" }}
                 >
-                  <Button variant="contained" startIcon={<Add />}>
-                    <Typography fontSize={13}>Préstamo</Typography>
-                  </Button>
-                  <Button
-                    variant="contained"
+                  <Fab size="small" color="primary" aria-label="edit">
+                    <EditIcon />
+                  </Fab>
+                  <Fab
+                    size="small"
                     color="error"
-                    startIcon={<DeleteIcon />}
+                    aria-label="edit"
                     onClick={() => onClickDelete(book._id)}
                   >
-                    <Typography fontSize={13}>Baja</Typography>
-                  </Button>
+                    <DeleteIcon />
+                  </Fab>
                 </Stack>
               </CardContent>
             </Card>

@@ -101,7 +101,7 @@ export function Member() {
             <Card style={{ marginTop: "20px" }}>
               <CardContent>
                 <Typography variant="h6" component="div">
-                  {member.name}
+                  {member.lastname}, {member.name}
                 </Typography>
 
                 <Typography variant="body2" color="text.secondary">

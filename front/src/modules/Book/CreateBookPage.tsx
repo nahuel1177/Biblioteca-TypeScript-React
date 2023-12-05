@@ -56,6 +56,9 @@ export const CreateBookPage: React.FC = () => {
     return (
         <Stack>
             <Container maxWidth="xs">
+            <Typography variant="h6" gutterBottom marginTop={2}>
+            Alta de Libro
+          </Typography>
                 <form onSubmit={handleSubmit}>
                     <TextField
                         label="Título"

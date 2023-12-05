@@ -32,6 +32,16 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await userService.updateUser(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`user controller - updeteUser\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const { code, result } = await userService.deleteUser(req);
@@ -42,5 +52,5 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-const user = { getUsers, getUserById, createUser, deleteUser };
+const user = { getUsers, getUserById, createUser, updateUser, deleteUser };
 export default user;

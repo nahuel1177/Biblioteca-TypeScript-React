@@ -58,9 +58,12 @@ export const CreateUserPage: React.FC = () => {
   return (
     <Stack>
       <Container maxWidth="xs">
+      <Typography variant="h6" gutterBottom marginTop={2}>
+            Alta de Usuario
+          </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
-            label="Nombre"
+            label="Nombres"
             name="name"
             value={user.name}
             onChange={handleInputChange}
@@ -68,7 +71,7 @@ export const CreateUserPage: React.FC = () => {
             margin="normal"
           />
           <TextField
-            label="Apellido"
+            label="Apellidos"
             name="lastname"
             value={user.lastname}
             onChange={handleInputChange}
@@ -76,7 +79,7 @@ export const CreateUserPage: React.FC = () => {
             margin="normal"
           />
           <TextField
-            label="Nombre de usuario"
+            label="Usuario"
             name="username"
             value={user.username}
             onChange={handleInputChange}
