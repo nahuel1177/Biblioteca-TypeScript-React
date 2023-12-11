@@ -5,7 +5,6 @@ import { userRouter } from "./routes/userRoute";
 import { bookRouter } from "./routes/bookRoute";
 import { loanRouter } from "./routes/loanRoute";
 import { memberRouter } from "./routes/memberRoute";
-import { roleRouter } from "./routes/roleRoute";
 import { authRouter } from "./routes/authRoute";
 //import { authentication, authorization } from "./middlewares";
 import { PORT } from "./common/constants";
@@ -21,7 +20,6 @@ app.use("/api", userRouter);
 app.use("/api", bookRouter);
 app.use("/api", loanRouter);
 app.use("/api", memberRouter);
-app.use("/api", roleRouter);
 
 async function start() {
   try {
