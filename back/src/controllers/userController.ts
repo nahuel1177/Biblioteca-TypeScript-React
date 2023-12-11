@@ -22,6 +22,16 @@ const getUserById = async (req: Request, res: Response) => {
   }
 };
 
+const getUserByUsername = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await userService.getUserByUsername(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`user controller - getUsersByUsername\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 const createUser = async (req: Request, res: Response) => {
   try {
     const { code, result } = await userService.createUser(req);
@@ -52,5 +62,12 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-const user = { getUsers, getUserById, createUser, updateUser, deleteUser };
+const user = {
+  getUsers,
+  getUserById,
+  getUserByUsername,
+  createUser,
+  updateUser,
+  deleteUser,
+};
 export default user;

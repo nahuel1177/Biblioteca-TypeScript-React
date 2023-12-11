@@ -1,19 +1,25 @@
 export interface IUser {
-  _id?: string;
+  _id: string;
   name?: string;
   lastname?: string;
   username?: string;
   password?: string;
   email?: string;
-  roleType?: string;
+  role?: string;
 }
-
 export interface IResponse {
-  data: {
     result: IUser[];
     error?: string;
     success: boolean;
+}
+export interface IResponseLogin {
+  user?: {
+    username: string;
+    type: string;
   };
+  token?: string;
+  error?: string;
+  success: boolean;
 }
 
 export interface ICreateUser {
@@ -22,14 +28,5 @@ export interface ICreateUser {
   username: string;
   password: string;
   email: string;
-  roleType: string;
-}
-
-export interface IUpdateUser {
-  _id?: string;
-  name?: string;
-  lastname?: string;
-  username?: string;
-  password?: string;
-  email?: string;
+  role: string;
 }

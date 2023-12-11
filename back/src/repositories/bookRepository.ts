@@ -9,8 +9,21 @@ class BookRepository {
     return Book.findById(id).exec();
   }
 
+  async getBookByTitle(title: string){
+    return Book.findOne({title}).exec();
+  }
+
   async createBook(newBook: any) {
     return Book.create(newBook);
+  }
+
+  async updateBook(id: string, book: any) {
+    return Book.findByIdAndUpdate(id, {
+      title: book.title,
+      author: book.author,
+      stockInt: book.stockInt,
+      stockExt: book.stockExt,
+    }).exec();
   }
 
   async deleteBook(id: string){

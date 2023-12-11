@@ -22,7 +22,6 @@ const getRoleById = async (req: Request, res: Response) => {
 
       return;
     }
-
     res.status(200).json(role);
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
@@ -52,10 +51,10 @@ const createRole = async (req: Request, res: Response) => {
 
   try {
     const newRole = {
-      type
+      type,
     };
 
-    console.log("Rol creado:",newRole);
+    console.log("Rol creado:", newRole);
     const createdRole = await roleRepository.createRole(newRole);
 
     return res.status(201).json(createdRole);

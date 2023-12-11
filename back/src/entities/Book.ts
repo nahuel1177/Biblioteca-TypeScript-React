@@ -3,13 +3,9 @@ import mongoose from "mongoose";
 const Book = new mongoose.Schema({
   title: String,
   author: String,
-  stock: Number,
+  stockInt: Number,
+  stockExt: Number,
 
-  isTaken: {
-    type: Boolean,
-    default: false,
-  },
-  
   isActive: {
     type: Boolean,
     default: true,

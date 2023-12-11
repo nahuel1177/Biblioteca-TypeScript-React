@@ -22,6 +22,16 @@ const getBookById = async (req: Request, res: Response) => {
   }
 };
 
+const getBookByTitle = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await bookService.getBookByTitle(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`book controller - getBookByTitle\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 const createBook = async (req: Request, res: Response) => {
   try {
     const { code, result } = await bookService.createBook(req);
@@ -32,9 +42,9 @@ const createBook = async (req: Request, res: Response) => {
   }
 };
 
-const deleteBook = async (req: Request, res: Response) => {
+const updateBook = async (req: Request, res: Response) => {
   try {
-    const { code, result } = await bookService.deleteBook(req);
+    const { code, result } = await bookService.updateBook(req);
     res.status(code).json(result);
   } catch (error) {
     logger.error(`book controller - updateBook\n ${error}`);
@@ -42,5 +52,22 @@ const deleteBook = async (req: Request, res: Response) => {
   }
 };
 
-const book = { getBooks, getBookById, createBook, deleteBook };
+const deleteBook = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await bookService.deleteBook(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`book controller - deleteBook\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
+const book = {
+  getBooks,
+  getBookById,
+  getBookByTitle,
+  createBook,
+  updateBook,
+  deleteBook,
+};
 export default book;

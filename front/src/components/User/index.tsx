@@ -1,12 +1,11 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { userService } from "../../services/userService";
 import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
+//import Autocomplete from "@mui/material/Autocomplete";
 import Add from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-import SearchIcon from "@mui/icons-material/Search";
+//import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
-//import CreateIcon from "@mui/icons-material/Create";
 import { useNavigate } from "react-router-dom";
 import { IUser } from "../../interfaces/userInterface";
 import {
@@ -19,7 +18,12 @@ import {
   Fab,
   Button,
   Modal,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
+import Swal from "sweetalert2";
 
 const style = {
   position: "absolute",
@@ -41,8 +45,8 @@ export function User() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await userService.getUsers();
-      if (response.data.success) {
-        setUsers(response.data.result);
+      if (response.result) {
+        setUsers(response.result);
       }
     };
     fetchData();
@@ -81,10 +85,16 @@ export function User() {
         return "Id invalido";
       }
       const response = await userService.deleteUser(id);
-      if (response.data.success) {
+      if (response.success) {
         const response = await userService.getUsers();
-        setUsers(response.data.result);
-        return "Se elimino el usuario";
+        setUsers(response.result);
+
+        return Swal.fire({
+          position: "center",
+          icon: "success",
+          text: "El usuario fue eliminado",
+          showConfirmButton: true,
+        });
       }
     } catch (error) {
       ("No existe el usuario");
@@ -102,15 +112,30 @@ export function User() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     // Aquí podrías enviar los datos del usuario al servidor o realizar otras acciones según tus necesidades
-    console.log("Usuario actualizado:", user);
-    userService.updateUser(user._id, user);
-    // Puedes reiniciar el formulario después de enviar los datos
-    const response = await userService.getUsers();
-    if (response.data.success) {
+    if (user.name != "" && user.lastname != "" && user.email != "") {
+      userService.updateUser(user._id, user);
+      // Puedes reiniciar el formulario después de enviar los datos
       const response = await userService.getUsers();
-      setUsers(response.data.result);
-      setUser(initialUserState);
+      if (response.success) {
+        setUsers(response.result);
+        setUser(initialUserState);
+        handleClose();
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          text: "El usuario fue modificado",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
+    }else{
       handleClose();
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        text: "Datos faltantes o inválidos.",
+        showConfirmButton: true,
+      });
     }
   };
 
@@ -136,6 +161,7 @@ export function User() {
                 onChange={handleInputChange}
                 fullWidth
                 margin="normal"
+                size="small"
               />
               <TextField
                 label="Apellidos"
@@ -144,6 +170,7 @@ export function User() {
                 onChange={handleInputChange}
                 fullWidth
                 margin="normal"
+                size="small"
               />
               <TextField
                 label="Usuario"
@@ -153,6 +180,7 @@ export function User() {
                 fullWidth
                 margin="normal"
                 disabled
+                size="small"
               />
               <TextField
                 label="Correo electrónico"
@@ -162,20 +190,26 @@ export function User() {
                 fullWidth
                 margin="normal"
                 type="email"
+                size="small"
               />
 
-              {/* <FormControl fullWidth margin="normal">
-                        <InputLabel>Rol</InputLabel>
-                        <Select
-                        name="roleId"
-                        value={user.roleId}
-                        onChange={handleInputChange}
-                        >
-                        <MenuItem value="admin">Administrador</MenuItem>
-                        <MenuItem value="employee">Usuario</MenuItem>
-                         Agrega más roles según sea necesario
-                        </Select>
-                      </FormControl> */}
+              <FormControl fullWidth margin="normal" size="small">
+                <InputLabel>Rol</InputLabel>
+                <Select
+                  label="Rol"
+                  name="role"
+                  value={user.role}
+                  onChange={(e) =>
+                    handleInputChange(
+                      e as ChangeEvent<{ name?: string; value: unknown }>
+                    )
+                  }
+                >
+                  <MenuItem value="admin">Administrador</MenuItem>
+                  <MenuItem value="employee">Usuario</MenuItem>
+                  {/* Agrega más roles según sea necesario */}
+                </Select>
+              </FormControl>
               <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
                 <Button
                   type="submit"
@@ -183,14 +217,10 @@ export function User() {
                   color="success"
                   onClick={handleSubmit}
                 >
-                  <Typography fontSize={13}>Guardar</Typography>
+                  <Typography fontSize={13}>Modificar</Typography>
                 </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleClose}
-                >
-                  <Typography fontSize={13}>Volver</Typography>
+                <Button variant="contained" color="error" onClick={handleClose}>
+                  <Typography fontSize={13}>Cancelar</Typography>
                 </Button>
               </Stack>
             </form>
@@ -201,7 +231,7 @@ export function User() {
             <Typography variant="h6" gutterBottom>
               Administración de Usuarios
             </Typography>
-            <Stack spacing={2} sx={{ width: 300 }}>
+            {/* <Stack spacing={2} sx={{ width: 300 }}>
               <Autocomplete
                 freeSolo
                 id="search"
@@ -219,23 +249,14 @@ export function User() {
                 )}
                 size="small"
               />
-            </Stack>
+            </Stack> */}
             <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<Add />}
-                onClick={() => onCLickCreate()}
-              >
-                <Typography fontSize={13}>Usuario</Typography>
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<SearchIcon />}
-              >
-                <Typography fontSize={13}>Buscar</Typography>
-              </Button>
+              <Fab color="success" onClick={() => onCLickCreate()} size="small">
+                <Add />
+              </Fab>
+              {/* <Fab color="primary" size="small">
+                <SearchIcon />
+              </Fab> */}
             </Stack>
           </CardContent>
         </Card>

@@ -1,19 +1,20 @@
 export interface ILoan {
-    member: string,
-    book: string,
-    createdAt: Date,
-  }
-  
-  export interface IResponse {
-    data: {
-      result: ILoan[];
-      error?: string;
-      success: boolean;
-    };
-  }
-  
-  export interface ICreateLoan {
-    member: string;
-    book: string;
-    createdAt: Date,
-  }
+  _id: string;
+  memberId: string;
+  bookId: string;
+  type: string;
+  createdAt: Date;
+  dateLimit: Date,
+  isDefeated: string;
+}
+export interface IResponse {
+  result: ILoan[];
+  error?: string;
+  success: boolean;
+}
+
+export interface ICreateLoan {
+  memberId: string;
+  bookId: string;
+  type: string;
+}

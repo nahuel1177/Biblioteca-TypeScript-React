@@ -131,3 +131,533 @@
  TypeError: Cannot read properties of undefined (reading 'name')
 [2023-12-05T19:07:50.221Z] error: user controller - updeteUser
  TypeError: Cannot read properties of undefined (reading 'name')
+[2023-12-05T23:46:02.595Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-05T23:47:04.731Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-05T23:48:27.470Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-05T23:48:35.574Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-05T23:52:47.484Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-05T23:54:32.971Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-05T23:55:51.960Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:02:04.889Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:07:00.664Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:09:45.742Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:11:16.785Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:13:14.882Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:14:10.601Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:14:37.582Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:18:44.161Z] error: book controller - updeteBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:32:39.097Z] error: book controller - updateBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:41:47.497Z] error: book controller - updateBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:42:23.743Z] error: book controller - updateBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:52:03.776Z] error: book controller - updateBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-06T00:55:50.163Z] error: book controller - updateBook
+ TypeError: book.findByIdAndUpdate is not a function
+[2023-12-08T18:26:22.958Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T18:27:37.638Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T18:28:54.394Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T18:41:46.826Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T18:44:02.358Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:32.691Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:33.848Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:34.021Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:34.183Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:34.354Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:34.516Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:34.688Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:34.883Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:35.309Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:35.745Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:46.589Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:47.118Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:47.297Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:47.452Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:47.616Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:47.769Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:47.935Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:48.095Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:48.235Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:48:48.383Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:01.589Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:02.303Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:02.460Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:02.615Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:02.769Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:02.941Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:03.102Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:03.259Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:03.414Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:03.576Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:03.724Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:03.905Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:04.074Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:04.223Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:04.381Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:20.173Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:20.842Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:20.997Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:21.137Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:21.277Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T18:50:35.351Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T18:51:13.084Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "id" (type string) at path "_id" for model "User"
+[2023-12-08T18:52:20.953Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T18:58:43.761Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T18:59:44.166Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:00:03.593Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:03.661Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:27.331Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:27.934Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:28.098Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:28.261Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:28.424Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:28.580Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:01:28.717Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:04:35.438Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:04:42.391Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:06:52.549Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:06:53.139Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:06:53.294Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:06:53.458Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:06:53.599Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:08:23.486Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-08T19:09:33.869Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username:alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:09:42.885Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:20:10.742Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "656faa44d6a45bbfc4cd3220" (type string)
+[2023-12-08T19:20:11.823Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "656faa44d6a45bbfc4cd3220" (type string)
+[2023-12-08T19:20:12.127Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "656faa44d6a45bbfc4cd3220" (type string)
+[2023-12-08T19:20:12.283Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "656faa44d6a45bbfc4cd3220" (type string)
+[2023-12-08T19:20:12.430Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "656faa44d6a45bbfc4cd3220" (type string)
+[2023-12-08T19:25:45.833Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:26:20.197Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:30:22.755Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:30:34.579Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:34:05.982Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "6alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:36:36.882Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:43:33.323Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:34.097Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:34.270Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:34.432Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:35.107Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:35.293Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:35.473Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:35.651Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:43:35.807Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:44:48.039Z] error: user controller - getUsersByName
+ CastError: Cast to ObjectId failed for value "alago" (type string) at path "_id" for model "User"
+[2023-12-08T19:46:42.278Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:48:30.070Z] error: user controller - getUsersByName
+ ObjectParameterError: Parameter "filter" to findOne() must be an object, got "alago" (type string)
+[2023-12-08T19:52:44.138Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "jenriquez" (type string) at path "_id" for model "User"
+[2023-12-09T00:57:17.933Z] error: book controller - updateBook
+ CastError: Cast to ObjectId failed for value "sanction" (type string) at path "_id" for model "Member"
+[2023-12-09T01:02:31.235Z] error: book controller - updateBook
+ CastError: Cast to ObjectId failed for value "sanction" (type string) at path "_id" for model "Member"
+[2023-12-09T01:03:58.516Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "sanction" (type string) at path "_id" for model "Member"
+[2023-12-09T01:06:44.211Z] error: member controller - deleteMember
+ CastError: Cast to ObjectId failed for value "sanction" (type string) at path "_id" for model "Member"
+[2023-12-09T01:10:51.384Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "sanction" (type string) at path "_id" for model "Member"
+[2023-12-09T01:14:23.970Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "sanction" (type string) at path "_id" for model "Member"
+[2023-12-09T01:15:30.918Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "sanction" (type string) at path "_id" for model "Member"
+[2023-12-09T01:18:32.648Z] error: member controller - sanctionMember
+ TypeError: Cannot read properties of undefined (reading 'name')
+[2023-12-09T16:32:46.785Z] error: loan controller - createLoan
+ ValidationError: bookId: Path `bookId` is required., memberId: Path `memberId` is required.
+[2023-12-09T16:34:08.676Z] error: loan controller - createLoan
+ ValidationError: bookId: Path `bookId` is required., memberId: Path `memberId` is required.
+[2023-12-09T16:34:09.678Z] error: loan controller - createLoan
+ ValidationError: bookId: Path `bookId` is required., memberId: Path `memberId` is required.
+[2023-12-09T16:34:09.880Z] error: loan controller - createLoan
+ ValidationError: bookId: Path `bookId` is required., memberId: Path `memberId` is required.
+[2023-12-09T16:34:10.060Z] error: loan controller - createLoan
+ ValidationError: bookId: Path `bookId` is required., memberId: Path `memberId` is required.
+[2023-12-09T16:34:28.951Z] error: loan controller - createLoan
+ ValidationError: bookId: Path `bookId` is required., memberId: Path `memberId` is required.
+[2023-12-09T20:20:34.828Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:52.614Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:53.466Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:53.612Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:53.766Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:53.914Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:54.063Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:54.224Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:54.387Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:54.544Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:54.714Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:54.859Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:55.048Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:55.202Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:55.374Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:55.511Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:55.659Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:55.815Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:56.311Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:56.489Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:56.677Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:56.870Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:57.064Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:57.218Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:21:57.375Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:24:19.834Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:24:24.735Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:25:37.700Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:25:38.232Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:25:38.402Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:25:38.557Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:25:38.690Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-09T20:26:25.283Z] error: user controller - createUser
+ TypeError: Cannot read properties of undefined (reading '_id')
+[2023-12-10T02:24:24.498Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:26:21.955Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:26:33.951Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:26:40.701Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:26:41.142Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:26:41.304Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:26:41.443Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:27:34.145Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:29:12.282Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T02:30:40.374Z] error: loan controller - getLoansById
+ CastError: Cast to ObjectId failed for value "all" (type string) at path "_id" for model "Loan"
+[2023-12-10T21:40:29.637Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T21:40:35.562Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T21:40:41.238Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T21:42:18.758Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `Role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T21:42:26.580Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `Role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T21:48:10.998Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T21:48:12.368Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T21:48:13.105Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `role` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T22:03:45.477Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `roleId` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T22:03:48.649Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `roleId` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-10T22:04:26.494Z] error: auth controller - login
+ StrictPopulateError: Cannot populate path `roleId` because it is not in your schema. Set the `strictPopulate` option to false to override.
+[2023-12-11T05:02:13.365Z] error: member controller - getMemberById
+ CastError: Cast to ObjectId failed for value "123456" (type string) at path "_id" for model "Member"
+[2023-12-11T05:06:25.979Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value "username" (type string) at path "_id" for model "User"
+[2023-12-11T07:11:30.651Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:11:30.656Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:11:30.658Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:11:30.659Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:13:10.658Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:13:10.661Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:13:10.663Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:13:10.667Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:14:28.670Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:14:28.691Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:14:28.693Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:14:28.695Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:22:55.678Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:22:55.690Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:22:55.695Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:22:55.698Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:28:25.663Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:28:25.666Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:28:25.668Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T07:28:25.671Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.385Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.388Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.391Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.406Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.611Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.612Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.614Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.615Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.726Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T14:55:35.729Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.149Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.150Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.164Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.166Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.177Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.179Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.182Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:05:10.185Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.478Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.489Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.492Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.496Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.530Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.532Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.539Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.542Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.552Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.556Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.559Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:28.561Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.547Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.593Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.606Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.608Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.613Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.617Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.619Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:18:43.621Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.847Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.849Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.878Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.887Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.894Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.896Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.902Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:20:58.911Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.067Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.070Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.094Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.096Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.104Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.109Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.112Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:21:06.113Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.369Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.379Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.393Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.396Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.404Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.409Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.412Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2023-12-11T15:26:13.413Z] error: member controller - updateMember
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"

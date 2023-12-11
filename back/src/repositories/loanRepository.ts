@@ -2,8 +2,8 @@
 import Loan from "../entities/Loan";
 
 class LoanRepository {
-  async getLoans() {
-    return Loan.find().exec();
+  async getLoans(criteriaOptions?: any) {
+    return Loan.find({ ...criteriaOptions }).exec();
   }
 
   async getLoanById(id: string) {
@@ -15,7 +15,7 @@ class LoanRepository {
   }
 
   async deleteLoan(id: string){
-    return Loan.findByIdAndUpdate(id).exec();
+    return Loan.findByIdAndUpdate(id, { isActive: false }).exec();
   }
 }
 

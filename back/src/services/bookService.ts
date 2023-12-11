@@ -6,13 +6,13 @@ class BookService {
   async getBooks() {
     const books = await bookRepository.getBooks({isActive:true});
 
-    if (!books.length) {
+    if (!books) {
       console.log("ENTRO AL IF");
       return {
-        code: 200,
+        code: 500,
         result: {
           result: [],
-          error: "Book not founded.",
+          error: "No hay libros para mostrar.",
           success: false,
         },
       };
@@ -34,7 +34,28 @@ class BookService {
       return {
         code: 404,
         result: {
-          error: "idBook not founded.",
+          error: "Libro no encontrado.",
+          success: false,
+        },
+      };
+    }
+    return {
+      code: 200,
+      result: {
+        result: book,
+        success: true,
+      },
+    };
+  }
+
+  async getBookByTitle(req: Request) {
+    const { title } = req.params;
+    const book = await bookRepository.getBookByTitle(title);
+    if (!book) {
+      return {
+        code: 404,
+        result: {
+          error: "No se encontro Libro",
           success: false,
         },
       };
@@ -49,21 +70,22 @@ class BookService {
   }
 
   async createBook(req: Request) {
-    const { title, author, stock } = req.body;
+    const { title, author, stockInt, stockExt } = req.body;
 
     const book = new Book({
       title: title,
       author: author,
-      stock: stock,
+      stockInt: stockInt,
+      stockExt: stockExt,
     });
 
     console.log("Creado", book);
     const createdBook = await bookRepository.createBook(book);
     if (!createdBook) {
       return {
-        code: 200,
+        code: 500,
         result: {
-          error: "Books was not created",
+          error: "No se pudo dar de alta el libro.",
           success: false,
         },
       };
@@ -82,9 +104,9 @@ class BookService {
     const updatedBook = await bookRepository.deleteBook(id);
     if (!updatedBook) {
         return {
-            code: 200,
+            code: 500,
             result: {
-              error: "Book was not updated",
+              error: "El libro no pudo ser eliminado.",
               success: false,
             },
           };
@@ -96,6 +118,34 @@ class BookService {
           success: true,
         },
       };
+  }
+
+  async updateBook(req: Request) {
+    const { title, author, stockInt, stockExt } = req.body;
+    const { id } = req.params;
+    const book = new Book({
+      title: title,
+      author: author,
+      stockInt: stockInt,
+      stockExt: stockExt,
+    });
+    const updatedBook = await bookRepository.updateBook(id, book);
+    if (!updatedBook) {
+      return {
+        code: 500,
+        result: {
+          error: "El libro no pudo ser actualizado",
+          success: false,
+        },
+      };
+    }
+    return {
+      code: 200,
+      result: {
+        result: updatedBook,
+        success: true,
+      },
+    };
   }
 }
 export const bookService = new BookService();

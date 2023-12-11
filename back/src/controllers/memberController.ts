@@ -22,12 +22,32 @@ const getMemberById = async (req: Request, res: Response) => {
   }
 };
 
+const getMemberByDni = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await memberService.getMemberByDni(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`member controller - getMermberByDni\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 const createMember = async (req: Request, res: Response) => {
   try {
     const { code, result } = await memberService.createMember(req);
     res.status(code).json(result);
   } catch (error) {
     logger.error(`member controller - createMember\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
+const updateMember = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await memberService.updateMember(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`member controller - updateMember\n ${error}`);
     res.status(500).json({ success: false, data: "Internal Server Error" });
   }
 };
@@ -42,5 +62,23 @@ const deleteMember = async (req: Request, res: Response) => {
   }
 };
 
-const member = { getMembers, getMemberById, createMember, deleteMember };
+const sanctionMember = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await memberService.sanctionMember(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`member controller - sanctionMember\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
+const member = {
+  getMembers,
+  getMemberById,
+  getMemberByDni,
+  createMember,
+  deleteMember,
+  updateMember,
+  sanctionMember,
+};
 export default member;

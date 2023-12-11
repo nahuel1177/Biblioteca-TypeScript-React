@@ -1,0 +1,6 @@
+{
+    "uri": "mongodb://127.0.0.1:27017/libdb",
+    "collection": "migrations",
+    "migrationsPath": "migrations",
+    "autosync": true
+  }

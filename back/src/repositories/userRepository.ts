@@ -9,6 +9,10 @@ class UserRepository {
     return User.findById(id).exec();
   }
 
+  async getUserByUsername(username: string){
+    return User.findOne({username}).exec();
+  }
+
   async createUser(newUser: any) {
     return User.create(newUser);
   }
@@ -16,9 +20,10 @@ class UserRepository {
   async updateUser(id: string, user: any) {
     return User.findByIdAndUpdate(id, {
       name: user.name,
-      lastaname: user.lastname,
+      lastname: user.lastname,
       password: user.password,
       email: user.email,
+      role: user.role,
     }).exec();
   }
 

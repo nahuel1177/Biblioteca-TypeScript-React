@@ -1,7 +1,7 @@
 import { Request } from "express";
 import bcrypt from "bcrypt";
 import { userRepository } from "../repositories/userRepository";
-import { roleRepository } from "../repositories/roleRepository";
+//import { roleRepository } from "../repositories/roleRepository";
 import User from "../entities/User";
 
 class UserService {
@@ -9,7 +9,6 @@ class UserService {
     const users = await userRepository.getUsers({ isActive: true });
 
     if (!users.length) {
-      console.log("ENTRO AL IF");
       return {
         code: 200,
         result: {
@@ -50,35 +49,39 @@ class UserService {
     };
   }
 
-  async createUser(req: Request) {
-    const { name, lastname, username, password, email, roleType } = req.body;
-    console.log("Entro a createUSer: ", roleType);
-
-    const role = await roleRepository.getRoleByType(roleType);
-    console.log("despues de await CreateUser");
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    if (!role) {
-      console.log("Entro al IF del createUser");
+  async getUserByUsername(req: Request) {
+    const { username } = req.params;
+    const user = await userRepository.getUserByUsername(username);
+    if (!user) {
       return {
-        code: 200,
+        code: 404,
         result: {
-          error: "Users was not created",
+          error: "No se encontro usuario",
           success: false,
         },
       };
     }
+    return {
+      code: 200,
+      result: {
+        result: user,
+        success: true,
+      },
+    };
+  }
 
+  async createUser(req: Request) {
+    const { name, lastname, username, password, email, role } = req.body;
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const user = new User({
       name: name,
       lastname: lastname,
       username: username,
       password: hashedPassword,
       email: email,
-      role: role._id,
+      role: role,
     });
-
-    console.log("Creado", user);
     const createdUser = await userRepository.createUser(user);
     if (!createdUser) {
       return {
@@ -120,19 +123,16 @@ class UserService {
   }
 
   async updateUser(req: Request) {
-    console.log("Entro al Update");
-    const { name, lastname, username, email } = req.body;
+    const { name, lastname, username, email, role } = req.body;
     const { id } = req.params;
-
     const user = new User({
       name: name,
       lastname: lastname,
       username: username,
       email: email,
+      role: role,
     });
-    console.log("Usuario: ", req.body);
     const updatedUser = await userRepository.updateUser(id, user);
-
     if (!updatedUser) {
       return {
         code: 200,

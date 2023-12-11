@@ -4,7 +4,23 @@ const Member = new mongoose.Schema({
   name: String,
   lastname: String,
   email: String,
+  dni: Number,
+
+  sanctionDate: {
+    type: Date,
+    default: null,
+  },
   
+  limitSanctionDays: {
+    type: Number,
+    default: 15,
+  },
+
+  isSanctioned: {
+    type: Boolean,
+    default: false,
+  },
+
   isActive: {
     type: Boolean,
     default: true,

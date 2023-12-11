@@ -3,13 +3,20 @@ import Member from "./Member";
 import Book from "./Book";
 
 const Loan = new mongoose.Schema({
-  member: {
+
+  type: String, 
+  isDefeated: {
+    type: String,
+    default: "Vigente",
+  },
+
+  memberId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: Member, // Reference to the User model
     required: true,
   },
 
-  book: {
+  bookId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: Book, // Reference to the Book model
     required: true,
@@ -18,6 +25,11 @@ const Loan = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+
+  dateLimit: {
+    type: Date, 
+    default: null,
   },
 
   isActive: {

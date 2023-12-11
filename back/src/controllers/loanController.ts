@@ -12,6 +12,16 @@ export const getLoans = async (_: Request, res: Response) => {
   }
 };
 
+export const getAllLoans = async (_: Request, res: Response) => {
+  try {
+    const { code, result } = await loanService.getAllLoans();
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`loan controller - getLoans\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 const getLoanById = async (req: Request, res: Response) => {
   try {
     const { code, result } = await loanService.getLoanById(req);
@@ -42,5 +52,5 @@ const deleteLoan = async (req: Request, res: Response) => {
   }
 };
 
-const loan = { getLoans, getLoanById, createLoan, deleteLoan };
+const loan = { getLoans, getAllLoans, getLoanById, createLoan, deleteLoan };
 export default loan;

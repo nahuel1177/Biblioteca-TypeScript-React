@@ -9,7 +9,7 @@ class MemberService {
     if (!members.length) {
         console.log("ENTRO AL IF")
       return {
-        code: 200,
+        code: 500,
         result: {
           result: [],  
           error: "Member not founded.",
@@ -48,13 +48,35 @@ class MemberService {
       };
   }
 
+  async getMemberByDni(req: Request) {
+    const { dni } = req.params;
+    const member = await memberRepository.getMemberByDni(parseInt(dni));
+    if (!member) {
+      return {
+        code: 404,
+        result: {
+          error: "No se encontro socio",
+          success: false,
+        },
+      };
+    }
+    return {
+      code: 200,
+      result: {
+        result: member,
+        success: true,
+      },
+    };
+  }
+
   async createMember(req: Request) {
-    const { name, lastname, email } = req.body;
+    const { name, lastname, email, dni } = req.body;
   
       const member = new Member({
         name: name,
         lastname: lastname,
         email: email,
+        dni: parseInt(dni),
       });
     
       console.log("Creado", member)
@@ -79,8 +101,8 @@ class MemberService {
 
   async deleteMember(req: Request) {
     const { id } = req.params;
-    const updatedUser = await memberRepository.deleteMember(id);
-    if (!updatedUser) {
+    const updatedMember = await memberRepository.deleteMember(id);
+    if (!updatedMember) {
         return {
             code: 200,
             result: {
@@ -92,7 +114,56 @@ class MemberService {
     return {
         code: 200,
         result: {
-          result: updatedUser,
+          result: updatedMember,
+          success: true,
+        },
+      };
+  }
+
+  async updateMember(req: Request) {
+    const { name, lastname, email } = req.body;
+    const { id } = req.params;
+    const member = new Member({
+      name: name,
+      lastname: lastname,
+      email: email,
+    });
+    const updatedMember = await memberRepository.updateMember(id, member);
+    if (!updatedMember) {
+      return {
+        code: 500,
+        result: {
+          error: "Member was not updated",
+          success: false,
+        },
+      };
+    }
+    return {
+      code: 200,
+      result: {
+        result: updatedMember,
+        success: true,
+      },
+    };
+  }
+
+  async sanctionMember(req: Request) {
+    const { _id, isSanctioned, sanctionDate } = req.body;
+    console.log("Estado: ", _id , isSanctioned);
+    const sanctionMember = await memberRepository.sanctionMember(_id, isSanctioned, sanctionDate);
+    if (!sanctionMember) {
+        return {
+            code: 200,
+            result: {
+              error: "Member was not updated",
+              success: false,
+            },
+          };
+    }
+    return {
+        code: 200,
+        result: {
+          result: sanctionMember,
           success: true,
         },
       };

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Role from "./Role";
+// import Role from "./Role";
 
 const User = new mongoose.Schema({
   name: String,
@@ -7,12 +7,12 @@ const User = new mongoose.Schema({
   username: String,
   password: String,
   email: String,
-
-  role: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: Role, // Reference to the Role model
-    required: true,
-  },
+  role: String,
+  // roleId: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: Role, // Reference to the Role model
+  //   required: true,
+  // },
 
   isActive: {
     type: Boolean,
