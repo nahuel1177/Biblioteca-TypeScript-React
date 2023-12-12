@@ -23,7 +23,7 @@ export async function up (): Promise<void> {
       email: "crodriguez@com",
       username: "crodriguez",
       password: "1234",
-      role: "employed",
+      role: "employee",
     },
   ]);
 
