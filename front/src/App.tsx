@@ -1,7 +1,5 @@
 import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 //import { LayoutModule } from "./modules/Layout";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { Login } from "./modules/Login";
@@ -11,16 +9,12 @@ import { BookModule, CreateBookModule } from "./modules/Book/index";
 import { LoanModule, CreateLoanModule } from "./modules/Loan/index";
 import { localStorage } from "./services/localStorage";
 import { LayoutModule } from "./modules/Layout";
-//import { roleService } from "./services/roleService";
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider } from './context/ThemeContext';
 
-//import { userService } from "./services/userService";
-
+//import { userService } from "./services/userService"
 function App() {
-  const darkTheme = createTheme({
-    palette: {
-      mode: "dark",
-    },
-  });
+
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ username: string; type: string }>({
@@ -59,7 +53,7 @@ function App() {
   };
   console.log("Tipo de Usuario: ", user?.type);
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider>
       <CssBaseline />
       <BrowserRouter>
         <Routes>
@@ -76,10 +70,6 @@ function App() {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           {isLoggedIn && (
             <>
-              <Route
-                path="/usuarios"
-                element={<UserModule roleType={user?.type} />}
-              />
               {user?.type === "admin" && (
                 <>
                   <Route

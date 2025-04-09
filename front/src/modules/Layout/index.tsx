@@ -15,6 +15,10 @@ import AdbIcon from "@mui/icons-material/Adb";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { useTheme } from '../../context/ThemeContext';
+import { Sun, Moon } from 'lucide-react';
+//import Brightness4Icon from "@mui/icons-material/Brightness4";
+//import Brightness7Icon from "@mui/icons-material/Brightness7";
 
 const pages = ["usuarios", "libros", "socios", "prestamos"];
 const settings = ["Salir"];
@@ -26,6 +30,7 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   console.log("Layout", roleType);
+  const { theme, toggleTheme } = useTheme();
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -46,6 +51,7 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
   const handleLogout = () => {
     navigate("/login");
   };
+
   return (
     <>
       <AppBar position="static">
@@ -166,7 +172,11 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
                 </>
               )}
             </Box>
-
+            <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton onClick={toggleTheme} color="inherit">
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+              </IconButton>
+            </Box>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Cerrar Sesion">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
