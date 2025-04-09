@@ -25,12 +25,12 @@ const style = {
 
 import Add from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-//import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
 import Swal from "sweetalert2";
+import { Search } from "@mui/icons-material";
 
 export function Book() {
   const [books, setBooks] = useState<IBook[]>([]);
@@ -38,6 +38,8 @@ export function Book() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
   //const [stock, setStock] = useState(Number);
   // const [error, setError] = useState({
   //   error: false,
@@ -55,6 +57,12 @@ export function Book() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm === "") {
+      setFilteredBooks([]);
+    }
+  }, [searchTerm]);
 
   const onCLickCreate = async () => {
     navigate("/crear-libro");
@@ -156,6 +164,14 @@ export function Book() {
     });
   }
 }
+
+const handleSearch = () => {
+  const filtered = books.filter(book => 
+    `${book.title}`.toLowerCase().includes(searchTerm.toLowerCase()))
+
+  setFilteredBooks(filtered);
+};
+
   return (
     <Stack>
       <Container>
@@ -237,44 +253,37 @@ export function Book() {
             <Typography variant="h6" gutterBottom>
               Administración de Libros
             </Typography>
-            {/* <Stack spacing={2} sx={{ width: 300 }}>
-              <Autocomplete
-                freeSolo
-                id="search"
-                disableClearable
-                options={books.map((option) => option.title)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Buscar"
-                    InputProps={{
-                      ...params.InputProps,
-                      type: "search",
-                    }}
-                  />
-                )}
-                size="small"
-              />
-            </Stack> */}
-            <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-            <Fab
+            <Stack 
+              direction="row" 
+              spacing={2} 
+              style={{ marginTop: "20px" }}
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Fab
                 color="success"
                 onClick={() => onCLickCreate()}
                 size="small"
               >
                 <Add />
               </Fab>
-              {/* <Fab
-                color="primary"
-                size="small"
-              >
-                <SearchIcon />
-              </Fab> */}
+              <Stack direction="row" spacing={2} alignItems="center">
+                <TextField
+                  size="small"
+                  placeholder="Buscar titulo o autor..."
+                  variant="outlined"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Fab color="primary" onClick={handleSearch} size="small">
+                  <Search />
+                </Fab>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>
         <Grid container spacing={2}>
-          {books?.map((book, index) => (
+          {(filteredBooks.length > 0 ? filteredBooks : books)?.map((book, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card style={{ marginTop: "5px" }}>
                 <CardContent>

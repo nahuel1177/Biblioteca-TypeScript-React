@@ -1,7 +1,6 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { memberService } from "../../services/memberService";
 import TextField from "@mui/material/TextField";
-//import Autocomplete from "@mui/material/Autocomplete";
 import { IMember } from "../../interfaces/memberInterface";
 import {
   Button,
@@ -26,7 +25,6 @@ const style = {
 };
 import DeleteIcon from "@mui/icons-material/Delete";
 import Add from "@mui/icons-material/Add";
-//import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
@@ -34,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { loanService } from "../../services/loanService";
 import { ILoan } from "../../interfaces/loanInterface";
+import { Search } from "@mui/icons-material";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
@@ -42,6 +41,8 @@ export function Member() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredMembers, setFilteredMembers] = useState<IMember[]>([]);
   //const [sanctionStatus, setSanctionStatus] = useState("Sin Sancion");
 
   useEffect(() => {
@@ -74,6 +75,12 @@ export function Member() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (searchTerm === "") {
+      setFilteredMembers([]);
+    }
+  }, [searchTerm]);
 
   const onCLickCreate = async () => {
     navigate("/crear-miembro");
@@ -113,29 +120,33 @@ export function Member() {
       return false;
     }
   };
-  const onClickDelete = async (id: string | undefined) => {
+  const onClickDelete = async (id: string) => {
     try {
-      if (!id) {
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          text: "El socio no existe",
-          showConfirmButton: true,
-        });
-      } else {
         const memberFinded = findMemberOnLoan(id);
         if (!memberFinded) {
-          const response = await memberService.deleteMember(id);
-          if (response.success) {
-            const response = await memberService.getMembers();
-            setMembers(response.result);
-            return Swal.fire({
-              position: "center",
-              icon: "success",
-              text: "El socio fue eliminado",
-              showConfirmButton: true,
-            });
-          }
+          Swal.fire({
+            text: "¿Esta seguro que desea eliminar?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Eliminar",
+            cancelButtonText: "Cancelar"
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              const response = await memberService.deleteMember(id);
+              if (response.success) {
+                const response = await memberService.getMembers();
+                setMembers(response.result);
+                return Swal.fire({
+                  position: "center",
+                  icon: "success",
+                  text: "El socio fue eliminado",
+                  timer: 2000,
+                });
+              }
+            }
+          });  
         } else {
           Swal.fire({
             position: "center",
@@ -144,16 +155,15 @@ export function Member() {
             showConfirmButton: true,
           });
         }
-      }
-    } catch (error) {
+      } catch (error) {
       Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "El socio no existe",
-        showConfirmButton: true,
+              icon: "error",
+              title: "Oops...",
+              text: "Hubo un problema, intentelo más tarde",
+              timer: 2000,
       });
     }
-  };
+   };
 
   async function onClickSanction(member: IMember, state: boolean) {
     try {
@@ -290,6 +300,14 @@ export function Member() {
     }
   };
 
+  const handleSearch = () => {
+    const filtered = members.filter(member => 
+      `${member.name} ${member.lastname}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredMembers(filtered);
+  };
+
   return (
     <Stack>
       <Container>
@@ -359,42 +377,39 @@ export function Member() {
           </Container>
         </Modal>
         <Card style={{ marginTop: "20px" }}>
-          <CardContent>
+        <CardContent>
             <Typography variant="h6" gutterBottom>
               Administración de Socios
             </Typography>
-            {/* <Stack spacing={2} sx={{ width: 300 }}>
-              <Autocomplete
-                freeSolo
-                id="search"
-                disableClearable
-                options={members.map((option) => option.name)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Buscar"
-                    InputProps={{
-                      ...params.InputProps,
-                      type: "search",
-                    }}
-                  />
-                )}
-                size="small"
-              />
-            </Stack> */}
-            <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
+            <Stack 
+              direction="row" 
+              spacing={2} 
+              style={{ marginTop: "20px" }}
+              alignItems="center"
+              justifyContent="space-between"
+            >
               <Fab color="success" onClick={() => onCLickCreate()} size="small">
                 <Add />
               </Fab>
-              {/* <Fab color="primary" size="small">
-                <SearchIcon />
-              </Fab> */}
+              
+              <Stack direction="row" spacing={2} alignItems="center">
+                <TextField
+                  size="small"
+                  placeholder="Buscar nombre o correo..."
+                  variant="outlined"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Fab color="primary" onClick={handleSearch} size="small">
+                  <Search />
+                </Fab>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>
 
         <Grid container spacing={2}>
-          {members.map((member, index) => (
+          {(filteredMembers.length > 0 ? filteredMembers : members)?.map((member, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card style={{ marginTop: "20px" }}>
                 <CardContent>

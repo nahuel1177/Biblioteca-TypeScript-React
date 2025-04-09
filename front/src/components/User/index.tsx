@@ -1,10 +1,10 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { userService } from "../../services/userService";
 import TextField from "@mui/material/TextField";
-//import Autocomplete from "@mui/material/Autocomplete";
+// import Autocomplete from "@mui/material/Autocomplete";
 import Add from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
-//import SearchIcon from "@mui/icons-material/Search";
+// import SearchIcon from "@mui/icons-material/Search";
 import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { IUser } from "../../interfaces/userInterface";
@@ -24,6 +24,7 @@ import {
   Select,
 } from "@mui/material";
 import Swal from "sweetalert2";
+import { Search } from "@mui/icons-material";
 
 const style = {
   position: "absolute",
@@ -42,6 +43,8 @@ export function User() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
   useEffect(() => {
     const fetchData = async () => {
       const response = await userService.getUsers();
@@ -52,12 +55,16 @@ export function User() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (searchTerm === "") {
+      setFilteredUsers([]);
+    }
+  }, [searchTerm]);
+
+
   const onCLickCreate = async () => {
     navigate("/crear-usuario");
   };
-  //async function onClickSearch(id: string | undefined) {
-
-  //}
 
   const initialUserState: IUser = {
     _id: "",
@@ -79,25 +86,39 @@ export function User() {
     }
   }
 
-  async function onClickDelete(id: string | undefined) {
+  async function onClickDelete(id: string) {
     try {
-      if (!id) {
-        return "Id invalido";
-      }
-      const response = await userService.deleteUser(id);
-      if (response.success) {
-        const response = await userService.getUsers();
-        setUsers(response.result);
-
-        return Swal.fire({
-          position: "center",
-          icon: "success",
-          text: "El usuario fue eliminado",
-          showConfirmButton: true,
-        });
-      }
+      Swal.fire({
+        text: "¿Esta seguro que desea eliminar?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Eliminar",
+        cancelButtonText: "Cancelar",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const response = await userService.deleteUser(id);
+          if (response.success) {
+            const response = await userService.getUsers();
+            setUsers(response.result);
+            return Swal.fire({
+              position: "center",
+              icon: "success",
+              text: "El usuario fue eliminado",
+              showConfirmButton: true,
+              timer: 2000,
+            });
+          }
+        }
+      });
     } catch (error) {
-      ("No existe el usuario");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Hubo un problema, intentelo más tarde",
+        timer: 2000,
+      });
     }
   }
 
@@ -128,7 +149,7 @@ export function User() {
           timer: 2000,
         });
       }
-    }else{
+    } else {
       handleClose();
       Swal.fire({
         position: "center",
@@ -137,6 +158,16 @@ export function User() {
         showConfirmButton: true,
       });
     }
+  };
+
+  const onClickSearch = () => {
+    const filtered = users.filter(user => 
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.lastname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
   };
 
   return (
@@ -227,42 +258,40 @@ export function User() {
           </Container>
         </Modal>
         <Card style={{ marginTop: "20px" }}>
-          <CardContent>
+        <CardContent>
             <Typography variant="h6" gutterBottom>
               Administración de Usuarios
             </Typography>
-            {/* <Stack spacing={2} sx={{ width: 300 }}>
-              <Autocomplete
-                freeSolo
-                id="search"
-                disableClearable
-                options={users.map((option) => option.username)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Buscar"
-                    InputProps={{
-                      ...params.InputProps,
-                      type: "search",
-                    }}
-                  />
-                )}
-                size="small"
-              />
-            </Stack> */}
-            <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
+
+            <Stack 
+              direction="row" 
+              spacing={2} 
+              style={{ marginTop: "20px" }}
+              alignItems="center"
+              justifyContent="space-between"
+            >
               <Fab color="success" onClick={() => onCLickCreate()} size="small">
                 <Add />
               </Fab>
-              {/* <Fab color="primary" size="small">
-                <SearchIcon />
-              </Fab> */}
+
+              <Stack direction="row" spacing={2} alignItems="center">
+                <TextField
+                  size="small"
+                  placeholder="Buscar usuario..."
+                  variant="outlined"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Fab color="primary" onClick={onClickSearch} size="small">
+                  <Search />
+                </Fab>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>
 
         <Grid container spacing={2}>
-          {users.map((user, index) => (
+        {(filteredUsers.length > 0 ? filteredUsers : users).map((user, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card style={{ marginTop: "20px" }}>
                 <CardContent>
