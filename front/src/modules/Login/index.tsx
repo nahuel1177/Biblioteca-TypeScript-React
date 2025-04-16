@@ -10,7 +10,12 @@ import { localStorage } from '../../services/localStorage';
 interface LoginProps {
   onLogin: (
     loggedIn: boolean,
-    user: { username: string; type: string } | undefined
+    user: { 
+      username: string; 
+      type: string;
+      name: string;
+      lastname: string;
+    } | undefined
   ) => void;
 }
 
@@ -30,15 +35,23 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Datos: ", username, password)
     try {
       const response = await authService.login({
         username,
         password,
       });
-      if (response.success) {
+      console.log('Login response:', response); 
+      if (response.success && response.user) {
+        // Ensure all required properties exist
+        const userData = {
+          username: response.user.username,
+          type: response.user.type,
+          name: response.user.name,  
+          lastname: response.user.lastname
+        };
         localStorage.set(response);
-        onLogin(true, response.user);
+        console.log("Datos del User: " , userData);
+        onLogin(true, userData);
         navigate("/");
       } else {
         setShowAlert("Usuario y/o contraseña incorrectos");
@@ -54,11 +67,12 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
       <div className="login-form-container">
         <Container maxWidth="xs">
           <Paper elevation={3} style={{ padding: 20 }}>
-            <Typography variant="h5" gutterBottom>
-              Ingresar
+            <Typography variant="h5" gutterBottom align="center">
+              BIBLIOTECA
             </Typography>
             <form onSubmit={handleSubmit}>
               <TextField
+                size="small"
                 fullWidth
                 label="Usuario"
                 variant="outlined"
@@ -67,6 +81,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 onChange={handleUsernameChange}
               />
               <TextField
+                size="small"
                 fullWidth
                 label="Contraseña"
                 type="password"

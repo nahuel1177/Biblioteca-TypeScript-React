@@ -32,7 +32,8 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { loanService } from "../../services/loanService";
 import { ILoan } from "../../interfaces/loanInterface";
-import { Search } from "@mui/icons-material";
+//import { Search } from "@mui/icons-material";
+import { SearchBar } from "../SearchBar";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
@@ -300,7 +301,7 @@ export function Member() {
     }
   };
 
-  const handleSearch = () => {
+  const onClickSearch = () => {
     const filtered = members.filter(member => 
       `${member.name} ${member.lastname}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -379,9 +380,9 @@ export function Member() {
         <Card style={{ marginTop: "20px" }}>
         <CardContent>
             <Typography variant="h6" gutterBottom>
-              Administración de Socios
+              Socios
             </Typography>
-            <Stack 
+              <Stack 
               direction="row" 
               spacing={2} 
               style={{ marginTop: "20px" }}
@@ -391,19 +392,13 @@ export function Member() {
               <Fab color="success" onClick={() => onCLickCreate()} size="small">
                 <Add />
               </Fab>
-              
-              <Stack direction="row" spacing={2} alignItems="center">
-                <TextField
-                  size="small"
-                  placeholder="Buscar nombre o correo..."
-                  variant="outlined"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Fab color="primary" onClick={handleSearch} size="small">
-                  <Search />
-                </Fab>
-              </Stack>
+
+              <SearchBar
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                onSearch={onClickSearch}
+                placeholder="Buscar socio..."
+              />
             </Stack>
           </CardContent>
         </Card>

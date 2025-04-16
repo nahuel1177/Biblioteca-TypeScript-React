@@ -8,7 +8,6 @@ import {
   Button,
   Stack,
   Fab,
-  TextField,
 } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 // import SearchIcon from "@mui/icons-material/Search";
@@ -20,7 +19,7 @@ import { bookService } from "../../services/bookService";
 import { loanService } from "../../services/loanService";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { Search } from "@mui/icons-material";
+import { SearchBar } from "../SearchBar";
 
 export function Loan() {
   const navigate = useNavigate();
@@ -152,7 +151,7 @@ export function Loan() {
     }
   };
 
-  const handleSearch = () => {
+  const onClickSearch = () => {
     const filtered = loans.filter((loan) => {
       const book = books.find((book) => book._id === loan.bookId);
       const member = members.find((member) => member._id === loan.memberId);
@@ -186,19 +185,12 @@ export function Loan() {
               <Fab color="success" onClick={() => onCLickCreate()} size="small">
                 <Add />
               </Fab>
-
-              <Stack direction="row" spacing={2} alignItems="center">
-                <TextField
-                  size="small"
-                  placeholder="Buscar por libro o socio..."
-                  variant="outlined"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Fab color="primary" onClick={handleSearch} size="small">
-                  <Search />
-                </Fab>
-              </Stack>
+              <SearchBar
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                onSearch={onClickSearch}
+                placeholder="Buscar Libro o Socio..."
+              />
             </Stack>
           </CardContent>
         </Card>

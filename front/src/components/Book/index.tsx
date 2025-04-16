@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
 import Swal from "sweetalert2";
-import { Search } from "@mui/icons-material";
+import { SearchBar } from "../SearchBar";
 
 export function Book() {
   const [books, setBooks] = useState<IBook[]>([]);
@@ -165,7 +165,7 @@ export function Book() {
   }
 }
 
-const handleSearch = () => {
+const onClickSearch = () => {
   const filtered = books.filter(book => 
     `${book.title}`.toLowerCase().includes(searchTerm.toLowerCase()))
 
@@ -251,7 +251,7 @@ const handleSearch = () => {
         <Card style={{ marginTop: "20px", marginBottom: "15px" }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
-              Administración de Libros
+              Libros
             </Typography>
             <Stack 
               direction="row" 
@@ -267,18 +267,12 @@ const handleSearch = () => {
               >
                 <Add />
               </Fab>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <TextField
-                  size="small"
-                  placeholder="Buscar titulo o autor..."
-                  variant="outlined"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Fab color="primary" onClick={handleSearch} size="small">
-                  <Search />
-                </Fab>
-              </Stack>
+              <SearchBar
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                onSearch={onClickSearch}
+                placeholder="Buscar usuario..."
+              />
             </Stack>
           </CardContent>
         </Card>

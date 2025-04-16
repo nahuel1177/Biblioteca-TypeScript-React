@@ -22,7 +22,7 @@ class AuthService {
     return {
       statusCode: 200,
       data: {
-        user: { username: user.username, type: user.role },
+        user: { username: user.username, name: user.name, lastname: user.lastname, type: user.role },
         token: jwt.sign({ username: user.username, type: user.role }, "SECRET_KEY"),
         success: true,
       },

@@ -15,8 +15,15 @@ interface ILocalStorage {
 }
 
 const localStorage: ILocalStorage = {
-  set: (user) => lscache.set(tokenkey, user, duration),
-  get: () => lscache.get(tokenkey),
+  set: (user) => {
+    console.log('Setting user data:', user);
+    lscache.set(tokenkey, user, duration);
+  },
+  get: () => {
+    const data = lscache.get(tokenkey);
+    console.log('Getting user data:', data);
+    return data;
+  },
   delete: () => lscache.flush(),
   setLoggedIn: (token) => lscache.set(loggedInkey, token, duration),
   getLoggedIn: () => lscache.get(loggedInkey),

@@ -16,6 +16,8 @@ export interface IResponseLogin {
   user?: {
     username: string;
     type: string;
+    name: string;
+    lastname: string;
   };
   token?: string;
   error?: string;

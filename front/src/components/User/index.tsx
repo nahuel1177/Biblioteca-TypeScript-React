@@ -24,7 +24,7 @@ import {
   Select,
 } from "@mui/material";
 import Swal from "sweetalert2";
-import { Search } from "@mui/icons-material";
+import { SearchBar } from '../SearchBar';
 
 const style = {
   position: "absolute",
@@ -260,7 +260,7 @@ export function User() {
         <Card style={{ marginTop: "20px" }}>
         <CardContent>
             <Typography variant="h6" gutterBottom>
-              Administración de Usuarios
+              Usuarios
             </Typography>
 
             <Stack 
@@ -274,18 +274,12 @@ export function User() {
                 <Add />
               </Fab>
 
-              <Stack direction="row" spacing={2} alignItems="center">
-                <TextField
-                  size="small"
-                  placeholder="Buscar usuario..."
-                  variant="outlined"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <Fab color="primary" onClick={onClickSearch} size="small">
-                  <Search />
-                </Fab>
-              </Stack>
+              <SearchBar
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                onSearch={onClickSearch}
+                placeholder="Buscar usuario..."
+              />
             </Stack>
           </CardContent>
         </Card>

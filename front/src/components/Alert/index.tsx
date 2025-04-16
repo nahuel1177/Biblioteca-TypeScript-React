@@ -24,6 +24,8 @@ export const Alert = ({
             textAlign: "center",
             border: "none",
             borderRadius: "4px",
+            backgroundColor: document.body.classList.contains('dark') ? "#1e1e1e" : "#fff", // Cambia según modo
+            color: document.body.classList.contains('dark') ? "#fff" : "#000", // Cambia según modo
           }}
         >
           <Typography variant="body1">{message}</Typography>
