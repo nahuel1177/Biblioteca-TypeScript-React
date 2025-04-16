@@ -9,13 +9,15 @@ import { BookModule, CreateBookModule } from "./modules/Book/index";
 import { LoanModule, CreateLoanModule } from "./modules/Loan/index";
 import { localStorage } from "./services/localStorage";
 import { LayoutModule } from "./modules/Layout";
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider } from './context/ThemeContext';
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "./context/ThemeContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { User } from "./components/User";
+import { NotFound } from './components/NotFound';
+import { Error500 } from './components/Error500';
 
 //import { userService } from "./services/userService"
 function App() {
-
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ username: string; type: string }>({
     username: "",
@@ -47,7 +49,6 @@ function App() {
       localStorage.getLoggedIn()
     );
     if (user) {
-  
       setUser(user);
     }
   };
@@ -132,10 +133,26 @@ function App() {
                     path="/crear-prestamo"
                     element={<CreateLoanModule roleType={user?.type} />}
                   />
+                  <Route
+                    path="/usuarios"
+                    element={
+                      <ProtectedRoute
+                        roleType={user.type}
+                        allowedRoles={["admin"]}
+                      >
+                        <User />
+                      </ProtectedRoute>
+                    }
+                  />
                 </>
               )}
             </>
           )}
+          {/* Add Error500 route */}
+          <Route path="/error-500" element={<Error500 />} />
+          
+          {/* This should remain the last route */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
