@@ -1,17 +1,12 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import { userService } from "../../services/userService";
+import { memberService } from "../../services/memberService";
 import {
   Typography,
   TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Button,
   Stack,
-  Container,
-  Box,
   Modal,
+  Box,
   Paper,
   Divider,
   IconButton,
@@ -20,7 +15,8 @@ import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import EditIcon from "@mui/icons-material/Edit";
+import { IMember } from "../../interfaces/memberInterface";
 
 const style = {
   position: "absolute",
@@ -35,59 +31,33 @@ const style = {
   outline: "none",
 };
 
-interface CreateUserModalProps {
+interface EditMemberModalProps {
   open: boolean;
-  onClose: () => void;
-  onUserCreated: () => Promise<void>;
+  handleClose: () => void;
+  member: IMember;
+  onMemberUpdated: () => void;
 }
 
-export const CreateUserModal = ({
-  open,
-  onClose,
-  onUserCreated,
-}: CreateUserModalProps) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    lastname: "",
-    username: "",
-    email: "",
-    password: "",
-    role: "",
-  });
+export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: EditMemberModalProps) {
+  const [editedMember, setEditedMember] = useState<IMember>(member);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
     name: false,
     lastname: false,
-    username: false,
     email: false,
-    password: false,
-    role: false,
+    dni: false,
   });
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      lastname: "",
-      username: "",
-      email: "",
-      password: "",
-      role: "",
-    });
-    setErrors({
-      name: false,
-      lastname: false,
-      username: false,
-      email: false,
-      password: false,
-      role: false,
-    });
-  };
+  // Update local state when the member prop changes
+  useState(() => {
+    setEditedMember(member);
+  });
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name as string]: value });
+    setEditedMember({ ...editedMember, [name as string]: value });
     
     // Clear error when user types
     if (name && errors[name as keyof typeof errors]) {
@@ -100,12 +70,10 @@ export const CreateUserModal = ({
 
   const validateForm = () => {
     const newErrors = {
-      name: formData.name.trim() === "",
-      lastname: formData.lastname.trim() === "",
-      username: formData.username.trim() === "",
-      email: formData.email.trim() === "",
-      password: formData.password.trim() === "",
-      role: formData.role.trim() === "",
+      name: !editedMember.name || editedMember.name.trim() === "",
+      lastname: !editedMember.lastname || editedMember.lastname.trim() === "",
+      email: editedMember.email?.trim() === "",
+      dni: !editedMember.dni || editedMember.dni <= 0,
     };
     
     setErrors(newErrors);
@@ -121,32 +89,35 @@ export const CreateUserModal = ({
 
     setLoading(true);
     try {
-      const response = await userService.createUser(formData);
+      const response = await memberService.updateMember(editedMember._id, editedMember);
       if (response.success) {
-        resetForm();
-        onClose();
-        await onUserCreated();
+        handleClose();
+        onMemberUpdated();
         Swal.fire({
           position: "center",
           icon: "success",
           title: "¡Éxito!",
-          text: "Usuario creado exitosamente",
+          text: "El socio fue modificado exitosamente",
           showConfirmButton: true,
           confirmButtonColor: "#4caf50",
         });
       } else {
         Swal.fire({
+          position: "center",
           icon: "error",
           title: "Error",
-          text: "No se pudo crear el usuario",
+          text: "Error al modificar el socio",
+          showConfirmButton: true,
           confirmButtonColor: "#f44336",
         });
       }
     } catch (error) {
       Swal.fire({
+        position: "center",
         icon: "error",
         title: "Error",
-        text: "No se pudo crear el usuario",
+        text: "Ocurrió un error al procesar la solicitud",
+        showConfirmButton: true,
         confirmButtonColor: "#f44336",
       });
     } finally {
@@ -154,17 +125,12 @@ export const CreateUserModal = ({
     }
   };
 
-  const handleCancel = () => {
-    resetForm();
-    onClose();
-  };
-
   return (
     <Modal
       open={open}
-      onClose={handleCancel}
-      aria-labelledby="create-modal-title"
-      aria-describedby="create-modal-description"
+      onClose={handleClose}
+      aria-labelledby="edit-modal-title"
+      aria-describedby="edit-modal-description"
     >
       <Paper sx={style} elevation={5}>
         <Box sx={{ 
@@ -178,12 +144,12 @@ export const CreateUserModal = ({
           borderTopRightRadius: 8
         }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <PersonAddIcon />
+            <EditIcon />
             <Typography variant="h6" component="h2" fontWeight="bold">
-              Crear Nuevo Usuario
+              Modificación de Socio
             </Typography>
           </Stack>
-          <IconButton onClick={handleCancel} size="small" aria-label="cerrar" sx={{ color: "white" }}>
+          <IconButton onClick={handleClose} size="small" aria-label="cerrar" sx={{ color: "white" }}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -193,7 +159,7 @@ export const CreateUserModal = ({
             <TextField
               label="Nombres"
               name="name"
-              value={formData.name}
+              value={member.name}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -209,7 +175,7 @@ export const CreateUserModal = ({
             <TextField
               label="Apellidos"
               name="lastname"
-              value={formData.lastname}
+              value={member.lastname}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -222,16 +188,18 @@ export const CreateUserModal = ({
             />
             
             <TextField
-              label="Usuario"
-              name="username"
-              value={formData.username}
+              label="Documento"
+              name="dni"
+              value={member.dni}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
+              type="number"
               size="small"
               required
-              error={errors.username}
-              helperText={errors.username ? "El usuario es requerido" : ""}
+              error={errors.dni}
+              helperText={errors.dni ? "El documento es requerido y debe ser mayor a 0" : ""}
+              InputProps={{ inputProps: { min: 1 } }}
               variant="outlined"
               sx={{ mb: 2 }}
             />
@@ -239,7 +207,7 @@ export const CreateUserModal = ({
             <TextField
               label="Correo electrónico"
               name="email"
-              value={formData.email}
+              value={member.email}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -252,58 +220,13 @@ export const CreateUserModal = ({
               sx={{ mb: 2 }}
             />
             
-            <TextField
-              label="Contraseña"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              type="password"
-              size="small"
-              required
-              error={errors.password}
-              helperText={errors.password ? "La contraseña es requerida" : ""}
-              variant="outlined"
-              sx={{ mb: 2 }}
-            />
-            
-            <FormControl 
-              fullWidth 
-              margin="normal" 
-              size="small" 
-              required
-              error={errors.role}
-              sx={{ mb: 2 }}
-            >
-              <InputLabel>Rol</InputLabel>
-              <Select
-                label="Rol"
-                name="role"
-                value={formData.role}
-                onChange={(e) =>
-                  handleInputChange(
-                    e as ChangeEvent<{ name?: string; value: unknown }>
-                  )
-                }
-              >
-                <MenuItem value="admin">Administrador</MenuItem>
-                <MenuItem value="employee">Usuario</MenuItem>
-              </Select>
-              {errors.role && (
-                <Typography variant="caption" color="error">
-                  El rol es requerido
-                </Typography>
-              )}
-            </FormControl>
-            
             <Divider sx={{ my: 3 }} />
             
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
                 variant="outlined"
                 color="error"
-                onClick={handleCancel}
+                onClick={handleClose}
                 startIcon={<CancelIcon />}
                 disabled={loading}
               >
@@ -325,4 +248,4 @@ export const CreateUserModal = ({
       </Paper>
     </Modal>
   );
-};
+}

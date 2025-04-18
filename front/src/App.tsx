@@ -3,10 +3,8 @@ import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { Login } from "./modules/Login";
-import { CreateUserModule, UserModule } from "./modules/User/index";
-import { MemberModule, CreateMemberModule } from "./modules/Member/index";
-import { BookModule, CreateBookModule } from "./modules/Book/index";
-import { LoanModule, CreateLoanModule } from "./modules/Loan/index";
+import { MemberModule } from "./modules/Member/index";
+import { LoanModule } from "./modules/Loan/index";
 import { localStorage } from "./services/localStorage";
 import { LayoutModule } from "./modules/Layout";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,6 +13,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { User } from "./components/User";
 import { NotFound } from './components/NotFound';
 import { Error500 } from './components/Error500';
+import { UserModule } from "./modules/User";
+import { BookModule } from "./modules/Book";
 
 //import { userService } from "./services/userService"
 function App() {
@@ -78,32 +78,16 @@ function App() {
                     element={<UserModule roleType={user?.type} />}
                   />
                   <Route
-                    path="/crear-usuario"
-                    element={<CreateUserModule roleType={user?.type} />}
-                  />
-                  <Route
                     path="/socios"
                     element={<MemberModule roleType={user?.type} />}
-                  />
-                  <Route
-                    path="/crear-miembro"
-                    element={<CreateMemberModule roleType={user?.type} />}
                   />
                   <Route
                     path="/libros"
                     element={<BookModule roleType={user?.type} />}
                   />
                   <Route
-                    path="/crear-libro"
-                    element={<CreateBookModule roleType={user?.type} />}
-                  />
-                  <Route
                     path="/prestamos"
                     element={<LoanModule roleType={user?.type} />}
-                  />
-                  <Route
-                    path="/crear-prestamo"
-                    element={<CreateLoanModule roleType={user?.type} />}
                   />
                 </>
               )}
@@ -114,24 +98,12 @@ function App() {
                     element={<BookModule roleType={user?.type} />}
                   />
                   <Route
-                    path="/crear-libro"
-                    element={<CreateBookModule roleType={user?.type} />}
-                  />
-                  <Route
                     path="/socios"
                     element={<MemberModule roleType={user?.type} />}
                   />
                   <Route
-                    path="/crear-miembro"
-                    element={<CreateMemberModule roleType={user?.type} />}
-                  />
-                  <Route
                     path="/prestamos"
                     element={<LoanModule roleType={user?.type} />}
-                  />
-                  <Route
-                    path="/crear-prestamo"
-                    element={<CreateLoanModule roleType={user?.type} />}
                   />
                   <Route
                     path="/usuarios"

@@ -5,6 +5,7 @@ export async function up (): Promise<void> {
 
   const { Member } = await Migration.getMemberModel();
   const { User } = await Migration.getUserModel();
+  const { Book } = await Migration.getBookModel();	
   
 
   await User.create([
@@ -13,7 +14,7 @@ export async function up (): Promise<void> {
       lastname: "Perez",
       email: "jperez@com",
       username: "jperez",
-      password: "1234",
+      password: "$2a$12$utsFOZvj787rtB3Fav7k8OTtcTcAIgvXZXAJquGEtSijYxXV8lewe",
       role: "admin",
     },
 
@@ -22,7 +23,7 @@ export async function up (): Promise<void> {
       lastname: "Rodriguez",
       email: "crodriguez@com",
       username: "crodriguez",
-      password: "1234",
+      password: "$2a$12$utsFOZvj787rtB3Fav7k8OTtcTcAIgvXZXAJquGEtSijYxXV8lewe",
       role: "employee",
     },
   ]);
@@ -32,8 +33,6 @@ export async function up (): Promise<void> {
       name: "Alberto",
       lastname: "Dominguez",
       email: "adominguez@com",
-      username: "adominguez",
-      password: "1234",
       dni: 99423402,
     },
   ]);

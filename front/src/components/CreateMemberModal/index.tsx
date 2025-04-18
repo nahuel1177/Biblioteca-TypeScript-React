@@ -1,17 +1,12 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import { userService } from "../../services/userService";
+import { memberService } from "../../services/memberService";
 import {
   Typography,
   TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Button,
   Stack,
-  Container,
-  Box,
   Modal,
+  Box,
   Paper,
   Divider,
   IconButton,
@@ -21,6 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { IMember } from "../../interfaces/memberInterface";
 
 const style = {
   position: "absolute",
@@ -35,51 +31,38 @@ const style = {
   outline: "none",
 };
 
-interface CreateUserModalProps {
+interface CreateMemberModalProps {
   open: boolean;
-  onClose: () => void;
-  onUserCreated: () => Promise<void>;
+  handleClose: () => void;
+  onMemberCreated: () => void;
 }
 
-export const CreateUserModal = ({
-  open,
-  onClose,
-  onUserCreated,
-}: CreateUserModalProps) => {
-  const [formData, setFormData] = useState({
+export function CreateMemberModal({ open, handleClose, onMemberCreated }: CreateMemberModalProps) {
+  const initialMemberState: IMember = {
+    _id: "",
     name: "",
     lastname: "",
-    username: "",
     email: "",
-    password: "",
-    role: "",
-  });
+    dni: 0,
+    isSanctioned: false,
+  };
+
+  const [newMember, setNewMember] = useState<IMember>(initialMemberState);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
     name: false,
     lastname: false,
-    username: false,
     email: false,
-    password: false,
-    role: false,
+    dni: false,
   });
 
   const resetForm = () => {
-    setFormData({
-      name: "",
-      lastname: "",
-      username: "",
-      email: "",
-      password: "",
-      role: "",
-    });
+    setNewMember(initialMemberState);
     setErrors({
       name: false,
       lastname: false,
-      username: false,
       email: false,
-      password: false,
-      role: false,
+      dni: false,
     });
   };
 
@@ -87,7 +70,7 @@ export const CreateUserModal = ({
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name as string]: value });
+    setNewMember({ ...newMember, [name as string]: value });
     
     // Clear error when user types
     if (name && errors[name as keyof typeof errors]) {
@@ -100,12 +83,10 @@ export const CreateUserModal = ({
 
   const validateForm = () => {
     const newErrors = {
-      name: formData.name.trim() === "",
-      lastname: formData.lastname.trim() === "",
-      username: formData.username.trim() === "",
-      email: formData.email.trim() === "",
-      password: formData.password.trim() === "",
-      role: formData.role.trim() === "",
+      name: !newMember.name || newMember.name.trim() === "",
+      lastname: !newMember.lastname || newMember.lastname.trim() === "",
+      email: newMember.email?.trim() === "",
+      dni: !newMember.dni || newMember.dni <= 0,
     };
     
     setErrors(newErrors);
@@ -121,32 +102,41 @@ export const CreateUserModal = ({
 
     setLoading(true);
     try {
-      const response = await userService.createUser(formData);
+      const response = await memberService.createMember({
+        name: newMember.name || '',
+        lastname: newMember.lastname || '',
+        email: newMember.email || '',
+        dni: newMember.dni || 0,
+      });
       if (response.success) {
         resetForm();
-        onClose();
-        await onUserCreated();
+        handleClose();
+        onMemberCreated();
         Swal.fire({
           position: "center",
           icon: "success",
           title: "¡Éxito!",
-          text: "Usuario creado exitosamente",
+          text: "El socio fue creado exitosamente",
           showConfirmButton: true,
           confirmButtonColor: "#4caf50",
         });
       } else {
         Swal.fire({
+          position: "center",
           icon: "error",
           title: "Error",
-          text: "No se pudo crear el usuario",
+          text: "Error al crear el socio",
+          showConfirmButton: true,
           confirmButtonColor: "#f44336",
         });
       }
     } catch (error) {
       Swal.fire({
+        position: "center",
         icon: "error",
         title: "Error",
-        text: "No se pudo crear el usuario",
+        text: "Ocurrió un error al procesar la solicitud",
+        showConfirmButton: true,
         confirmButtonColor: "#f44336",
       });
     } finally {
@@ -156,7 +146,7 @@ export const CreateUserModal = ({
 
   const handleCancel = () => {
     resetForm();
-    onClose();
+    handleClose();
   };
 
   return (
@@ -180,7 +170,7 @@ export const CreateUserModal = ({
           <Stack direction="row" spacing={1} alignItems="center">
             <PersonAddIcon />
             <Typography variant="h6" component="h2" fontWeight="bold">
-              Crear Nuevo Usuario
+              Crear Nuevo Socio
             </Typography>
           </Stack>
           <IconButton onClick={handleCancel} size="small" aria-label="cerrar" sx={{ color: "white" }}>
@@ -193,7 +183,7 @@ export const CreateUserModal = ({
             <TextField
               label="Nombres"
               name="name"
-              value={formData.name}
+              value={newMember.name}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -209,7 +199,7 @@ export const CreateUserModal = ({
             <TextField
               label="Apellidos"
               name="lastname"
-              value={formData.lastname}
+              value={newMember.lastname}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -222,16 +212,18 @@ export const CreateUserModal = ({
             />
             
             <TextField
-              label="Usuario"
-              name="username"
-              value={formData.username}
+              label="Documento"
+              name="dni"
+              value={newMember.dni}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
+              type="number"
               size="small"
               required
-              error={errors.username}
-              helperText={errors.username ? "El usuario es requerido" : ""}
+              error={errors.dni}
+              helperText={errors.dni ? "El documento es requerido y debe ser mayor a 0" : ""}
+              InputProps={{ inputProps: { min: 1 } }}
               variant="outlined"
               sx={{ mb: 2 }}
             />
@@ -239,7 +231,7 @@ export const CreateUserModal = ({
             <TextField
               label="Correo electrónico"
               name="email"
-              value={formData.email}
+              value={newMember.email}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -251,51 +243,6 @@ export const CreateUserModal = ({
               variant="outlined"
               sx={{ mb: 2 }}
             />
-            
-            <TextField
-              label="Contraseña"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              type="password"
-              size="small"
-              required
-              error={errors.password}
-              helperText={errors.password ? "La contraseña es requerida" : ""}
-              variant="outlined"
-              sx={{ mb: 2 }}
-            />
-            
-            <FormControl 
-              fullWidth 
-              margin="normal" 
-              size="small" 
-              required
-              error={errors.role}
-              sx={{ mb: 2 }}
-            >
-              <InputLabel>Rol</InputLabel>
-              <Select
-                label="Rol"
-                name="role"
-                value={formData.role}
-                onChange={(e) =>
-                  handleInputChange(
-                    e as ChangeEvent<{ name?: string; value: unknown }>
-                  )
-                }
-              >
-                <MenuItem value="admin">Administrador</MenuItem>
-                <MenuItem value="employee">Usuario</MenuItem>
-              </Select>
-              {errors.role && (
-                <Typography variant="caption" color="error">
-                  El rol es requerido
-                </Typography>
-              )}
-            </FormControl>
             
             <Divider sx={{ my: 3 }} />
             
@@ -325,4 +272,4 @@ export const CreateUserModal = ({
       </Paper>
     </Modal>
   );
-};
+}

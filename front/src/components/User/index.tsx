@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { SearchBar } from '../SearchBar';
-import { UserEditModal } from '../UserEditModal';
+import { UserEditModal } from '../EditUserModal';
 import { CreateUserModal } from '../CreateUserModal';
 
 export function User() {

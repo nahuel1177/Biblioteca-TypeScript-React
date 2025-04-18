@@ -17,52 +17,55 @@ import { IMember } from "../../interfaces/memberInterface";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
 import { loanService } from "../../services/loanService";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { SearchBar } from "../SearchBar";
+import { CreateLoanModal } from "../CreateLoanModal";
 
 export function Loan() {
-  const navigate = useNavigate();
   const [loans, setLoans] = useState<ILoan[]>([]);
   const [members, setMembers] = useState<IMember[]>([]);
   const [books, setBooks] = useState<IBook[]>([]);
   const [sanctionStatus, setSanctionStatus] = useState("Vigente");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredLoans, setFilteredLoans] = useState<ILoan[]>([]);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const handleOpenCreateModal = () => setOpenCreateModal(true);
+  const handleCloseCreateModal = () => setOpenCreateModal(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response2 = await memberService.getMembers();
-      if (response2.success) {
-        setMembers(response2.result);
-      }
+    fetchData();
+  }, []);
 
-      const response = await loanService.getLoans();
-      if (response.success) {
-        setLoans(response.result);
+  const fetchData = async () => {
+    const response2 = await memberService.getMembers();
+    if (response2.success) {
+      setMembers(response2.result);
+    }
 
-        for (const loan of response.result) {
-          if (isDefeated(loan.dateLimit)) {
-            const memberToUpdate = await memberService.getMemberById(
-              loan.memberId
-            );
-            console.log(memberToUpdate);
+    const response = await loanService.getLoans();
+    if (response.success) {
+      setLoans(response.result);
 
-            if (memberToUpdate) {
-              memberToUpdate.isSanctioned = true;
-              await memberService.sanctionMember(memberToUpdate);
-            }
+      for (const loan of response.result) {
+        if (isDefeated(loan.dateLimit)) {
+          const memberToUpdate = await memberService.getMemberById(
+            loan.memberId
+          );
+          console.log(memberToUpdate);
+
+          if (memberToUpdate) {
+            memberToUpdate.isSanctioned = true;
+            await memberService.sanctionMember(memberToUpdate);
           }
         }
       }
+    }
 
-      const response3 = await bookService.getBooks();
-      if (response3.success) {
-        setBooks(response3.result);
-      }
-    };
-    fetchData();
-  }, []);
+    const response3 = await bookService.getBooks();
+    if (response3.success) {
+      setBooks(response3.result);
+    }
+  };
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -71,7 +74,7 @@ export function Loan() {
   }, [searchTerm]);
 
   const onCLickCreate = async () => {
-    navigate("/crear-prestamo");
+    handleOpenCreateModal();
   };
 
   const onClickDelete = async (
@@ -169,6 +172,12 @@ export function Loan() {
   return (
     <Stack>
       <Container>
+        <CreateLoanModal 
+          open={openCreateModal} 
+          handleClose={handleCloseCreateModal} 
+          onLoanCreated={fetchData}
+        />
+
         <Card style={{ marginTop: "20px" }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>

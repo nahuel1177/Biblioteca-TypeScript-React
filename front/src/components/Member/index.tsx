@@ -34,6 +34,8 @@ import { loanService } from "../../services/loanService";
 import { ILoan } from "../../interfaces/loanInterface";
 //import { Search } from "@mui/icons-material";
 import { SearchBar } from "../SearchBar";
+import { CreateMemberModal } from "../CreateMemberModal";
+import { EditMemberModal } from "../EditMemberModal";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
@@ -42,6 +44,9 @@ export function Member() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const handleOpenCreateModal = () => setOpenCreateModal(true);
+  const handleCloseCreateModal = () => setOpenCreateModal(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMembers, setFilteredMembers] = useState<IMember[]>([]);
   //const [sanctionStatus, setSanctionStatus] = useState("Sin Sancion");
@@ -84,7 +89,7 @@ export function Member() {
   }, [searchTerm]);
 
   const onCLickCreate = async () => {
-    navigate("/crear-miembro");
+    handleOpenCreateModal();
   };
 
   const initialMemberState: IMember = {
@@ -312,71 +317,28 @@ export function Member() {
   return (
     <Stack>
       <Container>
-        <Modal
+        <EditMemberModal 
           open={open}
-          onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-          sx={style}
-        >
-          <Container maxWidth="xs">
-            <Typography variant="h6" gutterBottom marginTop={2}>
-              Modificación de Socio
-            </Typography>
-            <form onSubmit={handleSubmit}>
-              <TextField
-                label="Nombres"
-                name="name"
-                value={member.name}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                size="small"
-              />
-              <TextField
-                label="Apellidos"
-                name="lastname"
-                value={member.lastname}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                size="small"
-              />
-              <TextField
-                label="Documento"
-                name="dni"
-                value={member.dni}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                type="number"
-                size="small"
-              />
-              <TextField
-                label="Correo"
-                name="correo"
-                value={member.email}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                size="small"
-              />
-              <Stack direction="row" spacing={2} style={{ marginTop: "20px" }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="success"
-                  onClick={handleSubmit}
-                >
-                  <Typography fontSize={13}>Modificar</Typography>
-                </Button>
-                <Button variant="contained" color="error" onClick={handleClose}>
-                  <Typography fontSize={13}>Cancelar</Typography>
-                </Button>
-              </Stack>
-            </form>
-          </Container>
-        </Modal>
+          handleClose={handleClose}
+          member={member}
+          onMemberUpdated={async () => {
+            const response = await memberService.getMembers();
+            if (response.success) {
+              setMembers(response.result);
+            }
+          }}
+        />
+
+        <CreateMemberModal 
+          open={openCreateModal} 
+          handleClose={handleCloseCreateModal} 
+          onMemberCreated={async () => {
+            const response = await memberService.getMembers();
+            if (response.success) {
+              setMembers(response.result);
+            }
+          }}
+        />
         <Card style={{ marginTop: "20px" }}>
         <CardContent>
             <Typography variant="h6" gutterBottom>
@@ -435,7 +397,7 @@ export function Member() {
                       size="small"
                       color="error"
                       aria-label="edit"
-                      onClick={() => onClickDelete(member._id)}
+                      onClick={() => member._id && onClickDelete(member._id)}
                     >
                       <DeleteIcon />
                     </Fab>
