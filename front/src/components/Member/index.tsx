@@ -1,9 +1,7 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { memberService } from "../../services/memberService";
-import TextField from "@mui/material/TextField";
 import { IMember } from "../../interfaces/memberInterface";
 import {
-  Button,
   Container,
   Typography,
   Grid,
@@ -11,31 +9,21 @@ import {
   CardContent,
   Stack,
   Fab,
-  Modal,
+  useTheme,
 } from "@mui/material";
-const style = {
-  position: "absolute",
-  top: "40%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import Add from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
 import { loanService } from "../../services/loanService";
 import { ILoan } from "../../interfaces/loanInterface";
-//import { Search } from "@mui/icons-material";
 import { SearchBar } from "../SearchBar";
 import { CreateMemberModal } from "../CreateMemberModal";
 import { EditMemberModal } from "../EditMemberModal";
+import { useNavigate } from "react-router-dom";
+import { useSweetAlert } from "../../hooks/useSweetAlert";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
@@ -49,38 +37,53 @@ export function Member() {
   const handleCloseCreateModal = () => setOpenCreateModal(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMembers, setFilteredMembers] = useState<IMember[]>([]);
-  //const [sanctionStatus, setSanctionStatus] = useState("Sin Sancion");
+  const theme = useTheme();
+  const swal = useSweetAlert();
+  
+  // Configure SweetAlert2 theme based on app theme
+  useEffect(() => {
+    // Set SweetAlert2 theme based on the app's current theme
+    document.querySelector('.swal2-container')?.setAttribute('data-theme', theme.palette.mode);
+  }, [theme.palette.mode]);
+
+  const [sanctionStatus, setSanctionStatus] = useState("Sin Sancion");
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await memberService.getMembers();
-      if (response.success) {
-        setMembers(response.result);
+      try {
+        const response = await memberService.getMembers();
+        if (response.success) {
+          setMembers(response.result);
 
-        for (const member of response.result) {
-          if (
-            member.sanctionDate != null &&
-            member.limitSanctionDays != null
-          ) {
-            if (isDefeated(member.sanctionDate, member.limitSanctionDays)) {
-              const memberToUpdate = member;
-              if (memberToUpdate) {
-                memberToUpdate.isSanctioned = false;
-                //setSanctionStatus("Sin Sancion");
-                (member.sanctionDate = null),
-                  await memberService.sanctionMember(memberToUpdate);
+          for (const member of response.result) {
+            if (
+              member.sanctionDate != null &&
+              member.limitSanctionDays != null
+            ) {
+              if (isDefeated(member.sanctionDate, member.limitSanctionDays)) {
+                const memberToUpdate = member;
+                if (memberToUpdate) {
+                  memberToUpdate.isSanctioned = false;
+                  //setSanctionStatus("Sin Sancion");
+                  (member.sanctionDate = null),
+                    await memberService.sanctionMember(memberToUpdate);
+                }
               }
             }
           }
         }
-      }
-      const response2 = await loanService.getLoans();
-      if (response2.success) {
-        setLoans(response2.result);
+        
+        const response2 = await loanService.getLoans();
+        if (response2.success) {
+          setLoans(response2.result);
+        }
+      } catch (error) {
+        console.error("Error fetching members:", error);
+        navigate("/error500");
       }
     };
     fetchData();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -109,13 +112,7 @@ export function Member() {
       setMember(member);
       handleOpen();
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "El socio no existe",
-        showConfirmButton: false,
-        timer: 2000,
-      });
+      swal.error("El socio no existe");
     }
   }
   const findMemberOnLoan = (id: string) => {
@@ -130,44 +127,20 @@ export function Member() {
     try {
         const memberFinded = findMemberOnLoan(id);
         if (!memberFinded) {
-          Swal.fire({
-            text: "¿Esta seguro que desea eliminar?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Eliminar",
-            cancelButtonText: "Cancelar"
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              const response = await memberService.deleteMember(id);
-              if (response.success) {
-                const response = await memberService.getMembers();
-                setMembers(response.result);
-                return Swal.fire({
-                  position: "center",
-                  icon: "success",
-                  text: "El socio fue eliminado",
-                  timer: 2000,
-                });
-              }
+          const result = await swal.confirm("¿Esta seguro que desea eliminar?");
+          if (result.isConfirmed) {
+            const response = await memberService.deleteMember(id);
+            if (response.success) {
+              const response = await memberService.getMembers();
+              setMembers(response.result);
+              swal.success("El socio fue eliminado");
             }
-          });  
+          }
         } else {
-          Swal.fire({
-            position: "center",
-            icon: "error",
-            text: "Imposible eliminar. El socio tiene prestamos vigentes.",
-            showConfirmButton: true,
-          });
+          swal.error("Imposible eliminar. El socio tiene prestamos vigentes.");
         }
       } catch (error) {
-      Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "Hubo un problema, intentelo más tarde",
-              timer: 2000,
-      });
+        swal.error("Hubo un problema, intentelo más tarde");
     }
    };
 
@@ -183,13 +156,7 @@ export function Member() {
         if (response.success) {
           const response = await memberService.getMembers();
           setMembers(response.result);
-          //setSanctionStatus("Sancionado");
-          return Swal.fire({
-            position: "center",
-            icon: "error",
-            text: "El socio fue sancionado",
-            showConfirmButton: true,
-          });
+          swal.error("El socio fue sancionado");
         }
       } else {
         member.isSanctioned = state;
@@ -198,22 +165,11 @@ export function Member() {
         if (response.success) {
           const response = await memberService.getMembers();
           setMembers(response.result);
-          //setSanctionStatus("Sin Sancion");
-          return Swal.fire({
-            position: "center",
-            icon: "success",
-            text: "Se le quito la sancion al socio",
-            showConfirmButton: true,
-          });
+          swal.success("Se le quito la sancion al socio");
         }
       }
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "El socio no existe",
-        showConfirmButton: true,
-      });
+      swal.error("El socio no existe");
     }
   }
 
@@ -227,48 +183,6 @@ export function Member() {
     } else {
       //setSanctionStatus("Sancionado");
       return false;
-    }
-  };
-
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
-  ) => {
-    const { name, value } = e.target;
-    setMember({ ...member, [name as string]: value });
-    console.log("Miembro Input: ", member);
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    // Aquí podrías enviar los datos del usuario al servidor o realizar otras acciones según tus necesidades
-    if (
-      member.name != "" &&
-      member.lastname != "" &&
-      member.email != "" &&
-      member.dni != null
-    ) {
-      memberService.updateMember(member._id, member);
-      // Puedes reiniciar el formulario después de enviar los datos
-      const response = await memberService.getMembers();
-      if (response.success) {
-        setMembers(response.result);
-        setMember(initialMemberState);
-        handleClose();
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          text: "El socio fue actualizado",
-          showConfirmButton: true,
-        });
-      }
-    } else {
-      handleClose();
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "Datos faltantes o inválidos",
-        showConfirmButton: true,
-      });
     }
   };
 

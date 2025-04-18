@@ -7,9 +7,9 @@ import {
   CardContent,
   Button,
   Stack,
-  //Autocomplete,
   TextField,
   Fab,
+  useTheme,
 } from "@mui/material";
 
 import Add from "@mui/icons-material/Add";
@@ -18,10 +18,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
-import Swal from "sweetalert2";
 import { SearchBar } from "../SearchBar";
 import { CreateBookModal } from "../CreateBookModal";
 import { EditBookModal } from "../EditBookModal";
+import { useSweetAlert } from "../../hooks/useSweetAlert";
 
 export function Book() {
   const [books, setBooks] = useState<IBook[]>([]);
@@ -34,17 +34,30 @@ export function Book() {
   const handleCloseCreateModal = () => setOpenCreateModal(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
+  const theme = useTheme();
+  const swal = useSweetAlert();
+  
+  // Configure SweetAlert2 theme based on app theme
+  useEffect(() => {
+    // Set SweetAlert2 theme based on the app's current theme
+    document.querySelector('.swal2-container')?.setAttribute('data-theme', theme.palette.mode);
+  }, [theme.palette.mode]);
 
   useEffect(() => {
     console.log("Fetch");
     const fetchData = async () => {
-      const response = await bookService.getBooks();
-      if (response.success) {
-        setBooks(response.result);
+      try {
+        const response = await bookService.getBooks();
+        if (response.success) {
+          setBooks(response.result);
+        }
+      } catch (error) {
+        console.error("Error fetching books:", error);
+        navigate("/error500");
       }
     };
     fetchData();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (searchTerm === "") {
@@ -71,38 +84,18 @@ export function Book() {
       setSelectedBook(book);
       handleOpenEditModal();
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "El libro no existe",
-        showConfirmButton: false,
-        timer: 2000,
-      });
+      swal.error("El libro no existe");
     }
   }
 
   const onClickDelete = async (id: string | undefined) => {
     try {
       if (!id) {
-        return Swal.fire({
-          position: "center",
-          icon: "error",
-          text: "El libro no existe",
-          showConfirmButton: false,
-          timer: 2000,
-        });
+        return swal.error("El libro no existe");
       }
       
       // Add confirmation dialog before deleting
-      const result = await Swal.fire({
-        text: '¿Estás seguro que desea eliminar?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Eliminar',
-        cancelButtonText: 'Cancelar'
-      });
+      const result = await swal.confirm('¿Está seguro que desea eliminar?');
       
       // Only proceed with deletion if user confirmed
       if (result.isConfirmed) {
@@ -110,23 +103,11 @@ export function Book() {
         if (response.success) {
           const response = await bookService.getBooks();
           setBooks(response.result);
-          return Swal.fire({
-            position: "center",
-            icon: "success",
-            text: "El libro fue eliminado",
-            showConfirmButton: false,
-            timer: 2000,
-          });
+          return swal.success("El libro fue eliminado");
         }
       }
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "El libro no existe",
-        showConfirmButton: false,
-        timer: 2000,
-      });
+      swal.error("El libro no existe");
     }
   };
 

@@ -203,7 +203,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
               error={errors.author}
               helperText={errors.author ? "El autor es requerido" : ""}
               variant="outlined"
-              sx={{ mb: 2 }}
+              sx={{ mb: 4 }}
             />
             
             <Stack direction="row" spacing={2}>

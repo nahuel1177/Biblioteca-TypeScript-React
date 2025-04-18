@@ -10,7 +10,6 @@ import {
   Fab,
 } from "@mui/material";
 import Add from "@mui/icons-material/Add";
-// import SearchIcon from "@mui/icons-material/Search";
 import { ILoan } from "../../interfaces/loanInterface";
 import { memberService } from "../../services/memberService";
 import { IMember } from "../../interfaces/memberInterface";
@@ -20,11 +19,13 @@ import { loanService } from "../../services/loanService";
 import Swal from "sweetalert2";
 import { SearchBar } from "../SearchBar";
 import { CreateLoanModal } from "../CreateLoanModal";
+import { useNavigate } from "react-router-dom";
 
 export function Loan() {
   const [loans, setLoans] = useState<ILoan[]>([]);
   const [members, setMembers] = useState<IMember[]>([]);
   const [books, setBooks] = useState<IBook[]>([]);
+  const navigate = useNavigate();
   const [sanctionStatus, setSanctionStatus] = useState("Vigente");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredLoans, setFilteredLoans] = useState<ILoan[]>([]);
@@ -34,36 +35,41 @@ export function Loan() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const fetchData = async () => {
-    const response2 = await memberService.getMembers();
-    if (response2.success) {
-      setMembers(response2.result);
-    }
+    try {
+      const response2 = await memberService.getMembers();
+      if (response2.success) {
+        setMembers(response2.result);
+      }
 
-    const response = await loanService.getLoans();
-    if (response.success) {
-      setLoans(response.result);
+      const response = await loanService.getLoans();
+      if (response.success) {
+        setLoans(response.result);
 
-      for (const loan of response.result) {
-        if (isDefeated(loan.dateLimit)) {
-          const memberToUpdate = await memberService.getMemberById(
-            loan.memberId
-          );
-          console.log(memberToUpdate);
+        for (const loan of response.result) {
+          if (isDefeated(loan.dateLimit)) {
+            const memberToUpdate = await memberService.getMemberById(
+              loan.memberId
+            );
+            console.log(memberToUpdate);
 
-          if (memberToUpdate) {
-            memberToUpdate.isSanctioned = true;
-            await memberService.sanctionMember(memberToUpdate);
+            if (memberToUpdate) {
+              memberToUpdate.isSanctioned = true;
+              await memberService.sanctionMember(memberToUpdate);
+            }
           }
         }
       }
-    }
 
-    const response3 = await bookService.getBooks();
-    if (response3.success) {
-      setBooks(response3.result);
+      const response3 = await bookService.getBooks();
+      if (response3.success) {
+        setBooks(response3.result);
+      }
+    } catch (error) {
+      console.error("Error fetching loans:", error);
+      navigate("/error500");
     }
   };
 

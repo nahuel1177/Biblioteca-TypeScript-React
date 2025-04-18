@@ -14,11 +14,12 @@ import {
   CardContent,
   Stack,
   Fab,
+  useTheme,
 } from "@mui/material";
-import Swal from "sweetalert2";
 import { SearchBar } from '../SearchBar';
 import { UserEditModal } from '../EditUserModal';
 import { CreateUserModal } from '../CreateUserModal';
+import { useSweetAlert } from "../../hooks/useSweetAlert";
 
 export function User() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -31,6 +32,14 @@ export function User() {
   const handleCreateModalClose = () => setCreateModalOpen(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
+  const theme = useTheme();
+  const swal = useSweetAlert();
+  
+  // Configure SweetAlert2 theme based on app theme
+  useEffect(() => {
+    // Set SweetAlert2 theme based on the app's current theme
+    document.querySelector('.swal2-container')?.setAttribute('data-theme', theme.palette.mode);
+  }, [theme.palette.mode]);
   
   // Add useEffect to handle body scrolling
   useEffect(() => {
@@ -96,36 +105,16 @@ export function User() {
 
   async function onClickDelete(id: string) {
     try {
-      Swal.fire({
-        text: "¿Esta seguro que desea eliminar?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Eliminar",
-        cancelButtonText: "Cancelar",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const response = await userService.deleteUser(id);
-          if (response.success) {
-            await fetchUsers();
-            return Swal.fire({
-              position: "center",
-              icon: "success",
-              text: "El usuario fue eliminado",
-              showConfirmButton: true,
-              timer: 2000,
-            });
-          }
+      const result = await swal.confirm("¿Esta seguro que desea eliminar?");
+      if (result.isConfirmed) {
+        const response = await userService.deleteUser(id);
+        if (response.success) {
+          await fetchUsers();
+          swal.success("El usuario fue eliminado");
         }
-      });
+      }
     } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Hubo un problema, intentelo más tarde",
-        timer: 2000,
-      });
+      swal.error("Hubo un problema, intentelo más tarde");
     }
   }
 
@@ -145,22 +134,11 @@ export function User() {
         setUsers(response.result);
         setUser(initialUserState);
         handleClose();
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          text: "El usuario fue modificado",
-          showConfirmButton: false,
-          timer: 2000,
-        });
+        swal.success("El usuario fue modificado");
       }
     } else {
       handleClose();
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "Datos faltantes o inválidos.",
-        showConfirmButton: true,
-      });
+      swal.error("Datos faltantes o inválidos.");
     }
   };
 
