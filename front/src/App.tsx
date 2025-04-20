@@ -19,9 +19,9 @@ import { BookModule } from "./modules/Book";
 //import { userService } from "./services/userService"
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ username: string; type: string }>({
+  const [user, setUser] = useState<{ username: string; role: string }>({
     username: "",
-    type: "",
+    role: "",
   });
 
   useEffect(() => {
@@ -34,13 +34,24 @@ function App() {
       console.log("UseEffect IsLoggedIn antes: ", isLoggedIn);
       setIsLoggedIn(true);
       console.log("UseEffect IsLoggedIn despues: ", isLoggedIn);
-      setUser(data.user || { username: "", type: "" });
+      
+      // Ensure we're extracting the role correctly
+      const userData = typeof data === 'string' ? JSON.parse(data) : data;
+      const userRole = userData.user?.role || "";
+      const username = userData.user?.username || "";
+      
+      console.log("User role from localStorage:", userRole);
+      
+      setUser({ 
+        username: username, 
+        role: userRole
+      });
     }
   }, []);
 
   const handleLogin = async (
     loggedIn: boolean,
-    user: { username: string; type: string } | undefined
+    user: { username: string; role: string } | undefined
   ) => {
     setIsLoggedIn(loggedIn);
     localStorage.setLoggedIn(loggedIn.toString());
@@ -52,7 +63,7 @@ function App() {
       setUser(user);
     }
   };
-  console.log("Tipo de Usuario: ", user?.type);
+  console.log("Tipo de Usuario: ", user?.role);
   return (
     <ThemeProvider>
       <CssBaseline />
@@ -62,7 +73,7 @@ function App() {
             path="/"
             element={
               isLoggedIn ? (
-                <LayoutModule roleType={user.type} />
+                <LayoutModule roleType={user.role} />
               ) : (
                 <Navigate to="/login" replace={true} />
               )
@@ -71,45 +82,45 @@ function App() {
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
           {isLoggedIn && (
             <>
-              {user?.type === "admin" && (
+              {user?.role === "admin" && (
                 <>
                   <Route
                     path="/usuarios"
-                    element={<UserModule roleType={user?.type} />}
+                    element={<UserModule roleType={user?.role} />}
                   />
                   <Route
                     path="/socios"
-                    element={<MemberModule roleType={user?.type} />}
+                    element={<MemberModule roleType={user?.role} />}
                   />
                   <Route
                     path="/libros"
-                    element={<BookModule roleType={user?.type} />}
+                    element={<BookModule roleType={user?.role} />}
                   />
                   <Route
                     path="/prestamos"
-                    element={<LoanModule roleType={user?.type} />}
+                    element={<LoanModule roleType={user?.role} />}
                   />
                 </>
               )}
-              {user?.type === "employee" && (
+              {user?.role === "employee" && (
                 <>
                   <Route
                     path="/libros"
-                    element={<BookModule roleType={user?.type} />}
+                    element={<BookModule roleType={user?.role} />}
                   />
                   <Route
                     path="/socios"
-                    element={<MemberModule roleType={user?.type} />}
+                    element={<MemberModule roleType={user?.role} />}
                   />
                   <Route
                     path="/prestamos"
-                    element={<LoanModule roleType={user?.type} />}
+                    element={<LoanModule roleType={user?.role} />}
                   />
                   <Route
                     path="/usuarios"
                     element={
                       <ProtectedRoute
-                        roleType={user.type}
+                        roleType={user.role}
                         allowedRoles={["admin"]}
                       >
                         <User />

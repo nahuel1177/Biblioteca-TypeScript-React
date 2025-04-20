@@ -5,8 +5,10 @@ export interface ILoan {
   type: string;
   createdAt: Date;
   dateLimit: Date,
+  isActive: Boolean;
   isDefeated: string;
 }
+
 export interface IResponse {
   result: ILoan[];
   error?: string;

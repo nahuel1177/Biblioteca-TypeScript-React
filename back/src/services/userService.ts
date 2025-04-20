@@ -123,12 +123,13 @@ class UserService {
   }
 
   async updateUser(req: Request) {
-    const { name, lastname, username, email, role } = req.body;
+    const { name, lastname, username, password, email, role } = req.body;
     const { id } = req.params;
     const user = new User({
       name: name,
       lastname: lastname,
       username: username,
+      password: password,
       email: email,
       role: role,
     });

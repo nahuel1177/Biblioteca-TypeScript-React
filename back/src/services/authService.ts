@@ -22,8 +22,8 @@ class AuthService {
     return {
       statusCode: 200,
       data: {
-        user: { username: user.username, name: user.name, lastname: user.lastname, type: user.role },
-        token: jwt.sign({ username: user.username, type: user.role }, "SECRET_KEY"),
+        user: { _id: user._id, username: user.username, name: user.name, lastname: user.lastname, role: user.role, email: user.email},
+        token: jwt.sign({ username: user.username, role: user.role }, "SECRET_KEY"),
         success: true,
       },
     };

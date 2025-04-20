@@ -661,3 +661,17 @@
  CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
 [2023-12-11T15:26:13.413Z] error: member controller - updateMember
  CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "Member"
+[2025-04-19T15:01:22.193Z] error: user controller - getUsersById
+ CastError: Cast to ObjectId failed for value ":1" (type string) at path "_id" for model "User"
+[2025-04-19T15:02:32.774Z] error: user controller - updeteUser
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"
+[2025-04-19T15:06:04.531Z] error: user controller - updeteUser
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"
+[2025-04-19T15:15:20.528Z] error: user controller - updeteUser
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"
+[2025-04-19T15:16:34.926Z] error: user controller - updeteUser
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"
+[2025-04-19T15:23:14.143Z] error: user controller - updeteUser
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"
+[2025-04-19T15:26:41.922Z] error: user controller - updeteUser
+ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"

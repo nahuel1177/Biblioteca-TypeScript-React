@@ -12,10 +12,10 @@ interface LoginProps {
     loggedIn: boolean,
     user: { 
       username: string; 
-      type: string;
+      role: string;
       name: string;
       lastname: string;
-    } | undefined
+    }
   ) => void;
 }
 
@@ -45,7 +45,7 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
         // Ensure all required properties exist
         const userData = {
           username: response.user.username,
-          type: response.user.type,
+          role: response.user.role,
           name: response.user.name,  
           lastname: response.user.lastname
         };

@@ -19,9 +19,12 @@ import { Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import { localStorage } from "../../services/localStorage";
+import { EditProfileModal } from "../../components/EditProfileModal";
+import { IUser } from "../../interfaces/userInterface";
 
+// Update settings to include profile edit option
 const pages = ["usuarios", "libros", "socios", "prestamos"];
-const settings = ["Salir"];
+const settings = ["perfil", "salir"];
 
 export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
   roleType,
@@ -29,8 +32,13 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  console.log("Layout", roleType);
   const { theme, toggleTheme } = useTheme();
+  const [openProfileModal, setOpenProfileModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null);
+
+  // Handle opening and closing the profile modal
+  const handleOpenProfileModal = () => setOpenProfileModal(true);
+  const handleCloseProfileModal = () => setOpenProfileModal(false);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -49,28 +57,62 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
   };
 
   const handleLogout = () => {
+    localStorage.delete();
     navigate("/login");
   };
-
+  
   const [name, setName] = useState<string>("");
   const [lastname, setLastname] = useState<string>("");
   const [userInitials, setUserInitials] = useState<string>("");
 
   useEffect(() => {
     const userData = localStorage.get();
+    console.log("Datos del User: ", userData);
     if (userData) {
       const parsedData = typeof userData === "string" ? JSON.parse(userData) : userData;
-      const name = parsedData.user?.name || "";
-      const lastname = parsedData.user?.lastname || "";
+      const name = parsedData.user.name || "";
+      const lastname = parsedData.user.lastname || "";
       
       // Create initials from name and lastname
       const initials = `${name.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
       
       setName(name);
-      setLastname(lastname)
+      setLastname(lastname);
       setUserInitials(initials);
+      
+      // Store the full user data for the edit modal
+      setCurrentUser(parsedData.user || null);
     }
   }, []);
+
+  // Handle menu item clicks
+  const handleMenuItemClick = (setting: string) => {
+    handleCloseUserMenu();
+    
+    if (setting === "salir") {
+      handleLogout();
+    } else if (setting === "perfil") {
+      handleOpenProfileModal();
+    }
+  };
+
+  // Handle profile update
+  const handleProfileUpdate = (updatedUser: IUser) => {
+    // Update local state
+    setName(updatedUser.name || "");
+    setLastname(updatedUser.lastname || "");
+    const initials = `${updatedUser.name?.charAt(0) || ""}${updatedUser.lastname?.charAt(0) || ""}`.toUpperCase();
+    setUserInitials(initials);
+    setCurrentUser(updatedUser);
+    
+    // Update localStorage
+    const userData = localStorage.get();
+    if (userData) {
+      const parsedData = typeof userData === "string" ? JSON.parse(userData) : userData;
+      parsedData.user = updatedUser;
+      localStorage.set(parsedData);
+    }
+  };
 
   return (
     <>
@@ -228,7 +270,7 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
                 {name} {lastname}
               </Typography>
 
-              <Tooltip title="Cerrar Sesion">
+              <Tooltip title="Menú">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar sx={{ bgcolor: 'primary.main' }}>
                     {userInitials}
@@ -252,20 +294,12 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <MenuItem 
+                    key={setting} 
+                    onClick={() => handleMenuItemClick(setting)}
+                  >
                     <Typography textAlign="center">
-                      {setting === "Salir" ? (
-                        <a
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleLogout();
-                          }}
-                        >
-                          {setting}
-                        </a>
-                      ) : (
-                        setting
-                      )}
+                      {setting}
                     </Typography>
                   </MenuItem>
                 ))}
@@ -274,6 +308,16 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
           </Toolbar>
         </Container>
       </AppBar>
+      
+      {/* Profile Edit Modal */}
+      {currentUser && (
+        <EditProfileModal
+          open={openProfileModal}
+          onClose={handleCloseProfileModal}
+          user={currentUser}
+          onUpdate={handleProfileUpdate}
+        />
+      )}
     </>
   );
 };

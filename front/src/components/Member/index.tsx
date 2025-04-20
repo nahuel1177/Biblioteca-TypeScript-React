@@ -24,6 +24,7 @@ import { CreateMemberModal } from "../CreateMemberModal";
 import { EditMemberModal } from "../EditMemberModal";
 import { useNavigate } from "react-router-dom";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
@@ -116,16 +117,21 @@ export function Member() {
     }
   }
   const findMemberOnLoan = (id: string) => {
-    const loanFinded = loans.map((loan) => (loan.memberId = id));
-    if (loanFinded.length > 0) {
-      return true;
-    } else {
-      return false;
-    }
+    //const [result, setResult] = useState(false);
+    // Check if the member has any active loans
+    const activeLoan = loans.find(loan => 
+      loan.memberId === id && loan.isActive === true
+    );
+    console.log("activeLoan: ", activeLoan?._id);
+   
+    return activeLoan;
   };
+  
   const onClickDelete = async (id: string) => {
     try {
+      console.log("ID enviado:" ,id);
         const memberFinded = findMemberOnLoan(id);
+        console.log("memberFinded: ", memberFinded);
         if (!memberFinded) {
           const result = await swal.confirm("¿Esta seguro que desea eliminar?");
           if (result.isConfirmed) {
@@ -287,7 +293,6 @@ export function Member() {
                   <Typography variant="h6" component="div">
                     {member.lastname}, {member.name}
                   </Typography>
-
                   <Typography variant="body2" color="text.secondary">
                     Correo: {member.email}
                   </Typography>
@@ -311,7 +316,7 @@ export function Member() {
                       size="small"
                       color="error"
                       aria-label="edit"
-                      onClick={() => member._id && onClickDelete(member._id)}
+                      onClick={() => onClickDelete(member._id)}
                     >
                       <DeleteIcon />
                     </Fab>
