@@ -9,7 +9,6 @@ import {
   Select,
   Button,
   Stack,
-  Container,
   Box,
   Modal,
   Paper,
@@ -99,12 +98,16 @@ export const CreateUserModal = ({
   };
 
   const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = emailRegex.test(formData.email);
+    const isPasswordValid = formData.password.length >= 6;
+    
     const newErrors = {
       name: formData.name.trim() === "",
       lastname: formData.lastname.trim() === "",
       username: formData.username.trim() === "",
-      email: formData.email.trim() === "",
-      password: formData.password.trim() === "",
+      email: formData.email.trim() === "" || !isEmailValid,
+      password: formData.password.trim() === "" || !isPasswordValid,
       role: formData.role.trim() === "",
     };
     
@@ -247,7 +250,9 @@ export const CreateUserModal = ({
               size="small"
               required
               error={errors.email}
-              helperText={errors.email ? "El correo es requerido" : ""}
+              helperText={errors.email ? 
+                (formData.email.trim() === "" ? "El correo es requerido" : "Formato de correo inválido") 
+                : ""}
               variant="outlined"
               sx={{ mb: 2 }}
             />
@@ -263,7 +268,9 @@ export const CreateUserModal = ({
               size="small"
               required
               error={errors.password}
-              helperText={errors.password ? "La contraseña es requerida" : ""}
+              helperText={errors.password ? 
+                (formData.password.trim() === "" ? "La contraseña es requerida" : "La contraseña debe tener al menos 6 caracteres") 
+                : ""}
               variant="outlined"
               sx={{ mb: 2 }}
             />

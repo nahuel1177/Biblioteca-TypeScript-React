@@ -8,6 +8,7 @@ import {
   Button,
   Stack,
   Fab,
+  useTheme,
 } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { ILoan } from "../../interfaces/loanInterface";
@@ -32,6 +33,7 @@ export function Loan() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const handleOpenCreateModal = () => setOpenCreateModal(true);
   const handleCloseCreateModal = () => setOpenCreateModal(false);
+  const theme = useTheme(); // Add this to get the current theme
 
   useEffect(() => {
     fetchData();
@@ -95,7 +97,25 @@ export function Loan() {
           text: "El préstamo no existe",
           showConfirmButton: false,
           timer: 2000,
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
         });
+      }
+
+      const confirmResult = await Swal.fire({
+        text: "¿Está seguro que desea registrar la devolución?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirmar",
+        cancelButtonText: "Cancelar",
+        background: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+      });
+
+      if (!confirmResult.isConfirmed) {
+        return; // User cancelled the operation
       }
 
       const response = await loanService.deleteLoan(id);
@@ -108,6 +128,8 @@ export function Loan() {
             icon: "success",
             text: "El libro ha sido devuelto fuera de termino",
             showConfirmButton: true,
+            background: theme.palette.background.paper,
+            color: theme.palette.text.primary,
           });
         } else {
           member.sanctionDate = null;
@@ -123,6 +145,8 @@ export function Loan() {
               icon: "success",
               text: "El libro ha sido devuelto",
               showConfirmButton: true,
+              background: theme.palette.background.paper,
+              color: theme.palette.text.primary,
             });
           }
         }
@@ -133,6 +157,8 @@ export function Loan() {
         icon: "error",
         text: "El préstamo no existe",
         showConfirmButton: true,
+        background: theme.palette.background.paper,
+        color: theme.palette.text.primary,
       });
     }
   };

@@ -125,11 +125,13 @@ class UserService {
   async updateUser(req: Request) {
     const { name, lastname, username, password, email, role } = req.body;
     const { id } = req.params;
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const user = new User({
       name: name,
       lastname: lastname,
       username: username,
-      password: password,
+      password: hashedPassword,
       email: email,
       role: role,
     });

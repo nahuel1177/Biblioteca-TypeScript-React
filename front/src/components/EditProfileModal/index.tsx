@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import {
   Modal,
@@ -6,14 +7,17 @@ import {
   TextField,
   Button,
   IconButton,
-  Grid,
   Paper,
+  Stack,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { userService } from "../../services/userService";
 import { IUser } from "../../interfaces/userInterface";	
 import { useSweetAlert } from "../../hooks/useSweetAlert";
-
+import CancelIcon from "@mui/icons-material/Cancel";
+import SaveIcon from "@mui/icons-material/Save";
+import PersonIcon from "@mui/icons-material/Person";
 
 interface EditProfileModalProps {
   open: boolean;
@@ -31,6 +35,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [formData, setFormData] = useState<IUser>({ ...user });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const swal = useSweetAlert();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +92,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       return;
     }
 
+    setLoading(true);
     try {
       // Only include password in the update if it was provided
       const dataToUpdate = {
@@ -94,11 +100,11 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
         name: formData.name,
         lastname: formData.lastname,
         username: user.username,
-        ...(password ? { password: formData.password } : { password: user.password }),
+        ...(password ? { password } : {}),
         email: formData.email,
         role: user.role
       };
-      console.log("Data to update:", dataToUpdate.username);
+      
       const response = await userService.updateUser(user._id, dataToUpdate);
 
       if (response && response.success) {
@@ -118,6 +124,8 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     } catch (error: any) {
       console.error("Error updating profile:", error);
       swal.error(error?.message || "Error al actualizar el perfil");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,123 +141,133 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 500,
-          maxWidth: "90%",
-          p: 4,
+          width: 450,
+          p: 0,
           borderRadius: 2,
           boxShadow: 24,
+          outline: "none",
         }}
       >
-        <Box sx={{ mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Typography variant="h5" component="h2" fontWeight="bold">
-            Editar Perfil
-          </Typography>
-          <IconButton onClick={onClose} size="small">
+        <Box sx={{ 
+          p: 2, 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "center", 
+          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main', 
+          color: "white",
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8
+        }}>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <PersonIcon />
+            <Typography variant="h6" component="h2" fontWeight="bold">
+              Editar Perfil
+            </Typography>
+          </Stack>
+          <IconButton onClick={onClose} size="small" aria-label="cerrar" sx={{ color: "white" }}>
             <CloseIcon />
           </IconButton>
         </Box>
 
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Nombre"
-                name="name"
-                value={formData.name || ""}
-                onChange={handleChange}
-                error={!!errors.name}
-                helperText={errors.name}
-                variant="outlined"
-                margin="normal"
-                size="small"
-              />
-            </Grid>
+        <Box sx={{ p: 3 }}>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              fullWidth
+              label="Nombre"
+              name="name"
+              value={formData.name || ""}
+              onChange={handleChange}
+              error={!!errors.name}
+              helperText={errors.name}
+              variant="outlined"
+              margin="normal"
+              size="small"
+              sx={{ mb: 2 }}
+            />
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Apellido"
-                name="lastname"
-                value={formData.lastname || ""}
-                onChange={handleChange}
-                error={!!errors.lastname}
-                helperText={errors.lastname}
-                variant="outlined"
-                margin="normal"
-                size="small"
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              label="Apellido"
+              name="lastname"
+              value={formData.lastname || ""}
+              onChange={handleChange}
+              error={!!errors.lastname}
+              helperText={errors.lastname}
+              variant="outlined"
+              margin="normal"
+              size="small"
+              sx={{ mb: 2 }}
+            />
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Nombre de usuario"
-                name="username"
-                value={formData.username || ""}
-                InputProps={{
-                  readOnly: true,
-                }}
-                variant="outlined"
-                margin="normal"
-                size="small"
-                disabled
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              label="Nombre de usuario"
+              name="username"
+              value={formData.username || ""}
+              InputProps={{
+                readOnly: true,
+              }}
+              variant="outlined"
+              margin="normal"
+              size="small"
+              disabled
+              sx={{ mb: 2 }}
+            />
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Email"
-                name="email"
-                type="email"
-                value={formData.email || ""}
-                onChange={handleChange}
-                error={!!errors.email}
-                helperText={errors.email}
-                variant="outlined"
-                margin="normal"
-                size="small"
-              />
-            </Grid>
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email || ""}
+              onChange={handleChange}
+              error={!!errors.email}
+              helperText={errors.email}
+              variant="outlined"
+              margin="normal"
+              size="small"
+              sx={{ mb: 2 }}
+            />
 
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Nueva Contraseña"
-                name="password"
-                type="password"
-                value={password}
-                onChange={handleChange}
-                error={!!errors.password}
-                helperText={errors.password || "Dejar en blanco para mantener la contraseña actual"}
+            <TextField
+              fullWidth
+              label="Nueva Contraseña"
+              name="password"
+              type="password"
+              value={password}
+              onChange={handleChange}
+              error={!!errors.password}
+              helperText={errors.password || "Dejar en blanco para mantener la contraseña actual"}
+              variant="outlined"
+              margin="normal"
+              size="small"
+              sx={{ mb: 2 }}
+            />
+            
+            <Divider sx={{ my: 3 }} />
+            
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button 
                 variant="outlined"
-                margin="normal"
-                size="small"
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2, gap: 2 }}>
-                <Button 
-                  variant="outlined" 
-                  onClick={onClose}
-                  sx={{ textTransform: "none" }}
-                >
-                  Cancelar
-                </Button>
-                <Button 
-                  type="submit" 
-                  variant="contained" 
-                  color="primary"
-                  sx={{ textTransform: "none" }}
-                >
-                  Guardar
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </form>
+                color="error"
+                onClick={onClose}
+                startIcon={<CancelIcon />}
+                disabled={loading}
+              >
+                Cancelar
+              </Button>
+              <Button 
+                type="submit" 
+                variant="contained" 
+                color="primary"
+                startIcon={<SaveIcon />}
+                disabled={loading}
+              >
+                Guardar
+              </Button>
+            </Stack>
+          </form>
+        </Box>
       </Paper>
     </Modal>
   );
