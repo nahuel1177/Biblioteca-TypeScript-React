@@ -22,6 +22,16 @@ const getBookById = async (req: Request, res: Response) => {
   }
 };
 
+const getBookByIsbn = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await bookService.getBookByIsbn(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`book controller - getBookByIsbn\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 const getBookByTitle = async (req: Request, res: Response) => {
   try {
     const { code, result } = await bookService.getBookByTitle(req);
@@ -65,6 +75,7 @@ const deleteBook = async (req: Request, res: Response) => {
 const book = {
   getBooks,
   getBookById,
+  getBookByIsbn,
   getBookByTitle,
   createBook,
   updateBook,

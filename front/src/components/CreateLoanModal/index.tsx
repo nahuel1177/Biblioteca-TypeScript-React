@@ -16,7 +16,6 @@ import {
   FormHelperText,
   Autocomplete,
 } from "@mui/material";
-import { ILoan } from "../../interfaces/loanInterface";
 import { IMember } from "../../interfaces/memberInterface";
 import { IBook } from "../../interfaces/bookInterface";
 import { memberService } from "../../services/memberService";
@@ -47,17 +46,21 @@ interface CreateLoanModalProps {
   onLoanCreated: () => void;
 }
 
-export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoanModalProps) {
+export function CreateLoanModal({
+  open,
+  handleClose,
+  onLoanCreated,
+}: CreateLoanModalProps) {
   const [members, setMembers] = useState<IMember[]>([]);
   const [books, setBooks] = useState<IBook[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     memberId: "",
     bookId: "",
     type: "",
   });
-  
+
   const [errors, setErrors] = useState({
     memberId: false,
     bookId: false,
@@ -76,7 +79,7 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
         setBooks(booksResponse.result);
       }
     };
-    
+
     if (open) {
       fetchData();
     }
@@ -100,7 +103,7 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name as string]: value });
-    
+
     // Clear error when user types
     if (name && errors[name as keyof typeof errors]) {
       setErrors({
@@ -116,14 +119,14 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
       bookId: formData.bookId.trim() === "",
       type: formData.type.trim() === "",
     };
-    
+
     setErrors(newErrors);
-    return !Object.values(newErrors).some(error => error);
+    return !Object.values(newErrors).some((error) => error);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -131,7 +134,9 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
     setLoading(true);
     try {
       // Check if member is sanctioned
-      const selectedMember = members.find(member => member._id === formData.memberId);
+      const selectedMember = members.find(
+        (member) => member._id === formData.memberId
+      );
       if (selectedMember?.isSanctioned) {
         Swal.fire({
           position: "center",
@@ -145,7 +150,7 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
       }
 
       // Check book stock based on loan type
-      const selectedBook = books.find(book => book._id === formData.bookId);
+      const selectedBook = books.find((book) => book._id === formData.bookId);
       if (formData.type === "internal" && selectedBook?.stockInt === 0) {
         Swal.fire({
           position: "center",
@@ -225,33 +230,41 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
       aria-describedby="create-modal-description"
     >
       <Paper sx={style} elevation={5}>
-        <Box sx={{ 
-          p: 2, 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center", 
-          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main', 
-          color: "white",
-          borderTopLeftRadius: 8,
-          borderTopRightRadius: 8
-        }}>
+        <Box
+          sx={{
+            p: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            bgcolor: (theme) =>
+              theme.palette.mode === "dark" ? "primary.dark" : "primary.main",
+            color: "white",
+            borderTopLeftRadius: 8,
+            borderTopRightRadius: 8,
+          }}
+        >
           <Stack direction="row" spacing={1} alignItems="center">
             <LibraryAddIcon />
             <Typography variant="h6" component="h2" fontWeight="bold">
               Crear Nuevo Préstamo
             </Typography>
           </Stack>
-          <IconButton onClick={handleCancel} size="small" aria-label="cerrar" sx={{ color: "white" }}>
+          <IconButton
+            onClick={handleCancel}
+            size="small"
+            aria-label="cerrar"
+            sx={{ color: "white" }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
-        
+
         <Box sx={{ p: 3 }}>
           <form onSubmit={handleSubmit}>
-            <FormControl 
-              fullWidth 
-              margin="normal" 
-              size="small" 
+            <FormControl
+              fullWidth
+              margin="normal"
+              size="small"
               required
               error={errors.memberId}
               sx={{ mb: 2 }}
@@ -259,7 +272,11 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
               <Autocomplete
                 id="member-select"
                 options={members}
-                getOptionLabel={(option) => `${option.name} ${option.lastname}${option.isSanctioned ? " (Sancionado)" : ""}`}
+                getOptionLabel={(option) =>
+                  `${option.name} ${option.lastname}${
+                    option.isSanctioned ? " (Sancionado)" : ""
+                  }`
+                }
                 getOptionDisabled={(option) => Boolean(option.isSanctioned)}
                 onChange={(_, newValue) => {
                   setFormData({
@@ -274,22 +291,24 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
                   }
                 }}
                 renderInput={(params) => (
-                  <TextField 
-                    {...params} 
-                    label="Socio" 
+                  <TextField
+                    {...params}
+                    label="Socio"
                     error={errors.memberId}
                     helperText={errors.memberId ? "El socio es requerido" : ""}
                     size="small"
                   />
                 )}
-                isOptionEqualToValue={(option, value) => option._id === value._id}
+                isOptionEqualToValue={(option, value) =>
+                  option._id === value._id
+                }
               />
             </FormControl>
-            
-            <FormControl 
-              fullWidth 
-              margin="normal" 
-              size="small" 
+
+            <FormControl
+              fullWidth
+              margin="normal"
+              size="small"
               required
               error={errors.bookId}
               sx={{ mb: 2 }}
@@ -297,8 +316,12 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
               <Autocomplete
                 id="book-select"
                 options={books}
-                getOptionLabel={(option) => `${option.title} - ${option.author} `}
-                getOptionDisabled={(option) => option.stockInt === 0 && option.stockExt === 0}
+                getOptionLabel={(option) =>
+                  `${option.title} - ${option.author} `
+                }
+                getOptionDisabled={(option) =>
+                  option.stockInt === 0 && option.stockExt === 0
+                }
                 onChange={(_, newValue) => {
                   setFormData({
                     ...formData,
@@ -312,22 +335,24 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
                   }
                 }}
                 renderInput={(params) => (
-                  <TextField 
-                    {...params} 
-                    label="Libro" 
+                  <TextField
+                    {...params}
+                    label="Libro"
                     error={errors.bookId}
                     helperText={errors.bookId ? "El libro es requerido" : ""}
                     size="small"
                   />
                 )}
-                isOptionEqualToValue={(option, value) => option._id === value._id}
+                isOptionEqualToValue={(option, value) =>
+                  option._id === value._id
+                }
               />
             </FormControl>
-            
-            <FormControl 
-              fullWidth 
-              margin="normal" 
-              size="small" 
+
+            <FormControl
+              fullWidth
+              margin="normal"
+              size="small"
               required
               error={errors.type}
               sx={{ mb: 2 }}
@@ -347,12 +372,14 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
                 <MenuItem value="external">Externo</MenuItem>
               </Select>
               {errors.type && (
-                <FormHelperText>El tipo de préstamo es requerido</FormHelperText>
+                <FormHelperText>
+                  El tipo de préstamo es requerido
+                </FormHelperText>
               )}
             </FormControl>
-            
+
             <Divider sx={{ my: 3 }} />
-            
+
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
                 variant="outlined"
@@ -363,7 +390,7 @@ export function CreateLoanModal({ open, handleClose, onLoanCreated }: CreateLoan
               >
                 Cancelar
               </Button>
-              
+
               <Button
                 type="submit"
                 variant="contained"

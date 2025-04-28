@@ -53,7 +53,7 @@ export const Error401 = () => {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
             size="large"
           >
             Volver al Inicio

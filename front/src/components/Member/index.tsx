@@ -8,15 +8,9 @@ import {
   Card,
   CardContent,
   Stack,
-  Fab,
   useTheme,
 } from "@mui/material";
 
-import DeleteIcon from "@mui/icons-material/Delete";
-import Add from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import CloseIcon from "@mui/icons-material/Close";
-import CheckIcon from "@mui/icons-material/Check";
 import { loanService } from "../../services/loanService";
 import { ILoan } from "../../interfaces/loanInterface";
 import { SearchBar } from "../SearchBar";
@@ -24,7 +18,12 @@ import { CreateMemberModal } from "../CreateMemberModal";
 import { EditMemberModal } from "../EditMemberModal";
 import { useNavigate } from "react-router-dom";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
-import { ConstructionOutlined } from "@mui/icons-material";
+import {
+  CreateButton,
+  EditButton,
+  DeleteButton,
+  SanctionButton,
+} from "../Buttons";
 
 export function Member() {
   const [members, setMembers] = useState<IMember[]>([]);
@@ -40,14 +39,16 @@ export function Member() {
   const [filteredMembers, setFilteredMembers] = useState<IMember[]>([]);
   const theme = useTheme();
   const swal = useSweetAlert();
-  
+
   // Configure SweetAlert2 theme based on app theme
   useEffect(() => {
     // Set SweetAlert2 theme based on the app's current theme
-    document.querySelector('.swal2-container')?.setAttribute('data-theme', theme.palette.mode);
+    document
+      .querySelector(".swal2-container")
+      ?.setAttribute("data-theme", theme.palette.mode);
   }, [theme.palette.mode]);
 
-  const [sanctionStatus, setSanctionStatus] = useState("Sin Sancion");
+  //const [sanctionStatus, setSanctionStatus] = useState("Sin Sancion");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,6 +57,7 @@ export function Member() {
         if (response.success) {
           setMembers(response.result);
 
+          // Check for expired sanctions to remove them
           for (const member of response.result) {
             if (
               member.sanctionDate != null &&
@@ -72,14 +74,50 @@ export function Member() {
               }
             }
           }
+        } else {
+          swal.fire({
+            toast: true,
+            position: "top-end",
+            text: "Error al cargar los socios",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
-        
+
+        // Get all loans to check for expired ones
         const response2 = await loanService.getLoans();
         if (response2.success) {
           setLoans(response2.result);
+
+          // Check for expired loans and sanction members automatically
+          const currentDate = new Date();
+          for (const loan of response2.result) {
+            const loanDateLimit = new Date(loan.dateLimit);
+
+            // If loan is expired and still active
+            if (loanDateLimit < currentDate && loan.isActive) {
+              // Find the member to sanction
+              const memberToSanction = response.result.find(
+                (m) => m._id === loan.memberId
+              );
+
+              if (memberToSanction && !memberToSanction.isSanctioned) {
+                // Apply sanction
+                memberToSanction.isSanctioned = true;
+                memberToSanction.sanctionDate = new Date();
+                await memberService.sanctionMember(memberToSanction);
+
+                // Update the members list after sanctioning
+                const updatedResponse = await memberService.getMembers();
+                if (updatedResponse.success) {
+                  setMembers(updatedResponse.result);
+                }
+              }
+            }
+          }
         }
       } catch (error) {
-        console.error("Error fetching members:", error);
         navigate("/error500");
       }
     };
@@ -117,38 +155,35 @@ export function Member() {
     }
   }
   const findMemberOnLoan = (id: string) => {
-    //const [result, setResult] = useState(false);
     // Check if the member has any active loans
-    const activeLoan = loans.find(loan => 
-      loan.memberId === id && loan.isActive === true
+    const activeLoan = loans.find(
+      (loan) => loan.memberId === id && loan.isActive === true
     );
     console.log("activeLoan: ", activeLoan?._id);
-   
+
     return activeLoan;
   };
-  
+
   const onClickDelete = async (id: string) => {
     try {
-      console.log("ID enviado:" ,id);
-        const memberFinded = findMemberOnLoan(id);
-        console.log("memberFinded: ", memberFinded);
-        if (!memberFinded) {
-          const result = await swal.confirm("¿Esta seguro que desea eliminar?");
-          if (result.isConfirmed) {
-            const response = await memberService.deleteMember(id);
-            if (response.success) {
-              const response = await memberService.getMembers();
-              setMembers(response.result);
-              swal.success("El socio fue eliminado");
-            }
+      const memberFinded = findMemberOnLoan(id);
+      if (!memberFinded) {
+        const result = await swal.confirm("¿Esta seguro que desea eliminar?");
+        if (result.isConfirmed) {
+          const response = await memberService.deleteMember(id);
+          if (response.success) {
+            const response = await memberService.getMembers();
+            setMembers(response.result);
+            swal.success("El socio fue eliminado");
           }
-        } else {
-          swal.error("Imposible eliminar. El socio tiene prestamos vigentes.");
         }
-      } catch (error) {
-        swal.error("Hubo un problema, intentelo más tarde");
+      } else {
+        swal.error("Imposible eliminar. El socio tiene un prestamo vigente.");
+      }
+    } catch (error) {
+      swal.error("Hubo un problema, intentelo más tarde");
     }
-   };
+  };
 
   async function onClickSanction(member: IMember, state: boolean) {
     try {
@@ -166,7 +201,7 @@ export function Member() {
         }
       } else {
         member.isSanctioned = state;
-        member.sanctionDate = null
+        member.sanctionDate = null;
         const response = await memberService.sanctionMember(member);
         if (response.success) {
           const response = await memberService.getMembers();
@@ -200,44 +235,23 @@ export function Member() {
     }
   };
 
-  const sanctionMember = (member: IMember) => {
-    if (member.isSanctioned) {
-      return (
-        <Fab
-          size="small"
-          color="success"
-          aria-label="edit"
-          onClick={() => onClickSanction(member, false)}
-        >
-          <CheckIcon />
-        </Fab>
-      );
-    } else {
-      return (
-        <Fab
-          size="small"
-          color="default"
-          aria-label="edit"
-          onClick={() => onClickSanction(member, true)}
-        >
-          <CloseIcon />
-        </Fab>
-      );
-    }
-  };
-
   const onClickSearch = () => {
-    const filtered = members.filter(member => 
-      `${member.name} ${member.lastname}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email?.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = members.filter(
+      (member) =>
+        `${member.name} ${member.lastname}`
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        member.email?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredMembers(filtered);
   };
 
+  // Remove the sanctionMember function as we now have the SanctionButton component
+
   return (
     <Stack>
       <Container>
-        <EditMemberModal 
+        <EditMemberModal
           open={open}
           handleClose={handleClose}
           member={member}
@@ -248,10 +262,9 @@ export function Member() {
             }
           }}
         />
-
-        <CreateMemberModal 
-          open={openCreateModal} 
-          handleClose={handleCloseCreateModal} 
+        <CreateMemberModal
+          open={openCreateModal}
+          handleClose={handleCloseCreateModal}
           onMemberCreated={async () => {
             const response = await memberService.getMembers();
             if (response.success) {
@@ -260,21 +273,21 @@ export function Member() {
           }}
         />
         <Card style={{ marginTop: "20px" }}>
-        <CardContent>
+          <CardContent>
             <Typography variant="h6" gutterBottom>
               Socios
             </Typography>
-              <Stack 
-              direction="row" 
-              spacing={2} 
+            <Stack
+              direction="row"
+              spacing={2}
               style={{ marginTop: "20px" }}
               alignItems="center"
               justifyContent="space-between"
             >
-              <Fab color="success" onClick={() => onCLickCreate()} size="small">
-                <Add />
-              </Fab>
-
+              <CreateButton
+                onClick={onCLickCreate}
+                tooltipTitle="Crear Socio"
+              />
               <SearchBar
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
@@ -286,46 +299,44 @@ export function Member() {
         </Card>
 
         <Grid container spacing={2}>
-          {(filteredMembers.length > 0 ? filteredMembers : members)?.map((member, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card style={{ marginTop: "20px" }}>
-                <CardContent>
-                  <Typography variant="h6" component="div">
-                    {member.lastname}, {member.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Correo: {member.email}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Estado: {state(member.isSanctioned)}
-                  </Typography>
-                  <Stack
-                    direction="row"
-                    spacing={2}
-                    style={{ marginTop: "20px" }}
-                  >
-                    <Fab
-                      size="small"
-                      color="primary"
-                      aria-label="edit"
-                      onClick={() => onClickUpdate(member)}
+          {(filteredMembers.length > 0 ? filteredMembers : members)?.map(
+            (member, index) => (
+              <Grid item xs={12} sm={6} md={4} key={index}>
+                <Card style={{ marginTop: "20px" }}>
+                  <CardContent>
+                    <Typography variant="h6" component="div">
+                      {member.lastname}, {member.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Correo: {member.email}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Estado: {state(member.isSanctioned)}
+                    </Typography>
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      style={{ marginTop: "20px" }}
                     >
-                      <EditIcon />
-                    </Fab>
-                    <Fab
-                      size="small"
-                      color="error"
-                      aria-label="edit"
-                      onClick={() => onClickDelete(member._id)}
-                    >
-                      <DeleteIcon />
-                    </Fab>
-                    {sanctionMember(member)}
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
+                      <EditButton
+                        onClick={() => onClickUpdate(member)}
+                        tooltipTitle="Editar Socio"
+                      />
+                      <DeleteButton
+                        onClick={() => onClickDelete(member._id)}
+                        tooltipTitle="Eliminar Socio"
+                      />
+                      <SanctionButton
+                        isSanctioned={member.isSanctioned || false}
+                        onSanction={() => onClickSanction(member, true)}
+                        onRemoveSanction={() => onClickSanction(member, false)}
+                      />
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+            )
+          )}
         </Grid>
       </Container>
     </Stack>

@@ -1,4 +1,4 @@
-import { TextField, Fab, Stack } from "@mui/material";
+import { TextField, Fab, Stack, Tooltip } from "@mui/material";
 import { Search } from "@mui/icons-material";
 
 interface SearchBarProps {
@@ -25,9 +25,11 @@ export const SearchBar = ({ searchTerm, setSearchTerm, onSearch, placeholder = "
         onChange={(e) => setSearchTerm(e.target.value)}
         onKeyPress={handleKeyPress}
       />
+      <Tooltip title="Buscar">
       <Fab color="primary" onClick={onSearch} size="small">
         <Search />
       </Fab>
+      </Tooltip>
     </Stack>
   );
 };

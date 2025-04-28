@@ -1,4 +1,4 @@
-import { IResponseLogin } from "../interfaces/userInterface";
+import { IResponseLogin } from "../interfaces/loginInterface";
 import { api } from "./api";
 
 interface IUser {

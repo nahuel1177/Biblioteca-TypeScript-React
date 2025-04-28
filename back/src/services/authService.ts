@@ -1,20 +1,18 @@
 import { Request } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-
 import { authRepository } from "../repositories/authRepository";
-//import User from "../entities/User";
 
 class AuthService {
   async login(req: Request) {
     const { username, password } = req.body;
     const user = await authRepository.getUser(username);
-    console.log("Entro a authService", user?.role)
+  
     if (!user || !(await bcrypt.compare(password, user.password!))) {
       return {
         statusCode: 401,
         data: {
-          error: "Usuario y/o contraseña inválidas",
+          error: "El usuario o contraseña son incorrectos.",
           success: false,
         },
       };

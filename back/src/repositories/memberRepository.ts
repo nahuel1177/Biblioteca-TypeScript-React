@@ -13,6 +13,10 @@ class MemberRepository {
     return Member.findOne({dni}).exec();
   }
 
+  async getMemberByMail(email: string){
+    return Member.findOne({email}).exec();
+  }
+
   async createMember(newMember: any) {
     return Member.create(newMember);
   }

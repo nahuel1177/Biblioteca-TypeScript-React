@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-
 import { authService } from "../services/authService";
 import { logger } from "../logs/logs";
 
 const login = async (req: Request, res: Response) => {
-  console.log("Entro al authController", req.body)
+
   try {
     const { statusCode, data } = await authService.login(req);
     res.status(statusCode).json(data);

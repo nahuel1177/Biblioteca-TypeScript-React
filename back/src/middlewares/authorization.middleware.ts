@@ -19,6 +19,7 @@ export const authorization =
       return;
     }
     try {
+      console.log("Autorization middleware");
       const user = jwt.verify(token, "SECRET_KEY") as JwtPayload;
       if (!roles.includes(user.role)) {
         res.status(403).json({ message: "Unauthorized" });

@@ -1,7 +1,6 @@
 import { Request } from "express";
 import bcrypt from "bcrypt";
 import { userRepository } from "../repositories/userRepository";
-//import { roleRepository } from "../repositories/roleRepository";
 import User from "../entities/User";
 
 class UserService {
@@ -35,7 +34,7 @@ class UserService {
       return {
         code: 404,
         result: {
-          error: "Update",
+          error: "No se encontró usuario",
           success: false,
         },
       };
@@ -56,7 +55,28 @@ class UserService {
       return {
         code: 404,
         result: {
-          error: "No se encontro usuario",
+          error: "No se encontró usuario",
+          success: false,
+        },
+      };
+    }
+    return {
+      code: 200,
+      result: {
+        result: user,
+        success: true,
+      },
+    };
+  }
+
+  async getUserByMail(req: Request) {
+    const { email } = req.params;
+    const user = await userRepository.getUserByMail(email);
+    if (!user) {
+      return {
+        code: 404,
+        result: {
+          error: "No se encontró email",
           success: false,
         },
       };
@@ -87,7 +107,7 @@ class UserService {
       return {
         code: 500,
         result: {
-          error: "Users was not created",
+          error: "No se pudo crear el usuario",
           success: false,
         },
       };
@@ -108,7 +128,7 @@ class UserService {
       return {
         code: 200,
         result: {
-          error: "Users was not updated",
+          error: "No se pudo eliminar el usuario",
           success: false,
         },
       };
@@ -140,7 +160,7 @@ class UserService {
       return {
         code: 200,
         result: {
-          error: "Users was not updated",
+          error: "El usuario no pudo ser actualizado",
           success: false,
         },
       };

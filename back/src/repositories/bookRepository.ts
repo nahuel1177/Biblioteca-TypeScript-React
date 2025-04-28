@@ -9,6 +9,10 @@ class BookRepository {
     return Book.findById(id).exec();
   }
 
+  async getBookByIsbn(isbn: number){
+    return Book.findOne({isbn}).exec();
+  }
+
   async getBookByTitle(title: string){
     return Book.findOne({title}).exec();
   }

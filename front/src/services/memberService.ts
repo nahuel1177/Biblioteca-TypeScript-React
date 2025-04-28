@@ -3,6 +3,7 @@ import { api } from "./api";
 interface IService {
   getMembers: () => Promise<IResponse>;
   getMemberByDni: (dni: number) => Promise<IResponse>;
+  getMemberByMail: (email: string) => Promise<IResponse>;
   getMemberById: (_id: string | undefined) => Promise<IMember>;
   createMember: (newMember: ICreateMember) => Promise<IResponse>;
   updateMember: (_id: string | undefined, member: IMember) => Promise<IResponse>;
@@ -13,6 +14,7 @@ interface IService {
 export const memberService: IService = {
   getMembers: () => api.get("/members"),
   getMemberByDni: (dni: number) => api.get(`/members/dni/${dni}`),
+  getMemberByMail: (email: string) => api.get(`/members/email/${email}`),
   getMemberById: (_id: string | undefined) => api.get(`/members/${_id}`),
   createMember: (newMember: ICreateMember) => api.post('/members/', newMember),
   updateMember: (_id: string | undefined, member: IMember,) => api.put(`/members/update/${_id}`, member),

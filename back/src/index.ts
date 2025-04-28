@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api", authRouter);
 //app.use(authorization(['admin', 'employee']));
+//app.use("/api", authentication, userRouter);
 app.use("/api", userRouter);
 app.use("/api", bookRouter);
 app.use("/api", loanRouter);

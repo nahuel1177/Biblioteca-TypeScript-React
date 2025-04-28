@@ -48,6 +48,28 @@ class BookService {
     };
   }
 
+  async getBookByIsbn(req: Request) {
+    const { isbn } = req.params;
+
+    const book = await bookRepository.getBookByIsbn(parseInt(isbn));
+    if (!book) {
+      return {
+        code: 404,
+        result: {
+          error: "Libro no encontrado.",
+          success: false,
+        },
+      };
+    }
+    return {
+      code: 200,
+      result: {
+        result: book,
+        success: true,
+      },
+    };
+  }
+
   async getBookByTitle(req: Request) {
     const { title } = req.params;
     const book = await bookRepository.getBookByTitle(title);
@@ -70,11 +92,12 @@ class BookService {
   }
 
   async createBook(req: Request) {
-    const { title, author, stockInt, stockExt } = req.body;
+    const { title, author, isbn, stockInt, stockExt } = req.body;
 
     const book = new Book({
       title: title,
       author: author,
+      isbn: isbn,
       stockInt: stockInt,
       stockExt: stockExt,
     });

@@ -69,6 +69,27 @@ class MemberService {
     };
   }
 
+  async getMemberByMail(req: Request) {
+    const { email } = req.params;
+    const member = await memberRepository.getMemberByMail((email));
+    if (!member) {
+      return {
+        code: 404,
+        result: {
+          error: "No se encontro socio",
+          success: false,
+        },
+      };
+    }
+    return {
+      code: 200,
+      result: {
+        result: member,
+        success: true,
+      },
+    };
+  }
+
   async createMember(req: Request) {
     const { name, lastname, email, dni } = req.body;
   

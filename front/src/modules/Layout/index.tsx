@@ -272,7 +272,7 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
 
               <Tooltip title="Menú">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar sx={{ bgcolor: 'primary.main' }}>
+                  <Avatar sx={{ bgcolor: 'steelblue' }}>
                     {userInitials}
                   </Avatar>
                 </IconButton>

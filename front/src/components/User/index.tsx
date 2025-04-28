@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { userService } from "../../services/userService";
-import Add from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { IUser } from "../../interfaces/userInterface";
 import {
@@ -13,13 +10,13 @@ import {
   Card,
   CardContent,
   Stack,
-  Fab,
   useTheme,
 } from "@mui/material";
 import { SearchBar } from '../SearchBar';
 import { UserEditModal } from '../EditUserModal';
 import { CreateUserModal } from '../CreateUserModal';
 import { useSweetAlert } from "../../hooks/useSweetAlert";
+import { CreateButton, EditButton, DeleteButton } from "../Buttons";
 
 export function User() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -62,6 +59,15 @@ export function User() {
       const response = await userService.getUsers();
       if (response.result) {
         setUsers(response.result);
+      }else{
+        swal.fire({
+          toast: true,
+          position: "top-end",
+          text: "Error al cargar los usuarios",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     } catch(error) {
       if ((error as any).response && (error as any).response.status >= 500) {
@@ -99,7 +105,7 @@ export function User() {
       setUser(user);
       handleOpen();
     } catch (error) {
-      ("No existe el usuario");
+      swal.error("No existe el usuario");
     }
   }
 
@@ -182,9 +188,10 @@ export function User() {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Fab color="success" onClick={() => onCLickCreate()} size="small">
-                <Add />
-              </Fab>
+              <CreateButton 
+                onClick={onCLickCreate} 
+                tooltipTitle="Crear Usuario" 
+              />
 
               <SearchBar
                 searchTerm={searchTerm}
@@ -217,22 +224,14 @@ export function User() {
                     spacing={2}
                     style={{ marginTop: "20px" }}
                   >
-                    <Fab
-                      size="small"
-                      color="primary"
-                      aria-label="edit"
-                      onClick={() => onClickUpdate(user)}
-                    >
-                      <EditIcon />
-                    </Fab>
-                    <Fab
-                      size="small"
-                      color="error"
-                      aria-label="edit"
-                      onClick={() => onClickDelete(user._id)}
-                    >
-                      <DeleteIcon />
-                    </Fab>
+                    <EditButton 
+                      onClick={() => onClickUpdate(user)} 
+                      tooltipTitle="Editar Usuario"
+                    />
+                    <DeleteButton 
+                      onClick={() => onClickDelete(user._id)} 
+                      tooltipTitle="Eliminar Usuario"
+                    />
                   </Stack>
                 </CardContent>
               </Card>

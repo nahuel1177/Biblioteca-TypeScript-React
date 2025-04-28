@@ -27,7 +27,7 @@ export function Loan() {
   const [members, setMembers] = useState<IMember[]>([]);
   const [books, setBooks] = useState<IBook[]>([]);
   const navigate = useNavigate();
-  const [sanctionStatus, setSanctionStatus] = useState("Vigente");
+  //const [sanctionStatus, setSanctionStatus] = useState("Vigente");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredLoans, setFilteredLoans] = useState<ILoan[]>([]);
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -44,25 +44,68 @@ export function Loan() {
       const response2 = await memberService.getMembers();
       if (response2.success) {
         setMembers(response2.result);
+        
+        // Check for expired sanctions
+        const currentDate = new Date();
+        for (const member of response2.result) {
+          if (member.isSanctioned && member.sanctionDate && member.limitSanctionDays) {
+            const sanctionDate = new Date(member.sanctionDate);
+            const sanctionEndDate = new Date(sanctionDate);
+            sanctionEndDate.setDate(sanctionEndDate.getDate() + member.limitSanctionDays);
+            
+            // If sanction period has ended, remove the sanction
+            if (currentDate >= sanctionEndDate) {
+              const memberToUpdate = { ...member };
+              memberToUpdate.isSanctioned = false;
+              memberToUpdate.sanctionDate = null;
+              
+              await memberService.sanctionMember(memberToUpdate);
+            }
+          }
+        }
       }
 
       const response = await loanService.getLoans();
       if (response.success) {
         setLoans(response.result);
 
+        // Check each loan for expiration and sanction members if needed
+        const currentDate = new Date();
         for (const loan of response.result) {
-          if (isDefeated(loan.dateLimit)) {
+          const loanDateLimit = new Date(loan.dateLimit);
+          
+          // If loan is expired
+          if (loanDateLimit < currentDate) {
+            // Find the member to potentially sanction
             const memberToUpdate = await memberService.getMemberById(
               loan.memberId
             );
-            console.log(memberToUpdate);
-
-            if (memberToUpdate) {
+            
+            if (memberToUpdate && !memberToUpdate.isSanctioned) {
+              // Apply sanction
               memberToUpdate.isSanctioned = true;
+              memberToUpdate.sanctionDate = new Date();
               await memberService.sanctionMember(memberToUpdate);
             }
           }
         }
+        
+        // Refresh members list after potential sanctions
+        const updatedMembers = await memberService.getMembers();
+        if (updatedMembers.success) {
+          setMembers(updatedMembers.result);
+        }
+      }else{
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          text: "Error al cargar los préstamos",
+          showConfirmButton: false,
+          timer: 1500,
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+        });
       }
 
       const response3 = await bookService.getBooks();
@@ -70,7 +113,6 @@ export function Loan() {
         setBooks(response3.result);
       }
     } catch (error) {
-      console.error("Error fetching loans:", error);
       navigate("/error500");
     }
   };
@@ -178,10 +220,8 @@ export function Loan() {
     dateLimit = new Date(dateLimit);
 
     if (dateLimit.getTime() < dateNow.getTime()) {
-      setSanctionStatus("Vencido");
       return true;
     } else {
-      setSanctionStatus("Vigente");
       return false;
     }
   };
@@ -266,7 +306,7 @@ export function Loan() {
                     <Typography variant="body2" color="text.secondary">
                       Fecha de Entrega{" "}
                       {new Date(loan.dateLimit).toLocaleDateString()} (
-                      {sanctionStatus})
+                      {isDefeated(loan.dateLimit) ? "Vencido" : "Vigente"})
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Tipo: {typeLoan(loan)}

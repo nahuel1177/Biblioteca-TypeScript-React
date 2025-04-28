@@ -12,18 +12,18 @@ export async function up (): Promise<void> {
     {
       name: "Jorge",
       lastname: "Perez",
-      email: "jperez@com",
+      email: "jperez@gmail.com",
       username: "jperez",
-      password: "$2a$12$utsFOZvj787rtB3Fav7k8OTtcTcAIgvXZXAJquGEtSijYxXV8lewe",
+      password: "$2a$10$SliJr1a1mXugx7RXvlpFjudYPCSx/F/6SegdMHedKZmwV7WtfP6/m",
       role: "admin",
     },
 
     {
       name: "Carlos",
       lastname: "Rodriguez",
-      email: "crodriguez@com",
+      email: "crodriguez@gmail.com",
       username: "crodriguez",
-      password: "$2a$12$utsFOZvj787rtB3Fav7k8OTtcTcAIgvXZXAJquGEtSijYxXV8lewe",
+      password: "$2a$10$SliJr1a1mXugx7RXvlpFjudYPCSx/F/6SegdMHedKZmwV7WtfP6/m",
       role: "employee",
     },
   ]);
@@ -32,15 +32,16 @@ export async function up (): Promise<void> {
     {
       name: "Alberto",
       lastname: "Dominguez",
-      email: "adominguez@com",
-      dni: 99423402,
+      email: "adominguez@yahoo.com",
+      dni: 30341177,
     },
   ]);
 
   await Book.create([
     {
-      title: "La vuelta al mundo en 80 dias",
+      title: "La vuelta al mundo en 80 días",
       author: "Julio Verne" ,
+      isbn: 9789878933849,
       stockInt: 2,
       stockExt: 2,
     },
@@ -50,6 +51,7 @@ export async function up (): Promise<void> {
     {
       title: "La isla del Tesoro",
       author: "Robert Louis Stevenson",
+      isbn: 9789500746830,
       stockInt: 1,
       stockExt: 3,
     },

@@ -22,6 +22,16 @@ const getMemberById = async (req: Request, res: Response) => {
   }
 };
 
+const getMemberByMail = async (req: Request, res: Response) => {
+  try {
+    const { code, result } = await memberService.getMemberByMail(req);
+    res.status(code).json(result);
+  } catch (error) {
+    logger.error(`member controller - getMemberByMail\n ${error}`);
+    res.status(500).json({ success: false, data: "Internal Server Error" });
+  }
+};
+
 const getMemberByDni = async (req: Request, res: Response) => {
   try {
     const { code, result } = await memberService.getMemberByDni(req);
@@ -76,6 +86,7 @@ const member = {
   getMembers,
   getMemberById,
   getMemberByDni,
+  getMemberByMail,
   createMember,
   deleteMember,
   updateMember,

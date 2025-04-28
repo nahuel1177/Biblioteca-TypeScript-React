@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-// import Role from "./Role";
 
 const User = new mongoose.Schema({
   name: String,
@@ -8,17 +7,11 @@ const User = new mongoose.Schema({
   password: String,
   email: String,
   role: String,
-  // roleId: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: Role, // Reference to the Role model
-  //   required: true,
-  // },
 
   isActive: {
     type: Boolean,
     default: true,
   }
-
 
   // Add more properties as needed
 });

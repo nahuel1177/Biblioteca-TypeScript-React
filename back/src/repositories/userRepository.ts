@@ -13,6 +13,10 @@ class UserRepository {
     return User.findOne({username}).exec();
   }
 
+  async getUserByMail(email: string){
+    return User.findOne({email}).exec();
+  }
+
   async createUser(newUser: any) {
     return User.create(newUser);
   }

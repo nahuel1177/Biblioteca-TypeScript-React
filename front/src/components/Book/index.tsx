@@ -1,20 +1,14 @@
-import { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Typography,
   Grid,
   Card,
   CardContent,
-  Button,
   Stack,
-  TextField,
-  Fab,
   useTheme,
 } from "@mui/material";
 
-import Add from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import { useNavigate } from "react-router-dom";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
@@ -22,9 +16,14 @@ import { SearchBar } from "../SearchBar";
 import { CreateBookModal } from "../CreateBookModal";
 import { EditBookModal } from "../EditBookModal";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
+import { CreateButton, EditButton, DeleteButton } from "../Buttons";
+import { ILoan } from "../../interfaces/loanInterface";
+import { loanService } from "../../services/loanService";
 
+// Remove the async keyword from the component function
 export function Book() {
   const [books, setBooks] = useState<IBook[]>([]);
+  const [loans, setLoans] = useState<ILoan[]>([]);
   const navigate = useNavigate();
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -36,23 +35,40 @@ export function Book() {
   const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
   const theme = useTheme();
   const swal = useSweetAlert();
-  
+
   // Configure SweetAlert2 theme based on app theme
   useEffect(() => {
     // Set SweetAlert2 theme based on the app's current theme
-    document.querySelector('.swal2-container')?.setAttribute('data-theme', theme.palette.mode);
+    document
+      .querySelector(".swal2-container")
+      ?.setAttribute("data-theme", theme.palette.mode);
   }, [theme.palette.mode]);
 
   useEffect(() => {
-    console.log("Fetch");
     const fetchData = async () => {
       try {
         const response = await bookService.getBooks();
         if (response.success) {
           setBooks(response.result);
+        } else {
+          swal.fire({
+            toast: true,
+            position: "top-end",
+            text: "Error al cargar los libros",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500,
+          });
         }
       } catch (error) {
-        console.error("Error fetching books:", error);
+        swal.fire({
+          toast: true,
+          position: "top-end",
+          text: "Hubo un problema al cargar los libros. Por favor, inténtelo más tarde.",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 1500,
+        });
         navigate("/error500");
       }
     };
@@ -60,12 +76,40 @@ export function Book() {
   }, [navigate]);
 
   useEffect(() => {
+    const fetchLoans = async () => {
+      try {
+        const response = await loanService.getLoans();
+        if (response.success) {
+          setLoans(response.result);
+        } else {
+          swal.fire({
+            toast: true,
+            position: "top-end",
+            text: "Error al cargar los préstamos",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      } catch (error) {
+        swal.fire({
+          text: "Hubo un problema al cargar los préstamos. Por favor, inténtelo más tarde.",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    };
+    fetchLoans();
+  }, []);
+
+  useEffect(() => {
     if (searchTerm === "") {
       setFilteredBooks([]);
     }
   }, [searchTerm]);
 
-  const onCLickCreate = async () => {
+  const onCLickCreate = () => {
     handleOpenCreateModal();
   };
 
@@ -73,6 +117,7 @@ export function Book() {
     _id: "",
     title: "",
     author: "",
+    isbn: 0,
     stockInt: 0,
     stockExt: 0,
   };
@@ -84,30 +129,53 @@ export function Book() {
       setSelectedBook(book);
       handleOpenEditModal();
     } catch (error) {
-      swal.error("El libro no existe");
+      swal.fire({
+        text: "El libro no existe",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   }
 
-  const onClickDelete = async (id: string | undefined) => {
+  const findBookOnLoan = (id: string) => {
+    // Check if the member has any active loans
+    const activeLoan = loans.find(
+      (loan) => loan.bookId === id && loan.isActive === true
+    );
+    console.log("activeLoan: ", activeLoan?._id);
+
+    return activeLoan;
+  };
+
+  const onClickDelete = async (id: string) => {
     try {
-      if (!id) {
-        return swal.error("El libro no existe");
-      }
-      
-      // Add confirmation dialog before deleting
-      const result = await swal.confirm('¿Está seguro que desea eliminar?');
-      
-      // Only proceed with deletion if user confirmed
-      if (result.isConfirmed) {
-        const response = await bookService.deleteBook(id);
-        if (response.success) {
-          const response = await bookService.getBooks();
-          setBooks(response.result);
-          return swal.success("El libro fue eliminado");
+      const bookFinded = findBookOnLoan(id);
+      if (!bookFinded) {
+        const result = await swal.confirm("¿Esta seguro que desea eliminar?");
+        if (result.isConfirmed) {
+          const response = await bookService.deleteBook(id);
+          if (response.success) {
+            const response = await bookService.getBooks();
+            setBooks(response.result);
+            return swal.success("El libro fue eliminado");
+          }
         }
+      } else {
+        swal.fire({
+          text: "Imposible eliminar. El libro tiene un préstamo vigente.",
+          icon: "error",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     } catch (error) {
-      swal.error("El libro no existe");
+      swal.fire({
+        text: "Hubo un problema, intentelo más tarde",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
   };
 
@@ -130,16 +198,16 @@ export function Book() {
   return (
     <Stack>
       <Container>
-        <EditBookModal 
-          open={openEditModal} 
-          handleClose={handleCloseEditModal} 
+        <EditBookModal
+          open={openEditModal}
+          handleClose={handleCloseEditModal}
           book={selectedBook}
           onBookUpdated={refreshBooks}
         />
 
-        <CreateBookModal 
-          open={openCreateModal} 
-          handleClose={handleCloseCreateModal} 
+        <CreateBookModal
+          open={openCreateModal}
+          handleClose={handleCloseCreateModal}
           onBookCreated={refreshBooks}
         />
 
@@ -155,9 +223,10 @@ export function Book() {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Fab color="success" onClick={() => onCLickCreate()} size="small">
-                <Add />
-              </Fab>
+              <CreateButton
+                onClick={onCLickCreate}
+                tooltipTitle="Crear Libro"
+              />
               <SearchBar
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
@@ -179,6 +248,9 @@ export function Book() {
                       Autor: {book.author}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
+                      ISBN: {book.isbn}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
                       Stock Interno: {book.stockInt}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -189,22 +261,14 @@ export function Book() {
                       spacing={2}
                       style={{ marginTop: "20px" }}
                     >
-                      <Fab
-                        size="small"
-                        color="primary"
-                        aria-label="edit"
+                      <EditButton
                         onClick={() => onClickUpdate(book)}
-                      >
-                        <EditIcon />
-                      </Fab>
-                      <Fab
-                        size="small"
-                        color="error"
-                        aria-label="edit"
+                        tooltipTitle="Editar Libro"
+                      />
+                      <DeleteButton
                         onClick={() => onClickDelete(book._id)}
-                      >
-                        <DeleteIcon />
-                      </Fab>
+                        tooltipTitle="Eliminar Libro"
+                      />
                     </Stack>
                   </CardContent>
                 </Card>

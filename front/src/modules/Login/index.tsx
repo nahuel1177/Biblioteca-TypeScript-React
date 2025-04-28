@@ -40,9 +40,9 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
         username,
         password,
       });
-      console.log('Login response:', response); 
+  
       if (response.success && response.user) {
-        // Ensure all required properties exist
+      
         const userData = {
           username: response.user.username,
           role: response.user.role,
@@ -50,11 +50,11 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
           lastname: response.user.lastname
         };
         localStorage.set(response);
-        console.log("Datos del User: " , userData);
+
         onLogin(true, userData);
         navigate("/");
       } else {
-        setShowAlert("Usuario y/o contraseña incorrectos");
+        setShowAlert(response.error || 'Login failed');
       }
     } catch (error) {
       setShowAlert(true);

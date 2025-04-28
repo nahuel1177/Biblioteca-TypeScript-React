@@ -8,7 +8,6 @@ const Member = new mongoose.Schema({
 
   sanctionDate: {
     type: Date,
-    default: null,
   },
   
   limitSanctionDays: {

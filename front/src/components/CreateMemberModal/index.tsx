@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { memberService } from "../../services/memberService";
 import {
   Typography,
@@ -10,6 +10,7 @@ import {
   Paper,
   Divider,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
@@ -49,12 +50,67 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
 
   const [newMember, setNewMember] = useState<IMember>(initialMemberState);
   const [loading, setLoading] = useState(false);
+  const [checkingDni, setCheckingDni] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
   const [errors, setErrors] = useState({
     name: false,
     lastname: false,
     email: false,
     dni: false,
   });
+  const [errorMessages, setErrorMessages] = useState({
+    email: "",
+    dni: "",
+  });
+
+  // Add debounce for DNI and email checks
+  useEffect(() => {
+    if (newMember.dni && newMember.dni > 0) {
+      const timer = setTimeout(() => {
+        checkDniAvailability(newMember.dni);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [newMember.dni]);
+
+  useEffect(() => {
+    if (newMember.email && newMember.email.trim() !== "") {
+      const timer = setTimeout(() => {
+        checkEmailAvailability(newMember.email || '');
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [newMember.email]);
+
+  const checkDniAvailability = async (dni: number) => {
+    setCheckingDni(true);
+    try {
+      const response = await memberService.getMemberByDni(dni);
+      if (response.success) {
+        setErrors(prev => ({ ...prev, dni: true }));
+        setErrorMessages(prev => ({ ...prev, dni: "Este DNI ya está registrado" }));
+      }
+    } catch (error) {
+      console.error("Error checking DNI:", error);
+    } finally {
+      setCheckingDni(false);
+    }
+  };
+
+  const checkEmailAvailability = async (email: string) => {
+    setCheckingEmail(true);
+    try {
+      const response = await memberService.getMemberByMail(email);
+      if (response.success) {
+        setErrors(prev => ({ ...prev, email: true }));
+        setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
 
   const resetForm = () => {
     setNewMember(initialMemberState);
@@ -63,6 +119,10 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
       lastname: false,
       email: false,
       dni: false,
+    });
+    setErrorMessages({
+      email: "",
+      dni: "",
     });
   };
 
@@ -78,15 +138,26 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
         ...errors,
         [name]: false,
       });
+      
+      // Clear error messages for email and dni
+      if (name === 'email' || name === 'dni') {
+        setErrorMessages(prev => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
     }
   };
 
   const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = newMember.email ? emailRegex.test(newMember.email) : false;
+    
     const newErrors = {
       name: !newMember.name || newMember.name.trim() === "",
       lastname: !newMember.lastname || newMember.lastname.trim() === "",
-      email: newMember.email?.trim() === "",
-      dni: !newMember.dni || newMember.dni <= 0,
+      email: !newMember.email || newMember.email.trim() === "" || !isEmailValid || (errorMessages.email !== ""),
+      dni: !newMember.dni || newMember.dni <= 0 || (errorMessages.dni !== ""),
     };
     
     setErrors(newErrors);
@@ -100,8 +171,26 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
       return;
     }
 
+    // Final check for DNI and email availability before submission
     setLoading(true);
     try {
+      const dniCheck = await memberService.getMemberByDni(newMember.dni || 0);
+      const emailCheck = await memberService.getMemberByMail(newMember.email || '');
+      
+      if (dniCheck.success) {
+        setErrors(prev => ({ ...prev, dni: true }));
+        setErrorMessages(prev => ({ ...prev, dni: "Este DNI ya está registrado" }));
+        setLoading(false);
+        return;
+      }
+      
+      if (emailCheck.success) {
+        setErrors(prev => ({ ...prev, email: true }));
+        setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+        setLoading(false);
+        return;
+      }
+
       const response = await memberService.createMember({
         name: newMember.name || '',
         lastname: newMember.lastname || '',
@@ -222,8 +311,12 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
               size="small"
               required
               error={errors.dni}
-              helperText={errors.dni ? "El documento es requerido y debe ser mayor a 0" : ""}
-              InputProps={{ inputProps: { min: 1 } }}
+              helperText={errors.dni ? 
+                (errorMessages.dni || "El documento es requerido y debe ser mayor a 0") : ""}
+              InputProps={{ 
+                inputProps: { min: 1 },
+                endAdornment: checkingDni ? <CircularProgress size={20} /> : null
+              }}
               variant="outlined"
               sx={{ mb: 2 }}
             />
@@ -239,7 +332,11 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
               size="small"
               required
               error={errors.email}
-              helperText={errors.email ? "El correo es requerido" : ""}
+              helperText={errors.email ? 
+                (errorMessages.email || "El correo es requerido y debe tener un formato válido") : ""}
+              InputProps={{ 
+                endAdornment: checkingEmail ? <CircularProgress size={20} /> : null
+              }}
               variant="outlined"
               sx={{ mb: 2 }}
             />

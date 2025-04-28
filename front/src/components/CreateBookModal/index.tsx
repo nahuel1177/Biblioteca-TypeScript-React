@@ -1,6 +1,5 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import {
-  Container,
   Typography,
   TextField,
   Button,
@@ -10,6 +9,7 @@ import {
   Paper,
   Divider,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
@@ -43,6 +43,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
     _id: "",
     title: "",
     author: "",
+    isbn: 0,
     stockInt: 0,
     stockExt: 0,
   };
@@ -52,18 +53,50 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
   const [errors, setErrors] = useState({
     title: false,
     author: false,
+    isbn: false,
     stockInt: false,
     stockExt: false,
   });
+  const [checkingIsbn, setCheckingIsbn] = useState(false);
+  const [isbnError, setIsbnError] = useState("");
+
+  // Add debounce for ISBN check
+  useEffect(() => {
+    if (newBook.isbn && !isNaN(newBook.isbn) && newBook.isbn.toString().length === 13) {
+      const timer = setTimeout(() => {
+        checkIsbnAvailability(newBook.isbn);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [newBook.isbn]);
+
+  const checkIsbnAvailability = async (isbn: number) => {
+    setCheckingIsbn(true);
+    try {
+      const response = await bookService.getBookByIsbn(isbn);
+      if (response.success) {
+        setErrors(prev => ({ ...prev, isbn: true }));
+        setIsbnError("Este ISBN ya está registrado");
+      } else {
+        setIsbnError("");
+      }
+    } catch (error) {
+      console.error("Error checking ISBN:", error);
+    } finally {
+      setCheckingIsbn(false);
+    }
+  };
 
   const resetForm = () => {
     setNewBook(initialBookState);
     setErrors({
       title: false,
       author: false,
+      isbn: false,
       stockInt: false,
       stockExt: false,
     });
+    setIsbnError("");
   };
 
   const handleNewBookInputChange = (
@@ -78,6 +111,11 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
         ...errors,
         [name]: false,
       });
+      
+      // Clear ISBN error message
+      if (name === 'isbn') {
+        setIsbnError("");
+      }
     }
   };
 
@@ -85,6 +123,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
     const newErrors = {
       title: newBook.title.trim() === "",
       author: newBook.author.trim() === "",
+      isbn: newBook.isbn.toString().length !== 13 || isNaN(newBook.isbn) || isbnError !== "",
       stockInt: newBook.stockInt < 0,
       stockExt: newBook.stockExt < 0,
     };
@@ -100,8 +139,19 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
       return;
     }
 
+    // Final check for ISBN availability before submission
     setLoading(true);
     try {
+      if (newBook.isbn) {
+        const isbnCheck = await bookService.getBookByIsbn(newBook.isbn);
+        if (isbnCheck.success) {
+          setErrors(prev => ({ ...prev, isbn: true }));
+          setIsbnError("Este ISBN ya está registrado");
+          setLoading(false);
+          return;
+        }
+      }
+
       const response = await bookService.createBook(newBook);
       if (response.success) {
         resetForm();
@@ -203,7 +253,28 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
               error={errors.author}
               helperText={errors.author ? "El autor es requerido" : ""}
               variant="outlined"
+              sx={{ mb: 2 }}
+            />
+            
+            <TextField
+              label="ISBN"
+              name="isbn"
+              value={newBook.isbn}
+              onChange={handleNewBookInputChange}
+              fullWidth
+              margin="normal"
+              size="small"
+              error={errors.isbn}
+              helperText={errors.isbn ? 
+                (isbnError || "El ISBN debe contener exactamente 13 dígitos") : 
+                "Debe contener 13 dígitos"}
+              variant="outlined"
               sx={{ mb: 4 }}
+              InputProps={{ 
+                inputMode: 'numeric',
+                inputProps: { pattern: '[0-9]*' },
+                endAdornment: checkingIsbn ? <CircularProgress size={20} /> : null
+              }}
             />
             
             <Stack direction="row" spacing={2}>

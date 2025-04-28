@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { userService } from "../../services/userService";
 import {
   Typography,
@@ -14,6 +14,7 @@ import {
   Paper,
   Divider,
   IconButton,
+  CircularProgress,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
@@ -54,6 +55,8 @@ export const CreateUserModal = ({
     role: "",
   });
   const [loading, setLoading] = useState(false);
+  const [checkingUsername, setCheckingUsername] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
   const [errors, setErrors] = useState({
     name: false,
     lastname: false,
@@ -61,6 +64,10 @@ export const CreateUserModal = ({
     email: false,
     password: false,
     role: false,
+  });
+  const [errorMessages, setErrorMessages] = useState({
+    username: "",
+    email: "",
   });
 
   const resetForm = () => {
@@ -82,6 +89,55 @@ export const CreateUserModal = ({
     });
   };
 
+  // Add debounce for username and email checks
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (formData.username && !errors.username) {
+        checkUsernameAvailability(formData.username);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [errors.username, formData.username]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (formData.email && !errors.email) {
+        checkEmailAvailability(formData.email);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [errors.email, formData.email]);
+
+  const checkUsernameAvailability = async (username: string) => {
+    setCheckingUsername(true);
+    try {
+      const response = await userService.getUserByUsername(username);
+      if (response.success) {
+        setErrors(prev => ({ ...prev, username: true }));
+        setErrorMessages(prev => ({ ...prev, username: "Este nombre de usuario ya está en uso" }));
+      }
+    } catch (error) {
+      console.error("Error checking username:", error);
+    } finally {
+      setCheckingUsername(false);
+    }
+  };
+
+  const checkEmailAvailability = async (email: string) => {
+    setCheckingEmail(true);
+    try {
+      const response = await userService.getUserByMail(email);
+      if (response.success) {
+        setErrors(prev => ({ ...prev, email: true }));
+        setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
+
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
@@ -94,6 +150,14 @@ export const CreateUserModal = ({
         ...errors,
         [name]: false,
       });
+      
+      // Clear error messages for username and email
+      if (name === 'username' || name === 'email') {
+        setErrorMessages(prev => ({
+          ...prev,
+          [name]: "",
+        }));
+      }
     }
   };
 
@@ -105,8 +169,8 @@ export const CreateUserModal = ({
     const newErrors = {
       name: formData.name.trim() === "",
       lastname: formData.lastname.trim() === "",
-      username: formData.username.trim() === "",
-      email: formData.email.trim() === "" || !isEmailValid,
+      username: formData.username.trim() === "" || errors.username,
+      email: formData.email.trim() === "" || !isEmailValid || errors.email,
       password: formData.password.trim() === "" || !isPasswordValid,
       role: formData.role.trim() === "",
     };
@@ -122,8 +186,26 @@ export const CreateUserModal = ({
       return;
     }
 
+    // Final check for username and email availability before submission
     setLoading(true);
     try {
+      const usernameCheck = await userService.getUserByUsername(formData.username);
+      const emailCheck = await userService.getUserByMail(formData.email);
+      
+      if (!usernameCheck.result) {
+        setErrors(prev => ({ ...prev, username: true }));
+        setErrorMessages(prev => ({ ...prev, username: "Este nombre de usuario ya está en uso" }));
+        setLoading(false);
+        return;
+      }
+      
+      if (!emailCheck.success) {
+        setErrors(prev => ({ ...prev, email: true }));
+        setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+        setLoading(false);
+        return;
+      }
+
       const response = await userService.createUser(formData);
       if (response.success) {
         resetForm();
@@ -234,9 +316,13 @@ export const CreateUserModal = ({
               size="small"
               required
               error={errors.username}
-              helperText={errors.username ? "El usuario es requerido" : ""}
+              helperText={errors.username ? 
+                (errorMessages.username || "El usuario es requerido") : ""}
               variant="outlined"
               sx={{ mb: 2 }}
+              InputProps={{
+                endAdornment: checkingUsername ? <CircularProgress size={20} /> : null
+              }}
             />
             
             <TextField
@@ -251,10 +337,14 @@ export const CreateUserModal = ({
               required
               error={errors.email}
               helperText={errors.email ? 
-                (formData.email.trim() === "" ? "El correo es requerido" : "Formato de correo inválido") 
+                (errorMessages.email || 
+                  (formData.email.trim() === "" ? "El correo es requerido" : "Formato de correo inválido")) 
                 : ""}
               variant="outlined"
               sx={{ mb: 2 }}
+              InputProps={{
+                endAdornment: checkingEmail ? <CircularProgress size={20} /> : null
+              }}
             />
             
             <TextField
