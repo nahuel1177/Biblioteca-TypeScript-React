@@ -14,12 +14,13 @@ declare global {
 export const authorization =
   (roles: string[]) => (req: Request, res: Response, next: NextFunction) => {
     const token = getToken(req);
+    console.log("Autorization middleware");
     if (!token) {
       res.status(403).json({ message: "Unauthorized" });
       return;
     }
     try {
-      console.log("Autorization middleware");
+      
       const user = jwt.verify(token, "SECRET_KEY") as JwtPayload;
       if (!roles.includes(user.role)) {
         res.status(403).json({ message: "Unauthorized" });

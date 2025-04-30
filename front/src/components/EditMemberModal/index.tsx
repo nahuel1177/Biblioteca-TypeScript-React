@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { memberService } from "../../services/memberService";
 import {
   Typography,
@@ -49,9 +49,10 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
   });
 
   // Update local state when the member prop changes
-  useState(() => {
+  // Corrección: Usar useEffect para actualizar el estado cuando cambia member
+  useEffect(() => {
     setEditedMember(member);
-  });
+  }, [member]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
@@ -159,7 +160,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
             <TextField
               label="Nombres"
               name="name"
-              value={member.name}
+              value={editedMember.name}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -175,7 +176,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
             <TextField
               label="Apellidos"
               name="lastname"
-              value={member.lastname}
+              value={editedMember.lastname}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -190,7 +191,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
             <TextField
               label="Documento"
               name="dni"
-              value={member.dni}
+              value={editedMember.dni}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -207,7 +208,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
             <TextField
               label="Correo electrónico"
               name="email"
-              value={member.email}
+              value={editedMember.email}
               onChange={handleInputChange}
               fullWidth
               margin="normal"

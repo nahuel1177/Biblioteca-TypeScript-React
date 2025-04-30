@@ -3,9 +3,8 @@ import loan from "../controllers/loanController";
 
 const router = Router();
 
-router.get("/loans", loan.getLoans);
-router.get("/allLoans", loan.getAllLoans);
-router.get("/loans/:id", loan.getLoanById);
-router.post("/loans", loan.createLoan);
-router.delete("/loans/:id", loan.deleteLoan);
+router.get("/", loan.getLoans);
+router.get("/:id", loan.getLoanById);
+router.post("/", loan.createLoan);
+router.delete("/:id", loan.deleteLoan);
 export{router as loanRouter};

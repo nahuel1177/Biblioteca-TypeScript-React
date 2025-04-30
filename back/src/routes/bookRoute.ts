@@ -3,11 +3,11 @@ import book from "../controllers/bookController";
 
 const router = Router();
 
-router.get("/books", book.getBooks);
-router.get("/books/:id", book.getBookById);
-router.get("/books/title/:title", book.getBookByTitle)
-router.get("/books/isbn/:isbn", book.getBookByIsbn)
-router.post("/books", book.createBook);
-router.put("/books/:id", book.updateBook);
-router.delete("/books/:id", book.deleteBook);
+router.get("/", book.getBooks);
+router.get("/:id", book.getBookById);
+router.get("/title/:title", book.getBookByTitle)
+router.get("/isbn/:isbn", book.getBookByIsbn)
+router.post("/", book.createBook);
+router.put("/:id", book.updateBook);
+router.delete("/:id", book.deleteBook);
 export{router as bookRouter};

@@ -17,6 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
+import { useEffect } from "react";
 
 const style = {
   position: "absolute",
@@ -48,10 +49,10 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
     stockExt: false,
   });
 
-  // Update local state when the book prop changes
-  useState(() => {
+  // Corrección: Usar useEffect para actualizar el estado cuando cambia book
+  useEffect(() => {
     setEditedBook(book);
-  });
+  }, [book]);
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
@@ -159,7 +160,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
             <TextField
               label="Título"
               name="title"
-              value={book.title}
+              value={editedBook.title}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -175,7 +176,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
             <TextField
               label="Autor"
               name="author"
-              value={book.author}
+              value={editedBook.author}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
@@ -184,14 +185,14 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
               error={errors.author}
               helperText={errors.author ? "El autor es requerido" : ""}
               variant="outlined"
-              sx={{ mb: 2 }}
+              sx={{ mb: 3 }}
             />
             
             <Stack direction="row" spacing={2}>
               <TextField
                 label="Stock Interno"
                 name="stockInt"
-                value={book.stockInt}
+                value={editedBook.stockInt}
                 onChange={handleInputChange}
                 fullWidth
                 type="number"
@@ -206,7 +207,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
               <TextField
                 label="Stock Externo"
                 name="stockExt"
-                value={book.stockExt}
+                value={editedBook.stockExt}
                 onChange={handleInputChange}
                 fullWidth
                 type="number"

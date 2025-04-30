@@ -675,3 +675,9 @@
  CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"
 [2025-04-19T15:26:41.922Z] error: user controller - updeteUser
  CastError: Cast to ObjectId failed for value "undefined" (type string) at path "_id" for model "User"
+[2025-04-29T02:11:44.315Z] error: user controller - updeteUser
+ MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "aarcentales@gmail.com" }
+[2025-04-29T02:11:52.929Z] error: user controller - updeteUser
+ MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "aarcentales@gmail.com" }
+[2025-04-29T02:12:38.964Z] error: user controller - updeteUser
+ MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "aarcentales@gmail.com" }

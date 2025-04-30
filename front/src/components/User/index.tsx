@@ -54,6 +54,7 @@ export function User() {
     };
   }, [open, createModalOpen]);
   
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUsers = async () => {
     try {
       const response = await userService.getUsers();

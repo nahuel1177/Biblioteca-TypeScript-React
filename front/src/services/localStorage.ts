@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import lscache from "lscache";
-import { IResponseLogin } from "../interfaces/userInterface";
+import { IResponseLogin } from "../interfaces/loginInterface";
 
 const tokenkey = "tokenkey";
 const loggedInkey = "loggedInkey";
