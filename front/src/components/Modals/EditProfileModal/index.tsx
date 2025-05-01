@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -10,11 +10,12 @@ import {
   Paper,
   Stack,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { userService } from "../../services/userService";
-import { IUser } from "../../interfaces/userInterface";	
-import { useSweetAlert } from "../../hooks/useSweetAlert";
+import { userService } from "../../../services/userService";
+import { IUser } from "../../../interfaces/userInterface";	
+import { useSweetAlert } from "../../../hooks/useSweetAlert";
 import CancelIcon from "@mui/icons-material/Cancel";
 import SaveIcon from "@mui/icons-material/Save";
 import PersonIcon from "@mui/icons-material/Person";
@@ -36,7 +37,62 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [originalEmail, setOriginalEmail] = useState(user.email);
   const swal = useSweetAlert();
+
+  // Actualizar el email original cuando cambia el usuario
+  useEffect(() => {
+    setFormData({ ...user });
+    setOriginalEmail(user.email);
+  }, [user]);
+
+  // Función para manejar el cierre del modal y limpiar el formulario
+  const handleModalClose = () => {
+    // Restablecer todos los estados a sus valores iniciales
+    setFormData({ ...user });
+    setPassword("");
+    setLoading(false);
+    setCheckingEmail(false);
+    setErrors({});
+    
+    // Llamar a la función onClose proporcionada por el componente padre
+    onClose();
+  };
+
+  // Verificar disponibilidad de email cuando cambia
+  useEffect(() => {
+    if (formData.email && 
+        formData.email.trim() !== "" && 
+        formData.email !== originalEmail) {
+      const timer = setTimeout(() => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(formData.email || '')) {
+          checkEmailAvailability(formData.email || '');
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    } else if (formData.email === originalEmail) {
+      // Si el correo no ha cambiado, limpiamos cualquier error existente
+      setErrors(prev => ({ ...prev, email: "" }));
+    }
+  }, [formData.email, originalEmail]);
+
+  const checkEmailAvailability = async (email: string) => {
+    setCheckingEmail(true);
+    try {
+      const response = await userService.getUserByMail(email);
+      if (response.success) {
+        setErrors(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+      } else {
+        setErrors(prev => ({ ...prev, email: "" }));
+      }
+    } catch (error) {
+      console.error("Error checking email:", error);
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,8 +132,10 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       newErrors.email = "Email inválido";
     }
 
-    // Password validation only if user entered something
-    if (password && password.length < 6) {
+    // Validación de contraseña obligatoria
+    if (!password.trim()) {
+      newErrors.password = "La contraseña es requerida";
+    } else if (password.length < 6) {
       newErrors.password = "La contraseña debe tener al menos 6 caracteres";
     }
 
@@ -90,6 +148,15 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
     if (!validateForm()) {
       return;
+    }
+
+    // Verificación final de disponibilidad de Email antes del envío
+    if (formData.email !== originalEmail) {
+      const emailCheck = await userService.getUserByMail(formData.email || '');
+      if (emailCheck.success) {
+        setErrors(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+        return;
+      }
     }
 
     setLoading(true);
@@ -123,6 +190,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       }
     } catch (error: any) {
       console.error("Error updating profile:", error);
+      onClose();
       swal.error(error?.message || "Error al actualizar el perfil");
     } finally {
       setLoading(false);
@@ -132,7 +200,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   return (
     <Modal
       open={open}
-      onClose={onClose}
+      onClose={handleModalClose} // Usar la nueva función en lugar de onClose
       aria-labelledby="edit-profile-modal-title"
     >
       <Paper
@@ -164,7 +232,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               Editar Perfil
             </Typography>
           </Stack>
-          <IconButton onClick={onClose} size="small" aria-label="cerrar" sx={{ color: "white" }}>
+          <IconButton onClick={handleModalClose} size="small" aria-label="cerrar" sx={{ color: "white" }}>
             <CloseIcon />
           </IconButton>
         </Box>
@@ -227,17 +295,20 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               margin="normal"
               size="small"
               sx={{ mb: 2 }}
+              InputProps={{
+                endAdornment: checkingEmail ? <CircularProgress size={20} /> : null
+              }}
             />
 
             <TextField
               fullWidth
-              label="Nueva Contraseña"
+              label="Contraseña"
               name="password"
               type="password"
               value={password}
               onChange={handleChange}
               error={!!errors.password}
-              helperText={errors.password || "Dejar en blanco para mantener la contraseña actual"}
+              helperText={errors.password || "Ingrese su contraseña actual para guardar los cambios o una nueva si desea cambiarla."}
               variant="outlined"
               margin="normal"
               size="small"
@@ -250,7 +321,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
               <Button 
                 variant="outlined"
                 color="error"
-                onClick={onClose}
+                onClick={handleModalClose}
                 startIcon={<CancelIcon />}
                 disabled={loading}
               >

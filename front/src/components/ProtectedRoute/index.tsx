@@ -1,4 +1,4 @@
-import { Error401 } from '../Error401';
+import { Error401 } from '../Errors/Error401';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

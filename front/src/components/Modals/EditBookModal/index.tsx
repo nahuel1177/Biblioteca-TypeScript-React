@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import {
   Typography,
   TextField,
@@ -9,15 +9,15 @@ import {
   Paper,
   Divider,
   IconButton,
-  CircularProgress,
 } from "@mui/material";
-import { IBook } from "../../interfaces/bookInterface";
-import { bookService } from "../../services/bookService";
+import { IBook } from "../../../interfaces/bookInterface";
+import { bookService } from "../../../services/bookService";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import EditIcon from "@mui/icons-material/Edit";
+import { useEffect } from "react";
 
 const style = {
   position: "absolute",
@@ -32,78 +32,49 @@ const style = {
   outline: "none",
 };
 
-interface CreateBookModalProps {
+interface EditBookModalProps {
   open: boolean;
   handleClose: () => void;
-  onBookCreated: () => void;
+  book: IBook;
+  onBookUpdated: () => void;
 }
 
-export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBookModalProps) {
-  const initialBookState: IBook = {
-    _id: "",
-    title: "",
-    author: "",
-    isbn: 0,
-    stockInt: 0,
-    stockExt: 0,
-  };
-
-  const [newBook, setNewBook] = useState<IBook>(initialBookState);
+export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBookModalProps) {
+  const [editedBook, setEditedBook] = useState<IBook>(book);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({
     title: false,
     author: false,
-    isbn: false,
     stockInt: false,
     stockExt: false,
   });
-  const [checkingIsbn, setCheckingIsbn] = useState(false);
-  const [isbnError, setIsbnError] = useState("");
 
-  // Add debounce for ISBN check
+  // Corrección: Usar useEffect para actualizar el estado cuando cambia book
   useEffect(() => {
-    if (newBook.isbn && !isNaN(newBook.isbn) && newBook.isbn.toString().length === 13) {
-      const timer = setTimeout(() => {
-        checkIsbnAvailability(newBook.isbn);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [newBook.isbn]);
+    setEditedBook(book);
+  }, [book]);
 
-  const checkIsbnAvailability = async (isbn: number) => {
-    setCheckingIsbn(true);
-    try {
-      const response = await bookService.getBookByIsbn(isbn);
-      if (response.success) {
-        setErrors(prev => ({ ...prev, isbn: true }));
-        setIsbnError("Este ISBN ya está registrado");
-      } else {
-        setIsbnError("");
-      }
-    } catch (error) {
-      console.error("Error checking ISBN:", error);
-    } finally {
-      setCheckingIsbn(false);
-    }
-  };
-
-  const resetForm = () => {
-    setNewBook(initialBookState);
+  // Función para manejar el cierre del modal y limpiar el formulario
+  const handleModalClose = () => {
+    // Restablecer todos los estados a sus valores iniciales
+    setEditedBook(book);
+    setLoading(false);
     setErrors({
       title: false,
       author: false,
-      isbn: false,
       stockInt: false,
       stockExt: false,
     });
-    setIsbnError("");
+    
+    // Llamar a la función handleClose proporcionada por el componente padre
+    handleClose();
   };
 
-  const handleNewBookInputChange = (
+  const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
     const { name, value } = e.target;
-    setNewBook({ ...newBook, [name as string]: value });
+    setEditedBook({ ...editedBook, [name as string]: value });
     
     // Clear error when user types
     if (name && errors[name as keyof typeof errors]) {
@@ -111,57 +82,39 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
         ...errors,
         [name]: false,
       });
-      
-      // Clear ISBN error message
-      if (name === 'isbn') {
-        setIsbnError("");
-      }
     }
   };
 
   const validateForm = () => {
     const newErrors = {
-      title: newBook.title.trim() === "",
-      author: newBook.author.trim() === "",
-      isbn: newBook.isbn.toString().length !== 13 || isNaN(newBook.isbn) || isbnError !== "",
-      stockInt: newBook.stockInt < 0,
-      stockExt: newBook.stockExt < 0,
+      title: editedBook.title.trim() === "",
+      author: editedBook.author.trim() === "",
+      stockInt: editedBook.stockInt < 0,
+      stockExt: editedBook.stockExt < 0,
     };
     
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error);
   };
 
-  const handleCreateSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) {
       return;
     }
 
-    // Final check for ISBN availability before submission
     setLoading(true);
     try {
-      if (newBook.isbn) {
-        const isbnCheck = await bookService.getBookByIsbn(newBook.isbn);
-        if (isbnCheck.success) {
-          setErrors(prev => ({ ...prev, isbn: true }));
-          setIsbnError("Este ISBN ya está registrado");
-          setLoading(false);
-          return;
-        }
-      }
-
-      const response = await bookService.createBook(newBook);
+      const response = await bookService.updateBook(editedBook._id, editedBook);
       if (response.success) {
-        resetForm();
         handleClose();
-        onBookCreated();
+        onBookUpdated();
         Swal.fire({
           position: "center",
           icon: "success",
           title: "¡Éxito!",
-          text: "El libro fue creado exitosamente",
+          text: "El libro fue modificado exitosamente",
           showConfirmButton: true,
           confirmButtonColor: "#4caf50",
         });
@@ -170,7 +123,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
           position: "center",
           icon: "error",
           title: "Error",
-          text: "Error al crear el libro",
+          text: "Error al modificar el libro",
           showConfirmButton: true,
           confirmButtonColor: "#f44336",
         });
@@ -189,17 +142,12 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
     }
   };
 
-  const handleCancel = () => {
-    resetForm();
-    handleClose();
-  };
-
   return (
     <Modal
       open={open}
-      onClose={handleCancel}
-      aria-labelledby="create-modal-title"
-      aria-describedby="create-modal-description"
+      onClose={handleModalClose} // Usar la nueva función en lugar de handleClose
+      aria-labelledby="edit-modal-title"
+      aria-describedby="edit-modal-description"
     >
       <Paper sx={style} elevation={5}>
         <Box sx={{ 
@@ -213,27 +161,26 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
           borderTopRightRadius: 8
         }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <LibraryBooksIcon />
+            <EditIcon />
             <Typography variant="h6" component="h2" fontWeight="bold">
-              Crear Nuevo Libro
+              Modificación de Libro
             </Typography>
           </Stack>
-          <IconButton onClick={handleCancel} size="small" aria-label="cerrar" sx={{ color: "white" }}>
+          <IconButton onClick={handleModalClose} size="small" aria-label="cerrar" sx={{ color: "white" }}>
             <CloseIcon />
           </IconButton>
         </Box>
         
         <Box sx={{ p: 3 }}>
-          <form onSubmit={handleCreateSubmit}>
+          <form onSubmit={handleSubmit}>
             <TextField
               label="Título"
               name="title"
-              value={newBook.title}
-              onChange={handleNewBookInputChange}
+              value={editedBook.title}
+              onChange={handleInputChange}
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.title}
               helperText={errors.title ? "El título es requerido" : ""}
               autoFocus
@@ -244,49 +191,26 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
             <TextField
               label="Autor"
               name="author"
-              value={newBook.author}
-              onChange={handleNewBookInputChange}
+              value={editedBook.author}
+              onChange={handleInputChange}
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.author}
               helperText={errors.author ? "El autor es requerido" : ""}
               variant="outlined"
-              sx={{ mb: 2 }}
-            />
-            
-            <TextField
-              label="ISBN"
-              name="isbn"
-              value={newBook.isbn}
-              onChange={handleNewBookInputChange}
-              fullWidth
-              margin="normal"
-              size="small"
-              error={errors.isbn}
-              helperText={errors.isbn ? 
-                (isbnError || "El ISBN debe contener exactamente 13 dígitos") : 
-                "Debe contener 13 dígitos"}
-              variant="outlined"
               sx={{ mb: 4 }}
-              InputProps={{ 
-                inputMode: 'numeric',
-                inputProps: { pattern: '[0-9]*' },
-                endAdornment: checkingIsbn ? <CircularProgress size={20} /> : null
-              }}
             />
             
             <Stack direction="row" spacing={2}>
               <TextField
                 label="Stock Interno"
                 name="stockInt"
-                value={newBook.stockInt}
-                onChange={handleNewBookInputChange}
+                value={editedBook.stockInt}
+                onChange={handleInputChange}
                 fullWidth
                 type="number"
                 size="small"
-                required
                 error={errors.stockInt}
                 helperText={errors.stockInt ? "El valor debe ser mayor o igual a 0" : ""}
                 InputProps={{ inputProps: { min: 0 } }}
@@ -296,12 +220,11 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
               <TextField
                 label="Stock Externo"
                 name="stockExt"
-                value={newBook.stockExt}
-                onChange={handleNewBookInputChange}
+                value={editedBook.stockExt}
+                onChange={handleInputChange}
                 fullWidth
                 type="number"
                 size="small"
-                required
                 error={errors.stockExt}
                 helperText={errors.stockExt ? "El valor debe ser mayor o igual a 0" : ""}
                 InputProps={{ inputProps: { min: 0 } }}
@@ -315,7 +238,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
               <Button
                 variant="outlined"
                 color="error"
-                onClick={handleCancel}
+                onClick={handleModalClose}
                 startIcon={<CancelIcon />}
                 disabled={loading}
               >

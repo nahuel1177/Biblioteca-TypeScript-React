@@ -681,3 +681,29 @@
  MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "aarcentales@gmail.com" }
 [2025-04-29T02:12:38.964Z] error: user controller - updeteUser
  MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "aarcentales@gmail.com" }
+[2025-04-30T15:15:41.519Z] error: user controller - updeteUser
+ MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "jperez@yahoo.com.ar" }
+[2025-04-30T16:06:09.168Z] error: user controller - updeteUser
+ MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "jperez@yahoo.com.ar" }
+[2025-04-30T17:09:12.570Z] error: user controller - updeteUser
+ MongoServerError: Plan executor error during findAndModify :: caused by :: E11000 duplicate key error collection: libdb.users index: email_1 dup key: { email: "crodriguez@gmail.com" }
+[2025-04-30T19:52:39.207Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T19:52:48.582Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T19:53:19.505Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T19:54:01.092Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T19:54:31.208Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T20:00:10.605Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T20:03:03.479Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T20:06:15.926Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T20:10:23.434Z] error: user controller - updeteUser
+ Error: data and salt arguments required
+[2025-04-30T20:10:58.456Z] error: user controller - updeteUser
+ Error: data and salt arguments required

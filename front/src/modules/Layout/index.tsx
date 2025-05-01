@@ -19,7 +19,7 @@ import { Sun, Moon } from "lucide-react";
 import { useState, useEffect } from "react";
 import ImportContactsIcon from "@mui/icons-material/ImportContacts";
 import { localStorage } from "../../services/localStorage";
-import { EditProfileModal } from "../../components/EditProfileModal";
+import { EditProfileModal } from "../../components/Modals/EditProfileModal";
 import { IUser } from "../../interfaces/userInterface";
 
 // Update settings to include profile edit option

@@ -9,13 +9,15 @@ import {
   CardContent,
   Stack,
   useTheme,
+  Chip,
+  Box,
 } from "@mui/material";
 
 import { loanService } from "../../services/loanService";
 import { ILoan } from "../../interfaces/loanInterface";
 import { SearchBar } from "../SearchBar";
-import { CreateMemberModal } from "../CreateMemberModal";
-import { EditMemberModal } from "../EditMemberModal";
+import { CreateMemberModal } from "../Modals/CreateMemberModal";
+import { EditMemberModal } from "../Modals/EditMemberModal";
 import { useNavigate } from "react-router-dom";
 import { useSweetAlert } from "../../hooks/useSweetAlert";
 import {
@@ -227,6 +229,7 @@ export function Member() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const state = (memberSanction: boolean | undefined) => {
     if (memberSanction === true) {
       return "Sancionado";
@@ -304,14 +307,21 @@ export function Member() {
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card style={{ marginTop: "20px" }}>
                   <CardContent>
-                    <Typography variant="h6" component="div">
-                      {member.lastname}, {member.name}
-                    </Typography>
+                    <Box sx={{ position: "relative", mb: 1 }}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Typography variant="h6" component="div">
+                          {member.lastname}, {member.name}
+                        </Typography>
+                        <Chip
+                          label={member.isSanctioned ? "Sancionado" : "Sin Sanción"}
+                          color={member.isSanctioned ? "error" : "success"}
+                          size="small"
+                          variant="filled"
+                        />
+                      </Stack>
+                    </Box>
                     <Typography variant="body2" color="text.secondary">
                       Correo: {member.email}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Estado: {state(member.isSanctioned)}
                     </Typography>
                     <Stack
                       direction="row"

@@ -5,7 +5,7 @@ import { bookRepository } from "../repositories/bookRepository";
 
 class LoanService {
   async getLoans() {
-    const loans = await loanRepository.getLoans({ isActive: true});
+    const loans = await loanRepository.getLoans({ isActive: true });
 
     if (!loans.length) {
       console.log("ENTRO AL IF");
@@ -122,12 +122,38 @@ class LoanService {
           },
         };
       }
+      bookRepository.updateBook(takenBook.id, takenBook);
+      const dateLimit = new Date();
+      const loan = new Loan({
+        bookId: bookId,
+        memberId: memberId,
+        type: type,
+        dateLimit: dateLimit,
+      });
+      const createdLoan = await loanRepository.createLoan(loan);
+
+      if (!createdLoan) {
+        return {
+          code: 500,
+          result: {
+            error: "Préstamo realizado con éxito.",
+            success: false,
+          },
+        };
+      }
+      return {
+        code: 201,
+        result: {
+          result: createdLoan,
+          success: true,
+        },
+      };
     }
 
     bookRepository.updateBook(takenBook.id, takenBook);
-    const dateOfLoan = 1296000000; 
+    const dateOfLoan = 1296000000;
     const dateNow = new Date();
-    const dateLimit = new Date(dateNow.getTime() + dateOfLoan); 
+    const dateLimit = new Date(dateNow.getTime() + dateOfLoan);
     const loan = new Loan({
       bookId: bookId,
       memberId: memberId,

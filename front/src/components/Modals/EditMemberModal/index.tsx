@@ -1,23 +1,23 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { memberService } from "../../services/memberService";
+import { memberService } from "../../../services/memberService";
 import {
   Typography,
   TextField,
   Button,
   Stack,
   Modal,
-  Box,
   Paper,
   Divider,
   IconButton,
+  Box,
   CircularProgress,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { IMember } from "../../interfaces/memberInterface";
+import EditIcon from "@mui/icons-material/Edit";
+import { IMember } from "../../../interfaces/memberInterface";
 
 const style = {
   position: "absolute",
@@ -32,23 +32,15 @@ const style = {
   outline: "none",
 };
 
-interface CreateMemberModalProps {
+interface EditMemberModalProps {
   open: boolean;
   handleClose: () => void;
-  onMemberCreated: () => void;
+  member: IMember;
+  onMemberUpdated: () => void;
 }
 
-export function CreateMemberModal({ open, handleClose, onMemberCreated }: CreateMemberModalProps) {
-  const initialMemberState: IMember = {
-    _id: "",
-    name: "",
-    lastname: "",
-    email: "",
-    dni: 0,
-    isSanctioned: false,
-  };
-
-  const [newMember, setNewMember] = useState<IMember>(initialMemberState);
+export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: EditMemberModalProps) {
+  const [editedMember, setEditedMember] = useState<IMember>(member);
   const [loading, setLoading] = useState(false);
   const [checkingDni, setCheckingDni] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
@@ -59,28 +51,65 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
     dni: false,
   });
   const [errorMessages, setErrorMessages] = useState({
-    email: "",
     dni: "",
+    email: "",
   });
 
-  // Add debounce for DNI and email checks
+  // Actualizar el miembro editado cuando cambia el miembro original
   useEffect(() => {
-    if (newMember.dni && newMember.dni > 0) {
-      const timer = setTimeout(() => {
-        checkDniAvailability(newMember.dni);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [newMember.dni]);
+    setEditedMember(member);
+  }, [member]);
 
+  // Función para manejar el cierre del modal y limpiar el formulario
+  const handleModalClose = () => {
+    // Restablecer todos los estados a sus valores iniciales
+    setEditedMember(member);
+    setLoading(false);
+    setCheckingDni(false);
+    setCheckingEmail(false);
+    setErrors({
+      name: false,
+      lastname: false,
+      email: false,
+      dni: false,
+    });
+    setErrorMessages({
+      dni: "",
+      email: "",
+    });
+    
+    // Llamar a la función handleClose proporcionada por el componente padre
+    handleClose();
+  };
+
+  // Añadir debounce para verificación de DNI
   useEffect(() => {
-    if (newMember.email && newMember.email.trim() !== "") {
+    if (editedMember.dni && editedMember.dni > 0 && editedMember.dni !== member.dni) {
       const timer = setTimeout(() => {
-        checkEmailAvailability(newMember.email || '');
+        checkDniAvailability(editedMember.dni);
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [newMember.email]);
+  }, [editedMember.dni, member.dni]);
+
+  // Añadir debounce para verificación de Email
+  useEffect(() => {
+    if (editedMember.email && 
+        editedMember.email.trim() !== "" && 
+        editedMember.email !== member.email) {
+      const timer = setTimeout(() => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(editedMember.email || '')) {
+          checkEmailAvailability(editedMember.email || '');
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    } else if (editedMember.email === member.email) {
+      // Si el correo no ha cambiado, limpiamos cualquier error existente
+      setErrors(prev => ({ ...prev, email: false }));
+      setErrorMessages(prev => ({ ...prev, email: "" }));
+    }
+  }, [editedMember.email, member.email]);
 
   const checkDniAvailability = async (dni: number) => {
     setCheckingDni(true);
@@ -89,6 +118,8 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
       if (response.success) {
         setErrors(prev => ({ ...prev, dni: true }));
         setErrorMessages(prev => ({ ...prev, dni: "Este DNI ya está registrado" }));
+      } else {
+        setErrorMessages(prev => ({ ...prev, dni: "" }));
       }
     } catch (error) {
       console.error("Error checking DNI:", error);
@@ -104,6 +135,8 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
       if (response.success) {
         setErrors(prev => ({ ...prev, email: true }));
         setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+      } else {
+        setErrorMessages(prev => ({ ...prev, email: "" }));
       }
     } catch (error) {
       console.error("Error checking email:", error);
@@ -112,35 +145,20 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
     }
   };
 
-  const resetForm = () => {
-    setNewMember(initialMemberState);
-    setErrors({
-      name: false,
-      lastname: false,
-      email: false,
-      dni: false,
-    });
-    setErrorMessages({
-      email: "",
-      dni: "",
-    });
-  };
-
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
     const { name, value } = e.target;
-    setNewMember({ ...newMember, [name as string]: value });
-    
-    // Clear error when user types
+    setEditedMember({ ...editedMember, [name as string]: value });
+
     if (name && errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,
         [name]: false,
       });
       
-      // Clear error messages for email and dni
-      if (name === 'email' || name === 'dni') {
+      // Limpiar mensaje de error para DNI y email
+      if (name === 'dni' || name === 'email') {
         setErrorMessages(prev => ({
           ...prev,
           [name]: "",
@@ -151,61 +169,57 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
 
   const validateForm = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const isEmailValid = newMember.email ? emailRegex.test(newMember.email) : false;
+    const isEmailValid = editedMember.email ? emailRegex.test(editedMember.email) : false;
     
     const newErrors = {
-      name: !newMember.name || newMember.name.trim() === "",
-      lastname: !newMember.lastname || newMember.lastname.trim() === "",
-      email: !newMember.email || newMember.email.trim() === "" || !isEmailValid || (errorMessages.email !== ""),
-      dni: !newMember.dni || newMember.dni <= 0 || (errorMessages.dni !== ""),
+      name: !editedMember.name || editedMember.name.trim() === "",
+      lastname: !editedMember.lastname || editedMember.lastname.trim() === "",
+      email: !editedMember.email || editedMember.email.trim() === "" || !isEmailValid || (errorMessages.email !== ""),
+      dni: !editedMember.dni || editedMember.dni <= 0 || (errorMessages.dni !== ""),
     };
-    
+
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
-    // Final check for DNI and email availability before submission
-    setLoading(true);
-    try {
-      const dniCheck = await memberService.getMemberByDni(newMember.dni || 0);
-      const emailCheck = await memberService.getMemberByMail(newMember.email || '');
-      
+    // Verificación final de disponibilidad de DNI antes del envío
+    if (editedMember.dni !== member.dni) {
+      const dniCheck = await memberService.getMemberByDni(editedMember.dni || 0);
       if (dniCheck.success) {
         setErrors(prev => ({ ...prev, dni: true }));
         setErrorMessages(prev => ({ ...prev, dni: "Este DNI ya está registrado" }));
-        setLoading(false);
         return;
       }
-      
+    }
+
+    // Verificación final de disponibilidad de Email antes del envío
+    if (editedMember.email !== member.email) {
+      const emailCheck = await memberService.getMemberByMail(editedMember.email || '');
       if (emailCheck.success) {
         setErrors(prev => ({ ...prev, email: true }));
         setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
-        setLoading(false);
         return;
       }
-
-      const response = await memberService.createMember({
-        name: newMember.name || '',
-        lastname: newMember.lastname || '',
-        email: newMember.email || '',
-        dni: newMember.dni || 0,
-      });
+    }
+    // Si llegamos aquí, significa que el correo no está duplicado o no ha cambiado
+    setLoading(true);
+    try {
+      const response = await memberService.updateMember(editedMember._id, editedMember);
       if (response.success) {
-        resetForm();
         handleClose();
-        onMemberCreated();
+        onMemberUpdated();
         Swal.fire({
           position: "center",
           icon: "success",
           title: "¡Éxito!",
-          text: "El socio fue creado exitosamente",
+          text: "El socio fue modificado exitosamente",
           showConfirmButton: true,
           confirmButtonColor: "#4caf50",
         });
@@ -214,7 +228,7 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
           position: "center",
           icon: "error",
           title: "Error",
-          text: "Error al crear el socio",
+          text: "Error al modificar el socio",
           showConfirmButton: true,
           confirmButtonColor: "#f44336",
         });
@@ -233,86 +247,78 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
     }
   };
 
-  const handleCancel = () => {
-    resetForm();
-    handleClose();
-  };
-
   return (
     <Modal
       open={open}
-      onClose={handleCancel}
-      aria-labelledby="create-modal-title"
-      aria-describedby="create-modal-description"
+      onClose={handleModalClose} // Usar la nueva función en lugar de handleClose
+      aria-labelledby="edit-modal-title"
+      aria-describedby="edit-modal-description"
     >
       <Paper sx={style} elevation={5}>
-        <Box sx={{ 
-          p: 2, 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center", 
-          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main', 
+        <Box sx={{
+          p: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main',
           color: "white",
           borderTopLeftRadius: 8,
           borderTopRightRadius: 8
         }}>
           <Stack direction="row" spacing={1} alignItems="center">
-            <PersonAddIcon />
+            <EditIcon />
             <Typography variant="h6" component="h2" fontWeight="bold">
-              Crear Nuevo Socio
+              Modificación de Socio
             </Typography>
           </Stack>
-          <IconButton onClick={handleCancel} size="small" aria-label="cerrar" sx={{ color: "white" }}>
+          <IconButton onClick={handleModalClose} size="small" aria-label="cerrar" sx={{ color: "white" }}>
             <CloseIcon />
           </IconButton>
         </Box>
-        
+
         <Box sx={{ p: 3 }}>
           <form onSubmit={handleSubmit}>
             <TextField
               label="Nombres"
               name="name"
-              value={newMember.name}
+              value={editedMember.name}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.name}
               helperText={errors.name ? "El nombre es requerido" : ""}
               autoFocus
               variant="outlined"
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               label="Apellidos"
               name="lastname"
-              value={newMember.lastname}
+              value={editedMember.lastname}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.lastname}
               helperText={errors.lastname ? "El apellido es requerido" : ""}
               variant="outlined"
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               label="Documento"
               name="dni"
-              value={newMember.dni}
+              value={editedMember.dni}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
               type="number"
               size="small"
-              required
               error={errors.dni}
               helperText={errors.dni ? 
-                (errorMessages.dni || "El documento es requerido y debe ser mayor a 0") : ""}
+                (errorMessages.dni || "El documento es requerido") : ""}
               InputProps={{ 
                 inputProps: { min: 1 },
                 endAdornment: checkingDni ? <CircularProgress size={20} /> : null
@@ -320,40 +326,39 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
               variant="outlined"
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               label="Correo electrónico"
               name="email"
-              value={newMember.email}
+              value={editedMember.email}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
               type="email"
               size="small"
-              required
               error={errors.email}
               helperText={errors.email ? 
                 (errorMessages.email || "El correo es requerido y debe tener un formato válido") : ""}
+              variant="outlined"
+              sx={{ mb: 0 }}
               InputProps={{ 
                 endAdornment: checkingEmail ? <CircularProgress size={20} /> : null
               }}
-              variant="outlined"
-              sx={{ mb: 2 }}
             />
-            
+
             <Divider sx={{ my: 3 }} />
-            
+
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
                 variant="outlined"
                 color="error"
-                onClick={handleCancel}
+                onClick={handleModalClose}
                 startIcon={<CancelIcon />}
                 disabled={loading}
               >
                 Cancelar
               </Button>
-              
+
               <Button
                 type="submit"
                 variant="contained"

@@ -16,16 +16,17 @@ import {
   FormHelperText,
   Autocomplete,
 } from "@mui/material";
-import { IMember } from "../../interfaces/memberInterface";
-import { IBook } from "../../interfaces/bookInterface";
-import { memberService } from "../../services/memberService";
-import { bookService } from "../../services/bookService";
-import { loanService } from "../../services/loanService";
+
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import LibraryAddIcon from "@mui/icons-material/LibraryAdd";
+import { IMember } from "../../../interfaces/memberInterface";
+import { IBook } from "../../../interfaces/bookInterface";
+import { memberService } from "../../../services/memberService";
+import { bookService } from "../../../services/bookService";
+import { loanService } from "../../../services/loanService";
 
 const style = {
   position: "absolute",
@@ -353,9 +354,8 @@ export function CreateLoanModal({
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.type}
-              sx={{ mb: 2 }}
+              sx={{ mb: 0 }}
             >
               <InputLabel>Tipo de Préstamo</InputLabel>
               <Select

@@ -1,5 +1,5 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { userService } from "../../services/userService";
+import { userService } from "../../../services/userService";
 import {
   Typography,
   TextField,
@@ -15,6 +15,7 @@ import {
   Divider,
   IconButton,
   CircularProgress,
+  FormHelperText,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
@@ -199,7 +200,7 @@ export const CreateUserModal = ({
         return;
       }
       
-      if (!emailCheck.success) {
+      if (!emailCheck) {
         setErrors(prev => ({ ...prev, email: true }));
         setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
         setLoading(false);
@@ -283,7 +284,6 @@ export const CreateUserModal = ({
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.name}
               helperText={errors.name ? "El nombre es requerido" : ""}
               autoFocus
@@ -299,7 +299,6 @@ export const CreateUserModal = ({
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.lastname}
               helperText={errors.lastname ? "El apellido es requerido" : ""}
               variant="outlined"
@@ -314,7 +313,6 @@ export const CreateUserModal = ({
               fullWidth
               margin="normal"
               size="small"
-              required
               error={errors.username}
               helperText={errors.username ? 
                 (errorMessages.username || "El usuario es requerido") : ""}
@@ -334,7 +332,6 @@ export const CreateUserModal = ({
               margin="normal"
               type="email"
               size="small"
-              required
               error={errors.email}
               helperText={errors.email ? 
                 (errorMessages.email || 
@@ -356,7 +353,6 @@ export const CreateUserModal = ({
               margin="normal"
               type="password"
               size="small"
-              required
               error={errors.password}
               helperText={errors.password ? 
                 (formData.password.trim() === "" ? "La contraseña es requerida" : "La contraseña debe tener al menos 6 caracteres") 
@@ -369,7 +365,6 @@ export const CreateUserModal = ({
               fullWidth 
               margin="normal" 
               size="small" 
-              required
               error={errors.role}
               sx={{ mb: 2 }}
             >
@@ -388,9 +383,9 @@ export const CreateUserModal = ({
                 <MenuItem value="employee">Usuario</MenuItem>
               </Select>
               {errors.role && (
-                <Typography variant="caption" color="error">
+                <FormHelperText error>
                   El rol es requerido
-                </Typography>
+                </FormHelperText>
               )}
             </FormControl>
             

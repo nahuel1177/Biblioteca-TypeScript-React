@@ -11,18 +11,22 @@ import {
   CardContent,
   Stack,
   useTheme,
+  Chip,
 } from "@mui/material";
 import { SearchBar } from '../SearchBar';
-import { UserEditModal } from '../EditUserModal';
-import { CreateUserModal } from '../CreateUserModal';
+import { UserEditModal } from '../Modals/EditUserModal';
+import { CreateUserModal } from '../Modals/CreateUserModal';
+import { ViewUserModal } from '../Modals/ViewUserModal';
 import { useSweetAlert } from "../../hooks/useSweetAlert";
-import { CreateButton, EditButton, DeleteButton } from "../Buttons";
+import { CreateButton, EditButton, DeleteButton, ViewButton } from "../Buttons";
+
 
 export function User() {
   const [users, setUsers] = useState<IUser[]>([]);
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleCreateModalOpen = () => setCreateModalOpen(true);
@@ -40,7 +44,7 @@ export function User() {
   
   // Add useEffect to handle body scrolling
   useEffect(() => {
-    if (open || createModalOpen) {
+    if (open || createModalOpen || viewModalOpen) {
       // Disable scrolling when any modal is open
       document.body.style.overflow = 'hidden';
     } else {
@@ -52,7 +56,7 @@ export function User() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [open, createModalOpen]);
+  }, [open, createModalOpen, viewModalOpen]);
   
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchUsers = async () => {
@@ -97,12 +101,24 @@ export function User() {
     lastname: "",
     username: "",
     email: "",
+    role: "",
   };
 
   const [user, setUser] = useState<IUser>(initialUserState);
 
   async function onClickUpdate(user: IUser) {
     try {
+      // Verificar si el usuario es administrador
+      if (user.role === "admin") {
+        swal.fire({
+          title: "Acción no permitida",
+          text: "No se pueden modificar los datos de un usuario administrador",
+          icon: "warning",
+          confirmButtonText: "Entendido"
+        });
+        return;
+      }
+      
       setUser(user);
       handleOpen();
     } catch (error) {
@@ -110,20 +126,42 @@ export function User() {
     }
   }
 
-  async function onClickDelete(id: string) {
+  async function onClickDelete(id: string, role: string) {
     try {
+      // Verificar si el usuario es administrador
+      if (role === "admin") {
+        swal.fire({
+          title: "Acción no permitida",
+          text: "No se puede eliminar un usuario administrador",
+          icon: "warning",
+          confirmButtonText: "Entendido"
+        });
+        return;
+      }
+      
       const result = await swal.confirm("¿Esta seguro que desea eliminar?");
       if (result.isConfirmed) {
         const response = await userService.deleteUser(id);
         if (response.success) {
           await fetchUsers();
           swal.success("El usuario fue eliminado");
+        } else {
+          swal.error(response.error || "Error al eliminar el usuario");
         }
       }
     } catch (error) {
       swal.error("Hubo un problema, intentelo más tarde");
     }
   }
+
+  const handleViewUser = (user: IUser) => {
+    setUser(user);
+    setViewModalOpen(true);
+  };
+
+  const handleCloseViewModal = () => {
+    setViewModalOpen(false);
+  };
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
@@ -176,6 +214,12 @@ export function User() {
           onUserCreated={fetchUsers}
         />
         
+        <ViewUserModal
+          open={viewModalOpen}
+          onClose={handleCloseViewModal}
+          user={user}
+        />
+        
         <Card style={{ marginTop: "20px" }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
@@ -209,9 +253,18 @@ export function User() {
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card style={{ marginTop: "20px" }}>
                 <CardContent>
-                  <Typography variant="h6" component="div">
-                    {user.username}
-                  </Typography>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
+                    <Typography variant="h6" component="div">
+                      {user.username}
+                    </Typography>
+                    {user.role && (
+                      <Chip 
+                        label={user.role === "admin" ? "Administrador" : "Usuario"} 
+                        color={user.role === "admin" ? "primary" : "success"}
+                        size="small"
+                      />
+                    )}
+                  </Stack>
 
                   <Typography variant="body2" color="text.secondary">
                     {user.lastname}
@@ -225,14 +278,23 @@ export function User() {
                     spacing={2}
                     style={{ marginTop: "20px" }}
                   >
-                    <EditButton 
-                      onClick={() => onClickUpdate(user)} 
-                      tooltipTitle="Editar Usuario"
-                    />
-                    <DeleteButton 
-                      onClick={() => onClickDelete(user._id)} 
-                      tooltipTitle="Eliminar Usuario"
-                    />
+                    {user.role === "admin" ? (
+                      <ViewButton
+                        onClick={() => handleViewUser(user)}
+                        tooltipTitle="Ver Detalles"
+                      />
+                    ) : (
+                      <>
+                        <EditButton 
+                          onClick={() => onClickUpdate(user)} 
+                          tooltipTitle="Editar Usuario"
+                        />
+                        <DeleteButton 
+                          onClick={() => onClickDelete(user._id, user.role || "")} 
+                          tooltipTitle="Eliminar Usuario"
+                        />
+                      </>
+                    )}
                   </Stack>
                 </CardContent>
               </Card>

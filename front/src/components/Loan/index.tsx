@@ -19,8 +19,8 @@ import { bookService } from "../../services/bookService";
 import { loanService } from "../../services/loanService";
 import Swal from "sweetalert2";
 import { SearchBar } from "../SearchBar";
-import { CreateLoanModal } from "../CreateLoanModal";
 import { useNavigate } from "react-router-dom";
+import { CreateLoanModal } from "../Modals/CreateLoanModal";
 
 export function Loan() {
   const [loans, setLoans] = useState<ILoan[]>([]);
@@ -44,21 +44,27 @@ export function Loan() {
       const response2 = await memberService.getMembers();
       if (response2.success) {
         setMembers(response2.result);
-        
+
         // Check for expired sanctions
         const currentDate = new Date();
         for (const member of response2.result) {
-          if (member.isSanctioned && member.sanctionDate && member.limitSanctionDays) {
+          if (
+            member.isSanctioned &&
+            member.sanctionDate &&
+            member.limitSanctionDays
+          ) {
             const sanctionDate = new Date(member.sanctionDate);
             const sanctionEndDate = new Date(sanctionDate);
-            sanctionEndDate.setDate(sanctionEndDate.getDate() + member.limitSanctionDays);
-            
+            sanctionEndDate.setDate(
+              sanctionEndDate.getDate() + member.limitSanctionDays
+            );
+
             // If sanction period has ended, remove the sanction
             if (currentDate >= sanctionEndDate) {
               const memberToUpdate = { ...member };
               memberToUpdate.isSanctioned = false;
               memberToUpdate.sanctionDate = null;
-              
+
               await memberService.sanctionMember(memberToUpdate);
             }
           }
@@ -70,32 +76,36 @@ export function Loan() {
         setLoans(response.result);
 
         // Check each loan for expiration and sanction members if needed
-        const currentDate = new Date();
+        
         for (const loan of response.result) {
+          const currentDate = new Date();
           const loanDateLimit = new Date(loan.dateLimit);
-          
-          // If loan is expired
-          if (loanDateLimit < currentDate) {
-            // Find the member to potentially sanction
-            const memberToUpdate = await memberService.getMemberById(
-              loan.memberId
-            );
-            
-            if (memberToUpdate && !memberToUpdate.isSanctioned) {
-              // Apply sanction
-              memberToUpdate.isSanctioned = true;
-              memberToUpdate.sanctionDate = new Date();
-              await memberService.sanctionMember(memberToUpdate);
+
+          // Si loan is expired
+          console.log("Tipo de prestamo: ", loan.type);
+          if (loan.type === "external") {
+            console.log("Prestamo externo");
+            if (currentDate.getTime() > loanDateLimit.getTime()) {
+              // Find the member to potentially sanction
+              const memberToUpdate = await memberService.getMemberById(
+                loan.memberId
+              );
+              if (memberToUpdate && memberToUpdate.isActive) {
+                // Apply sanction
+                memberToUpdate.isSanctioned = true;
+                memberToUpdate.sanctionDate = new Date();
+                await memberService.sanctionMember(memberToUpdate);
+              }
             }
           }
         }
-        
+
         // Refresh members list after potential sanctions
         const updatedMembers = await memberService.getMembers();
         if (updatedMembers.success) {
           setMembers(updatedMembers.result);
         }
-      }else{
+      } else {
         Swal.fire({
           toast: true,
           position: "top-end",
@@ -215,14 +225,37 @@ export function Loan() {
     }
   };
 
-  const isDefeated = (dateLimit: Date) => {
+  // Función para verificar si un préstamo está vencido
+  const isLoanDefeated = (loan: ILoan): boolean => {
     const dateNow = new Date();
-    dateLimit = new Date(dateLimit);
-
-    if (dateLimit.getTime() < dateNow.getTime()) {
-      return true;
-    } else {
+    const dateLimit = new Date(loan.dateLimit);
+    
+    // Los préstamos internos nunca vencen
+    if (loan.type !== "external") {
       return false;
+    }
+    
+    return dateLimit.getTime() < dateNow.getTime();
+  };
+  
+  // Función para actualizar el estado de vencimiento de los préstamos
+  const updateLoanStatus = async () => {
+    for (const loan of loans) {
+      const isDefeated = isLoanDefeated(loan);
+      
+      // Solo actualizar si el estado ha cambiado
+      if ((isDefeated && loan.isDefeated !== "Vencido") || 
+          (!isDefeated && loan.isDefeated === "Vencido")) {
+        
+        const updatedLoan = { ...loan };
+        updatedLoan.isDefeated = isDefeated ? "Vencido" : "Vigente";
+        
+        try {
+          await loanService.updateLoan(updatedLoan._id, updatedLoan);
+        } catch (error) {
+          console.error("Error al actualizar el estado del préstamo:", error);
+        }
+      }
     }
   };
 
@@ -241,12 +274,19 @@ export function Loan() {
     setFilteredLoans(filtered);
   };
 
+  // Ejecutar la verificación de préstamos cuando cambie la lista de préstamos
+  useEffect(() => {
+    if (loans.length > 0) {
+      updateLoanStatus();
+    }
+  }, [loans]);
+
   return (
     <Stack>
       <Container>
-        <CreateLoanModal 
-          open={openCreateModal} 
-          handleClose={handleCloseCreateModal} 
+        <CreateLoanModal
+          open={openCreateModal}
+          handleClose={handleCloseCreateModal}
           onLoanCreated={fetchData}
         />
 
@@ -305,8 +345,8 @@ export function Loan() {
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Fecha de Entrega{" "}
-                      {new Date(loan.dateLimit).toLocaleDateString()} (
-                      {isDefeated(loan.dateLimit) ? "Vencido" : "Vigente"})
+                      {new Date(loan.dateLimit).toLocaleDateString()}
+                      {` (${loan.isDefeated})`}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Tipo: {typeLoan(loan)}

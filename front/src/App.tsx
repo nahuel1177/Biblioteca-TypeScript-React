@@ -11,8 +11,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { User } from "./components/User";
-import { NotFound } from './components/NotFound';
-import { Error500 } from './components/Error500';
+import { NotFound } from './components/Errors/NotFound';
+import { Error500 } from './components/Errors/Error500';
 import { UserModule } from "./modules/User";
 import { BookModule } from "./modules/Book";
 

@@ -5,7 +5,7 @@ export interface ILoan {
   type: string;
   createdAt: Date;
   dateLimit: Date,
-  isActive: Boolean;
+  isActive: boolean;
   isDefeated: string;
 }
 
