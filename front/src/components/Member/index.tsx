@@ -99,21 +99,24 @@ export function Member() {
 
             // If loan is expired and still active
             if (loanDateLimit < currentDate && loan.isActive) {
-              // Find the member to sanction
-              const memberToSanction = response.result.find(
-                (m) => m._id === loan.memberId
-              );
+              // Only sanction for external loans, not internal ones
+              if (loan.type === "external") {
+                // Find the member to sanction
+                const memberToSanction = response.result.find(
+                  (m) => m._id === loan.memberId
+                );
 
-              if (memberToSanction && !memberToSanction.isSanctioned) {
-                // Apply sanction
-                memberToSanction.isSanctioned = true;
-                memberToSanction.sanctionDate = new Date();
-                await memberService.sanctionMember(memberToSanction);
+                if (memberToSanction && !memberToSanction.isSanctioned) {
+                  // Apply sanction
+                  memberToSanction.isSanctioned = true;
+                  memberToSanction.sanctionDate = new Date();
+                  await memberService.sanctionMember(memberToSanction);
 
-                // Update the members list after sanctioning
-                const updatedResponse = await memberService.getMembers();
-                if (updatedResponse.success) {
-                  setMembers(updatedResponse.result);
+                  // Update the members list after sanctioning
+                  const updatedResponse = await memberService.getMembers();
+                  if (updatedResponse.success) {
+                    setMembers(updatedResponse.result);
+                  }
                 }
               }
             }
@@ -220,21 +223,16 @@ export function Member() {
     const dateNow = new Date();
     sanctionDate = new Date(sanctionDate);
 
-    if (dateNow.getTime() - sanctionDate.getTime() === limitSanctionDays) {
-      //setSanctionStatus("Sin Sancion");
+    // Calculate the difference in milliseconds
+    const diffTime = dateNow.getTime() - sanctionDate.getTime();
+    // Convert milliseconds to days
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Check if the sanction period has passed
+    if (diffDays >= limitSanctionDays) {
       return true;
     } else {
-      //setSanctionStatus("Sancionado");
       return false;
-    }
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const state = (memberSanction: boolean | undefined) => {
-    if (memberSanction === true) {
-      return "Sancionado";
-    } else {
-      return "Sin Sanción";
     }
   };
 
@@ -248,8 +246,6 @@ export function Member() {
     );
     setFilteredMembers(filtered);
   };
-
-  // Remove the sanctionMember function as we now have the SanctionButton component
 
   return (
     <Stack>
@@ -309,7 +305,7 @@ export function Member() {
                   <CardContent>
                     <Box sx={{ position: "relative", mb: 1 }}>
                       <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography variant="h6" component="div">
+                        <Typography component="div">
                           {member.lastname}, {member.name}
                         </Typography>
                         <Chip

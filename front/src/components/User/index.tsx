@@ -173,13 +173,14 @@ export function User() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (user.name != "" && user.lastname != "" && user.email != "") {
-      userService.updateUser(user._id, user);
-      const response = await userService.getUsers();
-      if (response.success) {
-        setUsers(response.result);
+      const updateResponse = await userService.updateUser(user._id, user);
+      if (updateResponse.success) {
+        await fetchUsers(); // Fetch updated users list
         setUser(initialUserState);
         handleClose();
         swal.success("El usuario fue modificado");
+      } else {
+        swal.error("Error al modificar el usuario");
       }
     } else {
       handleClose();
@@ -254,7 +255,7 @@ export function User() {
               <Card style={{ marginTop: "20px" }}>
                 <CardContent>
                   <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography variant="h6" component="div">
+                    <Typography component="div">
                       {user.username}
                     </Typography>
                     {user.role && (

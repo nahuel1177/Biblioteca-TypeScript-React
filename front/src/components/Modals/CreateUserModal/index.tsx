@@ -144,21 +144,96 @@ export const CreateUserModal = ({
   ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name as string]: value });
-    
+
     // Clear error when user types
     if (name && errors[name as keyof typeof errors]) {
-      setErrors({
-        ...errors,
-        [name]: false,
-      });
-      
-      // Clear error messages for username and email
-      if (name === 'username' || name === 'email') {
+      // For email, validate format as user types
+      if (name === 'email') {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isEmailValid = value === '' || emailRegex.test(value as string);
+
+        setErrors({
+          ...errors,
+          [name]: !isEmailValid,
+        });
+
+        if (!isEmailValid && value !== '') {
+          setErrorMessages(prev => ({
+            ...prev,
+            [name]: "Formato de correo inválido",
+          }));
+        } else {
+          setErrorMessages(prev => ({
+            ...prev,
+            [name]: "",
+          }));
+        }
+      } else if (name === 'username') {
+        // Validar que el nombre de usuario no esté vacío
+        const isUsernameValid = value !== '';
+
+        setErrors({
+          ...errors,
+          [name]: !isUsernameValid,
+        });
+
+        if (!isUsernameValid) {
+          setErrorMessages(prev => ({
+            ...prev,
+            [name]: "El usuario es requerido",
+          }));
+        } else {
+          setErrorMessages(prev => ({
+            ...prev,
+            [name]: "",
+          }));
+
+          // Si el nombre de usuario es válido, verificar disponibilidad
+          if (value !== '') {
+            // La verificación real se hará en el useEffect con debounce
+            setCheckingUsername(true);
+          }
+        }
+      } else if (name === 'password') {
+        // Validar la contraseña mientras se escribe
+        const isPasswordValid = value === '' || (value as string).length >= 6;
+        
+        setErrors({
+          ...errors,
+          [name]: !isPasswordValid,
+        });
+      } else {
+        setErrors({
+          ...errors,
+          [name]: false,
+        });
+      }
+    } else if (name === 'email') {
+      // Also validate email even if there was no previous error
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      const isEmailValid = value === '' || emailRegex.test(value as string);
+
+      if (!isEmailValid && value !== '') {
+        setErrors({
+          ...errors,
+          [name]: true,
+        });
         setErrorMessages(prev => ({
           ...prev,
-          [name]: "",
+          [name]: "Formato de correo inválido",
         }));
       }
+    } else if (name === 'username' && value !== '') {
+      // Iniciar verificación de disponibilidad del nombre de usuario
+      setCheckingUsername(true);
+    } else if (name === 'password' && value !== '') {
+      // Validar la contraseña en tiempo real incluso si no había error previo
+      const isPasswordValid = (value as string).length >= 6;
+      
+      setErrors({
+        ...errors,
+        [name]: !isPasswordValid,
+      });
     }
   };
 
@@ -166,7 +241,7 @@ export const CreateUserModal = ({
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const isEmailValid = emailRegex.test(formData.email);
     const isPasswordValid = formData.password.length >= 6;
-    
+
     const newErrors = {
       name: formData.name.trim() === "",
       lastname: formData.lastname.trim() === "",
@@ -175,14 +250,14 @@ export const CreateUserModal = ({
       password: formData.password.trim() === "" || !isPasswordValid,
       role: formData.role.trim() === "",
     };
-    
+
     setErrors(newErrors);
     return !Object.values(newErrors).some(error => error);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -190,24 +265,8 @@ export const CreateUserModal = ({
     // Final check for username and email availability before submission
     setLoading(true);
     try {
-      const usernameCheck = await userService.getUserByUsername(formData.username);
-      const emailCheck = await userService.getUserByMail(formData.email);
-      
-      if (!usernameCheck.result) {
-        setErrors(prev => ({ ...prev, username: true }));
-        setErrorMessages(prev => ({ ...prev, username: "Este nombre de usuario ya está en uso" }));
-        setLoading(false);
-        return;
-      }
-      
-      if (!emailCheck) {
-        setErrors(prev => ({ ...prev, email: true }));
-        setErrorMessages(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
-        setLoading(false);
-        return;
-      }
-
       const response = await userService.createUser(formData);
+
       if (response.success) {
         resetForm();
         onClose();
@@ -253,12 +312,12 @@ export const CreateUserModal = ({
       aria-describedby="create-modal-description"
     >
       <Paper sx={style} elevation={5}>
-        <Box sx={{ 
-          p: 2, 
-          display: "flex", 
-          justifyContent: "space-between", 
-          alignItems: "center", 
-          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main', 
+        <Box sx={{
+          p: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main',
           color: "white",
           borderTopLeftRadius: 8,
           borderTopRightRadius: 8
@@ -273,7 +332,7 @@ export const CreateUserModal = ({
             <CloseIcon />
           </IconButton>
         </Box>
-        
+
         <Box sx={{ p: 3 }}>
           <form onSubmit={handleSubmit}>
             <TextField
@@ -290,7 +349,7 @@ export const CreateUserModal = ({
               variant="outlined"
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               label="Apellidos"
               name="lastname"
@@ -304,7 +363,7 @@ export const CreateUserModal = ({
               variant="outlined"
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               label="Usuario"
               name="username"
@@ -314,7 +373,7 @@ export const CreateUserModal = ({
               margin="normal"
               size="small"
               error={errors.username}
-              helperText={errors.username ? 
+              helperText={errors.username ?
                 (errorMessages.username || "El usuario es requerido") : ""}
               variant="outlined"
               sx={{ mb: 2 }}
@@ -322,7 +381,7 @@ export const CreateUserModal = ({
                 endAdornment: checkingUsername ? <CircularProgress size={20} /> : null
               }}
             />
-            
+
             <TextField
               label="Correo electrónico"
               name="email"
@@ -333,9 +392,9 @@ export const CreateUserModal = ({
               type="email"
               size="small"
               error={errors.email}
-              helperText={errors.email ? 
-                (errorMessages.email || 
-                  (formData.email.trim() === "" ? "El correo es requerido" : "Formato de correo inválido")) 
+              helperText={errors.email ?
+                (errorMessages.email ||
+                  (formData.email.trim() === "" ? "El correo es requerido" : "Formato de correo inválido"))
                 : ""}
               variant="outlined"
               sx={{ mb: 2 }}
@@ -343,7 +402,7 @@ export const CreateUserModal = ({
                 endAdornment: checkingEmail ? <CircularProgress size={20} /> : null
               }}
             />
-            
+
             <TextField
               label="Contraseña"
               name="password"
@@ -354,17 +413,17 @@ export const CreateUserModal = ({
               type="password"
               size="small"
               error={errors.password}
-              helperText={errors.password ? 
-                (formData.password.trim() === "" ? "La contraseña es requerida" : "La contraseña debe tener al menos 6 caracteres") 
+              helperText={errors.password ?
+                (formData.password.trim() === "" ? "La contraseña es requerida" : "La contraseña debe tener al menos 6 caracteres")
                 : ""}
               variant="outlined"
               sx={{ mb: 2 }}
             />
-            
-            <FormControl 
-              fullWidth 
-              margin="normal" 
-              size="small" 
+
+            <FormControl
+              fullWidth
+              margin="normal"
+              size="small"
               error={errors.role}
               sx={{ mb: 2 }}
             >
@@ -388,9 +447,9 @@ export const CreateUserModal = ({
                 </FormHelperText>
               )}
             </FormControl>
-            
+
             <Divider sx={{ my: 3 }} />
-            
+
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
                 variant="outlined"
@@ -401,7 +460,7 @@ export const CreateUserModal = ({
               >
                 Cancelar
               </Button>
-              
+
               <Button
                 type="submit"
                 variant="contained"

@@ -15,6 +15,7 @@ import {
   MenuItem,
   FormHelperText,
   Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 
 import Swal from "sweetalert2";
@@ -55,6 +56,9 @@ export function CreateLoanModal({
   const [members, setMembers] = useState<IMember[]>([]);
   const [books, setBooks] = useState<IBook[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeLoans, setActiveLoans] = useState<any[]>([]);
+  const [bookError, setBookError] = useState("");
+  const [checkingDuplicateLoan, setCheckingDuplicateLoan] = useState(false);
 
   const [formData, setFormData] = useState({
     memberId: "",
@@ -68,6 +72,7 @@ export function CreateLoanModal({
     type: false,
   });
 
+  // Remove the nested useEffect structure
   useEffect(() => {
     const fetchData = async () => {
       const membersResponse = await memberService.getMembers();
@@ -79,12 +84,54 @@ export function CreateLoanModal({
       if (booksResponse.success) {
         setBooks(booksResponse.result);
       }
+
+      // Fetch active loans to check for duplicates
+      const loansResponse = await loanService.getLoans();
+      if (loansResponse.success) {
+        setActiveLoans(loansResponse.result.filter(loan => loan.isActive));
+      }
     };
 
     if (open) {
       fetchData();
     }
   }, [open]);
+
+  // Separate useEffect for the debounced duplicate loan check
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (formData.memberId && formData.bookId) {
+        checkDuplicateLoan(formData.memberId, formData.bookId);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [formData.memberId, formData.bookId]);
+
+  const checkDuplicateLoan = async (memberId: string, bookId: string) => {
+    setCheckingDuplicateLoan(true);
+    try {
+      const loansResponse = await loanService.getLoans();
+      if (loansResponse.success) {
+        const activeLoans = loansResponse.result.filter(loan => loan.isActive);
+        const hasDuplicateLoan = activeLoans.some(
+          loan => loan.memberId === memberId && loan.bookId === bookId
+        );
+        
+        if (hasDuplicateLoan) {
+          setBookError("Este socio ya tiene un préstamo activo de este libro");
+          setErrors(prev => ({ ...prev, bookId: true }));
+        } else {
+          setBookError("");
+          setErrors(prev => ({ ...prev, bookId: false }));
+        }
+      }
+    } catch (error) {
+      console.error("Error checking duplicate loan:", error);
+    } finally {
+      setCheckingDuplicateLoan(false);
+    }
+  
+  };
 
   const resetForm = () => {
     setFormData({
@@ -117,7 +164,7 @@ export function CreateLoanModal({
   const validateForm = () => {
     const newErrors = {
       memberId: formData.memberId.trim() === "",
-      bookId: formData.bookId.trim() === "",
+      bookId: formData.bookId.trim() === "" || Boolean(bookError), // Add bookError check
       type: formData.type.trim() === "",
     };
 
@@ -320,19 +367,26 @@ export function CreateLoanModal({
                 getOptionLabel={(option) =>
                   `${option.title} - ${option.author} `
                 }
-                getOptionDisabled={(option) =>
-                  option.stockInt === 0 && option.stockExt === 0
-                }
+                getOptionDisabled={(option: IBook): boolean => {
+                  // Disable if no stock
+                  const noStock = option.stockInt === 0 && option.stockExt === 0;
+                  return Boolean(noStock);
+                }}
                 onChange={(_, newValue) => {
                   setFormData({
                     ...formData,
                     bookId: newValue?._id || "",
                   });
-                  if (errors.bookId) {
+                  
+                  // The actual check will be done in the useEffect with debounce
+                  if (newValue && formData.memberId) {
+                    setCheckingDuplicateLoan(true);
+                  } else if (errors.bookId) {
                     setErrors({
                       ...errors,
                       bookId: false,
                     });
+                    setBookError("");
                   }
                 }}
                 renderInput={(params) => (
@@ -340,8 +394,19 @@ export function CreateLoanModal({
                     {...params}
                     label="Libro"
                     error={errors.bookId}
-                    helperText={errors.bookId ? "El libro es requerido" : ""}
+                    helperText={errors.bookId ? (bookError || "El libro es requerido") : ""}
                     size="small"
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {checkingDuplicateLoan ? (
+                            <CircularProgress color="inherit" size={20} />
+                          ) : null}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
                   />
                 )}
                 isOptionEqualToValue={(option, value) =>

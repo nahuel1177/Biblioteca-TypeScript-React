@@ -9,6 +9,8 @@ import {
   Stack,
   Fab,
   useTheme,
+  Chip,
+  Box,
 } from "@mui/material";
 import Add from "@mui/icons-material/Add";
 import { ILoan } from "../../interfaces/loanInterface";
@@ -27,7 +29,6 @@ export function Loan() {
   const [members, setMembers] = useState<IMember[]>([]);
   const [books, setBooks] = useState<IBook[]>([]);
   const navigate = useNavigate();
-  //const [sanctionStatus, setSanctionStatus] = useState("Vigente");
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredLoans, setFilteredLoans] = useState<ILoan[]>([]);
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -76,35 +77,33 @@ export function Loan() {
         setLoans(response.result);
 
         // Check each loan for expiration and sanction members if needed
-        
         for (const loan of response.result) {
-          const currentDate = new Date();
-          const loanDateLimit = new Date(loan.dateLimit);
-
-          // Si loan is expired
-          console.log("Tipo de prestamo: ", loan.type);
-          if (loan.type === "external") {
-            console.log("Prestamo externo");
-            if (currentDate.getTime() > loanDateLimit.getTime()) {
-              // Find the member to potentially sanction
-              const memberToUpdate = await memberService.getMemberById(
-                loan.memberId
-              );
-              if (memberToUpdate && memberToUpdate.isActive) {
-                // Apply sanction
-                memberToUpdate.isSanctioned = true;
-                memberToUpdate.sanctionDate = new Date();
-                await memberService.sanctionMember(memberToUpdate);
+          // Solo verificar préstamos activos
+          if (loan.isActive) {
+            const currentDate = new Date();
+            const loanDateLimit = new Date(loan.dateLimit);
+          
+            // Solo sancionar préstamos externos vencidos
+            if (loan.type === "external") {
+              if (currentDate.getTime() > loanDateLimit.getTime()) {
+                // Find the member to potentially sanction
+                const memberToUpdate = await memberService.getMemberById(loan.memberId);
+                if (memberToUpdate && memberToUpdate.isActive && !memberToUpdate.isSanctioned) {
+                  // Apply sanction only if not already sanctioned
+                  memberToUpdate.isSanctioned = true;
+                  memberToUpdate.sanctionDate = new Date();
+                  await memberService.sanctionMember(memberToUpdate);
+                }
               }
             }
           }
         }
+      }
 
         // Refresh members list after potential sanctions
         const updatedMembers = await memberService.getMembers();
         if (updatedMembers.success) {
           setMembers(updatedMembers.result);
-        }
       } else {
         Swal.fire({
           toast: true,
@@ -170,11 +169,49 @@ export function Loan() {
         return; // User cancelled the operation
       }
 
+      // Find the loan to check its type
+      const loan = loans.find(loan => loan._id === id);
+      
+      if (!loan) {
+        return Swal.fire({
+          position: "center",
+          icon: "error",
+          text: "El préstamo no existe",
+          showConfirmButton: false,
+          timer: 2000,
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+        });
+      }
+      
+      // Para préstamos internos, simplemente eliminar sin modificar el estado del miembro
+      if (loan.type === "internal") {
+        const response = await loanService.deleteLoan(id);
+        if (response.success) {
+          const updatedLoans = await loanService.getLoans();
+          setLoans(updatedLoans.result);
+          return Swal.fire({
+            position: "center",
+            icon: "success",
+            text: "El libro ha sido devuelto",
+            showConfirmButton: true,
+            background: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+          });
+        }
+        return;
+      }
+      
+      // A partir de aquí solo se procesan préstamos externos
+      // Crear una copia del miembro para no modificar el original directamente
+      const memberToUpdate = { ...member };
+
       const response = await loanService.deleteLoan(id);
       if (response.success) {
-        if (member.isSanctioned) {
-          const response = await loanService.getLoans();
-          setLoans(response.result);
+        // Solo para préstamos externos con sanción
+        if (memberToUpdate.isSanctioned) {
+          const updatedLoans = await loanService.getLoans();
+          setLoans(updatedLoans.result);
           return Swal.fire({
             position: "center",
             icon: "success",
@@ -184,30 +221,24 @@ export function Loan() {
             color: theme.palette.text.primary,
           });
         } else {
-          member.sanctionDate = null;
-          const response4 = await memberService.updateMember(
-            member._id,
-            member
-          );
-          if (response4.success) {
-            const response = await loanService.getLoans();
-            setLoans(response.result);
-            return Swal.fire({
-              position: "center",
-              icon: "success",
-              text: "El libro ha sido devuelto",
-              showConfirmButton: true,
-              background: theme.palette.background.paper,
-              color: theme.palette.text.primary,
-            });
-          }
+          // Para préstamos externos que no están vencidos
+          const updatedLoans = await loanService.getLoans();
+          setLoans(updatedLoans.result);
+          return Swal.fire({
+            position: "center",
+            icon: "success",
+            text: "El libro ha sido devuelto",
+            showConfirmButton: true,
+            background: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+          });
         }
       }
     } catch (error) {
       Swal.fire({
         position: "center",
         icon: "error",
-        text: "El préstamo no existe",
+        text: "Error al procesar la devolución",
         showConfirmButton: true,
         background: theme.palette.background.paper,
         color: theme.palette.text.primary,
@@ -229,31 +260,47 @@ export function Loan() {
   const isLoanDefeated = (loan: ILoan): boolean => {
     const dateNow = new Date();
     const dateLimit = new Date(loan.dateLimit);
-    
+
     // Los préstamos internos nunca vencen
-    if (loan.type !== "external") {
+    if (loan.type === "internal") {
+      return false;
+    } else if (dateLimit.getTime() < dateNow.getTime()){
+      return true;
+    }else{
       return false;
     }
-    
-    return dateLimit.getTime() < dateNow.getTime();
   };
-  
+
   // Función para actualizar el estado de vencimiento de los préstamos
   const updateLoanStatus = async () => {
     for (const loan of loans) {
-      const isDefeated = isLoanDefeated(loan);
-      
-      // Solo actualizar si el estado ha cambiado
-      if ((isDefeated && loan.isDefeated !== "Vencido") || 
-          (!isDefeated && loan.isDefeated === "Vencido")) {
+      // Asegurarse de que solo los préstamos activos se verifiquen
+      if (loan.isActive) {
+        const isDefeated = isLoanDefeated(loan);
         
-        const updatedLoan = { ...loan };
-        updatedLoan.isDefeated = isDefeated ? "Vencido" : "Vigente";
-        
-        try {
-          await loanService.updateLoan(updatedLoan._id, updatedLoan);
-        } catch (error) {
-          console.error("Error al actualizar el estado del préstamo:", error);
+        // Solo actualizar si el estado ha cambiado y no es un préstamo interno
+        if (loan.type !== "internal" && 
+            ((isDefeated && loan.isDefeated !== "Vencido") ||
+            (!isDefeated && loan.isDefeated === "Vencido"))) {
+
+          const updatedLoan = { ...loan };
+          updatedLoan.isDefeated = isDefeated ? "Vencido" : "Vigente";
+
+          try {
+            await loanService.updateLoan(updatedLoan._id, updatedLoan);
+          } catch (error) {
+            console.error("Error al actualizar el estado del préstamo:", error);
+          }
+        } else if (loan.type === "internal" && loan.isDefeated !== "Vigente") {
+          // Asegurarse de que los préstamos internos siempre estén marcados como vigentes
+          const updatedLoan = { ...loan };
+          updatedLoan.isDefeated = "Vigente";
+          
+          try {
+            await loanService.updateLoan(updatedLoan._id, updatedLoan);
+          } catch (error) {
+            console.error("Error al actualizar el estado del préstamo interno:", error);
+          }
         }
       }
     }
@@ -321,11 +368,24 @@ export function Loan() {
               <Grid item xs={12} sm={6} md={4} key={index}>
                 <Card style={{ marginTop: "20px" }}>
                   <CardContent>
-                    <Typography variant="h6" component="div">
-                      {books.find((book) => book._id === loan.bookId)?.title}
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                      <Typography component="div">
+                        {books.find((book) => book._id === loan.bookId)?.title}
+                      </Typography>
+                      <Stack direction="row" spacing={1}>
+                        <Chip 
+                          label={loan.type === "external" ? "Externo" : "Interno"} 
+                          color={loan.type === "external" ? "primary" : "secondary"}
+                          size="small"
+                        />
+                        <Chip 
+                          label={loan.isDefeated} 
+                          color={loan.isDefeated === "Vencido" ? "error" : "success"}
+                          size="small"
+                        />
+                      </Stack>
+                    </Box>
                     <Typography variant="body2" color="text.secondary">
-                      Autor:{" "}
                       {books.find((book) => book._id === loan.bookId)?.author}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -346,10 +406,6 @@ export function Loan() {
                     <Typography variant="body2" color="text.secondary">
                       Fecha de Entrega{" "}
                       {new Date(loan.dateLimit).toLocaleDateString()}
-                      {` (${loan.isDefeated})`}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Tipo: {typeLoan(loan)}
                     </Typography>
                     <Stack
                       direction="row"
