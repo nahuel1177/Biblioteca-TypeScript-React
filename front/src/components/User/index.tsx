@@ -236,7 +236,7 @@ export function User() {
             >
               <CreateButton 
                 onClick={onCLickCreate} 
-                tooltipTitle="Crear Usuario" 
+                tooltipTitle="Agregar Usuario" 
               />
 
               <SearchBar

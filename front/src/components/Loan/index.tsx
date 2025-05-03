@@ -23,6 +23,7 @@ import Swal from "sweetalert2";
 import { SearchBar } from "../SearchBar";
 import { useNavigate } from "react-router-dom";
 import { CreateLoanModal } from "../Modals/CreateLoanModal";
+import { CreateButton } from "../Buttons";
 
 export function Loan() {
   const [loans, setLoans] = useState<ILoan[]>([]);
@@ -340,9 +341,10 @@ export function Loan() {
               alignItems="center"
               justifyContent="space-between"
             >
-              <Fab color="success" onClick={() => onCLickCreate()} size="small">
-                <Add />
-              </Fab>
+              <CreateButton
+                onClick={onCLickCreate}
+                tooltipTitle="Prestar Libro"
+              />
               <SearchBar
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}

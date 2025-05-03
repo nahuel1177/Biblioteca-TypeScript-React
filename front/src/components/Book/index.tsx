@@ -226,7 +226,7 @@ export function Book() {
             >
               <CreateButton
                 onClick={onCLickCreate}
-                tooltipTitle="Crear Libro"
+                tooltipTitle="Agregar Libro"
               />
               <SearchBar
                 searchTerm={searchTerm}

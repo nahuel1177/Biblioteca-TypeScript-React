@@ -285,7 +285,7 @@ export function Member() {
             >
               <CreateButton
                 onClick={onCLickCreate}
-                tooltipTitle="Crear Socio"
+                tooltipTitle="Agregar Socio"
               />
               <SearchBar
                 searchTerm={searchTerm}
