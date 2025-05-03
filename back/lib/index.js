@@ -47,17 +47,25 @@ var bookRoute_1 = require("./routes/bookRoute");
 var loanRoute_1 = require("./routes/loanRoute");
 var memberRoute_1 = require("./routes/memberRoute");
 var authRoute_1 = require("./routes/authRoute");
-//import { authentication, authorization } from "./middlewares";
+var middlewares_1 = require("./middlewares");
 var constants_1 = require("./common/constants");
 var app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
+// Ruta de autenticación (login) - sin protección
 app.use("/api", authRoute_1.authRouter);
-//app.use(authorization(['admin', 'employee']));
-app.use("/api", userRoute_1.userRouter);
-app.use("/api", bookRoute_1.bookRouter);
-app.use("/api", loanRoute_1.loanRouter);
-app.use("/api", memberRoute_1.memberRouter);
+// Crear un router para las rutas protegidas
+var protectedRoutes = express_1.default.Router();
+// Aplicar middlewares de autenticación y autorización a todas las rutas protegidas
+protectedRoutes.use(middlewares_1.authentication);
+protectedRoutes.use((0, middlewares_1.authorization)(['admin', 'employee']));
+// Registrar las rutas protegidas
+protectedRoutes.use("/users", userRoute_1.userRouter);
+protectedRoutes.use("/books", bookRoute_1.bookRouter);
+protectedRoutes.use("/loans", loanRoute_1.loanRouter);
+protectedRoutes.use("/members", memberRoute_1.memberRouter);
+// Montar las rutas protegidas bajo /api
+app.use("/api", protectedRoutes);
 function start() {
     return __awaiter(this, void 0, void 0, function () {
         var port_1, error_1;

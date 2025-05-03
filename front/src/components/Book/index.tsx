@@ -183,7 +183,8 @@ export function Book() {
     const filtered = books.filter(
       (book) =>
         `${book.title}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        `${book.author}`.toLowerCase().includes(searchTerm.toLowerCase())
+        `${book.author}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        `${book.isbn}`.toString().includes(searchTerm)
     );
     setFilteredBooks(filtered);
   };
@@ -231,7 +232,7 @@ export function Book() {
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 onSearch={onClickSearch}
-                placeholder="Buscar por título o autor..."
+                placeholder="Título, autor o ISBN..."
               />
             </Stack>
           </CardContent>

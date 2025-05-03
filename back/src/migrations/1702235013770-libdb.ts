@@ -1,4 +1,3 @@
-import Book from "../entities/Book";
 import { Migration } from "../entities/Migration";
 
 export async function up (): Promise<void> {

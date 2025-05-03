@@ -4,7 +4,6 @@ import { TextField, Button, Typography, Container, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "./index.css";
 import { authService } from "../../services/authService";
-import { Alert } from "../../components/Alert";
 import { localStorage } from '../../services/localStorage';
 
 interface LoginProps {
@@ -20,17 +19,19 @@ interface LoginProps {
 }
 
 export const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [showAlert, setShowAlert] = useState<string | boolean>(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
+    if (error) setError(""); // Clear error when user types
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
+    if (error) setError(""); // Clear error when user types
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -42,7 +43,6 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
       });
   
       if (response.success && response.user) {
-      
         const userData = {
           username: response.user.username,
           role: response.user.role,
@@ -54,10 +54,12 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
         onLogin(true, userData);
         navigate("/");
       } else {
-        setShowAlert(response.error || 'Login failed');
+        // Set error message instead of showing SweetAlert
+        setError(response.error || 'Credenciales incorrectas');
       }
     } catch (error) {
-      setShowAlert(true);
+      // Set generic error message
+      setError('Ocurrió un error al intentar iniciar sesión');
     }
   };
 
@@ -89,6 +91,8 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 margin="normal"
                 value={password}
                 onChange={handlePasswordChange}
+                error={!!error}
+                helperText={error}
               />
               <Button
                 type="submit"
@@ -100,9 +104,6 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 Ingresar
               </Button>
             </form>
-            {showAlert && typeof showAlert === "string" && (
-              <Alert message={showAlert} onClose={() => setShowAlert(false)} />
-            )}
           </Paper>
         </Container>
       </div>

@@ -246,16 +246,6 @@ export function Loan() {
     }
   };
 
-  const typeLoan = (loan: ILoan) => {
-    {
-      if (loan.type == "external") {
-        return "Externo";
-      } else {
-        return "Interno";
-      }
-    }
-  };
-
   // Función para verificar si un préstamo está vencido
   const isLoanDefeated = (loan: ILoan): boolean => {
     const dateNow = new Date();
