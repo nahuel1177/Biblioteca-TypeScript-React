@@ -21,7 +21,7 @@ export async function up (): Promise<void> {
       name: "Carlos",
       lastname: "Gentili",
       email: "cgentili@gmail.com",
-      username: "crodriguez",
+      username: "cgentili",
       password: "$2a$10$SliJr1a1mXugx7RXvlpFjudYPCSx/F/6SegdMHedKZmwV7WtfP6/m",
       role: "employee",
     },
@@ -53,7 +53,7 @@ export async function up (): Promise<void> {
       author: "Robert Louis Stevenson",
       isbn: 9789500746830,
       loanable: false,
-      stockInt: 1,
+      stockInt: 3,
       stockExt: 0,
     },
   ]);
