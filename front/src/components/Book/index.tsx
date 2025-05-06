@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   Stack,
-  useTheme,
 } from "@mui/material";
 
 import { useNavigate } from "react-router-dom";
@@ -33,42 +32,25 @@ export function Book() {
   const handleCloseCreateModal = () => setOpenCreateModal(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredBooks, setFilteredBooks] = useState<IBook[]>([]);
-  const theme = useTheme();
   const swal = useSweetAlert();
-
-  // Configure SweetAlert2 theme based on app theme
-  useEffect(() => {
-    // Set SweetAlert2 theme based on the app's current theme
-    document
-      .querySelector(".swal2-container")
-      ?.setAttribute("data-theme", theme.palette.mode);
-  }, [theme.palette.mode]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await bookService.getBooks();
         if (response.success) {
-          setBooks(response.result);
+          // Si la respuesta es exitosa, establecer los libros (incluso si es un array vacío)
+          setBooks(response.result || []);
+        } else if (!response.result || response.result.length === 0) {
+          // Si no hay libros, simplemente establecer un array vacío sin mostrar error
+          setBooks([]);
         } else {
-          swal.fire({
-            toast: true,
-            position: "top-end",
-            text: "Error al cargar los libros",
-            icon: "error",
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          // Solo mostrar error si hay un problema real (no simplemente una colección vacía)
+          swal.toast("Error al cargar los libros", "error");
         }
       } catch (error) {
-        swal.fire({
-          toast: true,
-          position: "top-end",
-          text: "Hubo un problema al cargar los libros. Por favor, inténtelo más tarde.",
-          icon: "error",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        console.error("Error al cargar libros:", error);
+        // Solo navegar a la página de error en caso de errores graves
         navigate("/error500");
       }
     };
@@ -80,24 +62,18 @@ export function Book() {
       try {
         const response = await loanService.getLoans();
         if (response.success) {
-          setLoans(response.result);
+          // Si la respuesta es exitosa, establecer los préstamos (incluso si es un array vacío)
+          setLoans(response.result || []);
+        } else if (!response.result || response.result.length === 0) {
+          // Si no hay préstamos, simplemente establecer un array vacío sin mostrar error
+          setLoans([]);
         } else {
-          swal.fire({
-            toast: true,
-            position: "top-end",
-            text: "Error al cargar los préstamos",
-            icon: "error",
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          // Solo mostrar error si hay un problema real (no simplemente una colección vacía)
+          swal.toast("Error al cargar los préstamos", "error");
         }
       } catch (error) {
-        swal.fire({
-          text: "Hubo un problema al cargar los préstamos. Por favor, inténtelo más tarde.",
-          icon: "error",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        console.error("Error al cargar préstamos:", error);
+        // No navegar a la página de error para problemas con préstamos
       }
     };
     fetchLoans();
@@ -118,6 +94,7 @@ export function Book() {
     title: "",
     author: "",
     isbn: 0,
+    loanable: true,
     stockInt: 0,
     stockExt: 0,
   };
@@ -157,25 +134,16 @@ export function Book() {
           const response = await bookService.deleteBook(id);
           if (response.success) {
             const response = await bookService.getBooks();
-            setBooks(response.result);
+            setBooks(response.result || []);
             return swal.success("El libro fue eliminado");
           }
         }
       } else {
-        swal.fire({
-          text: "Imposible eliminar. El libro tiene un préstamo vigente.",
-          icon: "error",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        swal.error("Imposible eliminar. El libro tiene un préstamo vigente.");
       }
     } catch (error) {
-      swal.fire({
-        text: "Hubo un problema, intentelo más tarde",
-        icon: "error",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      console.error("Error al eliminar libro:", error);
+      swal.error("Hubo un problema, intentelo más tarde");
     }
   };
 
@@ -190,9 +158,13 @@ export function Book() {
   };
 
   const refreshBooks = async () => {
-    const response = await bookService.getBooks();
-    if (response.success) {
-      setBooks(response.result);
+    try {
+      const response = await bookService.getBooks();
+      if (response.success) {
+        setBooks(response.result || []);
+      }
+    } catch (error) {
+      console.error("Error al refrescar libros:", error);
     }
   };
 

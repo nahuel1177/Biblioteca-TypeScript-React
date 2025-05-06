@@ -7,7 +7,6 @@ import {
   CardContent,
   Button,
   Stack,
-  useTheme,
   Chip,
   Box,
 } from "@mui/material";
@@ -17,7 +16,7 @@ import { IMember } from "../../interfaces/memberInterface";
 import { IBook } from "../../interfaces/bookInterface";
 import { bookService } from "../../services/bookService";
 import { loanService } from "../../services/loanService";
-import Swal from "sweetalert2";
+import { useSweetAlert } from "../../hooks/useSweetAlert";
 import { SearchBar } from "../SearchBar";
 import { useNavigate } from "react-router-dom";
 import { CreateLoanModal } from "../Modals/CreateLoanModal";
@@ -33,7 +32,7 @@ export function Loan() {
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const handleOpenCreateModal = () => setOpenCreateModal(true);
   const handleCloseCreateModal = () => setOpenCreateModal(false);
-  const theme = useTheme(); // Add this to get the current theme
+  const swal = useSweetAlert();
 
   useEffect(() => {
     fetchData();
@@ -41,13 +40,14 @@ export function Loan() {
 
   const fetchData = async () => {
     try {
+      // Cargar miembros
       const response2 = await memberService.getMembers();
       if (response2.success) {
-        setMembers(response2.result);
+        setMembers(response2.result || []);
 
         // Check for expired sanctions
         const currentDate = new Date();
-        for (const member of response2.result) {
+        for (const member of response2.result || []) {
           if (
             member.isSanctioned &&
             member.sanctionDate &&
@@ -71,12 +71,14 @@ export function Loan() {
         }
       }
 
+      // Cargar préstamos
       const response = await loanService.getLoans();
       if (response.success) {
-        setLoans(response.result);
+        // Si la respuesta es exitosa pero no hay préstamos, simplemente establecer un array vacío
+        setLoans(response.result || []);
 
         // Check each loan for expiration and sanction members if needed
-        for (const loan of response.result) {
+        for (const loan of response.result || []) {
           // Solo verificar préstamos activos
           if (loan.isActive) {
             const currentDate = new Date();
@@ -97,30 +99,31 @@ export function Loan() {
             }
           }
         }
-      }
-
-        // Refresh members list after potential sanctions
-        const updatedMembers = await memberService.getMembers();
-        if (updatedMembers.success) {
-          setMembers(updatedMembers.result);
+      } else if (!response.result || response.result.length === 0) {
+        // Si no hay préstamos, simplemente establecer un array vacío sin mostrar error
+        setLoans([]);
       } else {
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          icon: "error",
-          text: "Error al cargar los préstamos",
-          showConfirmButton: false,
-          timer: 1500,
-          background: theme.palette.background.paper,
-          color: theme.palette.text.primary,
-        });
+        // Solo mostrar error si hay un problema real (no simplemente una colección vacía)
+        swal.error("Error al cargar los préstamos");
       }
 
+      // Refresh members list after potential sanctions
+      const updatedMembers = await memberService.getMembers();
+      if (updatedMembers.success) {
+        setMembers(updatedMembers.result || []);
+      }
+
+      // Cargar libros
       const response3 = await bookService.getBooks();
       if (response3.success) {
-        setBooks(response3.result);
+        setBooks(response3.result || []);
+      } else if (!response3.result || response3.result.length === 0) {
+        // Si no hay libros, simplemente establecer un array vacío sin mostrar error
+        setBooks([]);
       }
     } catch (error) {
+      // Solo navegar a la página de error en caso de errores graves
+      console.error("Error al cargar datos:", error);
       navigate("/error500");
     }
   };
@@ -141,28 +144,10 @@ export function Loan() {
   ) => {
     try {
       if (!id || !member) {
-        return Swal.fire({
-          position: "center",
-          icon: "error",
-          text: "El préstamo no existe",
-          showConfirmButton: false,
-          timer: 2000,
-          background: theme.palette.background.paper,
-          color: theme.palette.text.primary,
-        });
+        return swal.error("El préstamo no existe");
       }
 
-      const confirmResult = await Swal.fire({
-        text: "¿Está seguro que desea registrar la devolución?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Confirmar",
-        cancelButtonText: "Cancelar",
-        background: theme.palette.background.paper,
-        color: theme.palette.text.primary,
-      });
+      const confirmResult = await swal.confirm("¿Está seguro que desea registrar la devolución?");
 
       if (!confirmResult.isConfirmed) {
         return; // User cancelled the operation
@@ -172,15 +157,7 @@ export function Loan() {
       const loan = loans.find(loan => loan._id === id);
       
       if (!loan) {
-        return Swal.fire({
-          position: "center",
-          icon: "error",
-          text: "El préstamo no existe",
-          showConfirmButton: false,
-          timer: 2000,
-          background: theme.palette.background.paper,
-          color: theme.palette.text.primary,
-        });
+        return swal.error("El préstamo no existe");
       }
       
       // Para préstamos internos, simplemente eliminar sin modificar el estado del miembro
@@ -188,15 +165,8 @@ export function Loan() {
         const response = await loanService.deleteLoan(id);
         if (response.success) {
           const updatedLoans = await loanService.getLoans();
-          setLoans(updatedLoans.result);
-          return Swal.fire({
-            position: "center",
-            icon: "success",
-            text: "El libro ha sido devuelto",
-            showConfirmButton: true,
-            background: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-          });
+          setLoans(updatedLoans.result || []);
+          return swal.success("El libro ha sido devuelto");
         }
         return;
       }
@@ -210,38 +180,17 @@ export function Loan() {
         // Solo para préstamos externos con sanción
         if (memberToUpdate.isSanctioned) {
           const updatedLoans = await loanService.getLoans();
-          setLoans(updatedLoans.result);
-          return Swal.fire({
-            position: "center",
-            icon: "success",
-            text: "El libro ha sido devuelto fuera de termino",
-            showConfirmButton: true,
-            background: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-          });
+          setLoans(updatedLoans.result || []);
+          return swal.success("El libro ha sido devuelto fuera de termino");
         } else {
           // Para préstamos externos que no están vencidos
           const updatedLoans = await loanService.getLoans();
-          setLoans(updatedLoans.result);
-          return Swal.fire({
-            position: "center",
-            icon: "success",
-            text: "El libro ha sido devuelto",
-            showConfirmButton: true,
-            background: theme.palette.background.paper,
-            color: theme.palette.text.primary,
-          });
+          setLoans(updatedLoans.result || []);
+          return swal.success("El libro ha sido devuelto");
         }
       }
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        text: "Error al procesar la devolución",
-        showConfirmButton: true,
-        background: theme.palette.background.paper,
-        color: theme.palette.text.primary,
-      });
+      swal.error("Error al procesar la devolución");
     }
   };
 
@@ -262,6 +211,9 @@ export function Loan() {
 
   // Función para actualizar el estado de vencimiento de los préstamos
   const updateLoanStatus = async () => {
+    // Solo proceder si hay préstamos para actualizar
+    if (!loans || loans.length === 0) return;
+    
     for (const loan of loans) {
       // Asegurarse de que solo los préstamos activos se verifiquen
       if (loan.isActive) {
@@ -278,14 +230,9 @@ export function Loan() {
           try {
             await loanService.updateLoan(updatedLoan._id, updatedLoan);
           } catch (error) {
-            Swal.fire({
-              position: "center",
-              icon: "error",
-              text: "Error al actualizar el estado del préstamo",
-              showConfirmButton: true,
-              background: theme.palette.background.paper,
-              color: theme.palette.text.primary,
-            });
+            console.error("Error al actualizar el estado del préstamo:", error);
+            // Solo mostrar alerta si es un error real, no por falta de datos
+            swal.error("Error al actualizar el estado del préstamo");
           }
         } else if (loan.type === "internal" && loan.isDefeated !== "Vigente") {
           // Asegurarse de que los préstamos internos siempre estén marcados como vigentes
@@ -295,14 +242,9 @@ export function Loan() {
           try {
             await loanService.updateLoan(updatedLoan._id, updatedLoan);
           } catch (error) {
-            Swal.fire({
-              position: "center",
-              icon: "error",
-              text: "Error al actualizar el estado del préstamo interno",
-              showConfirmButton: true,
-              background: theme.palette.background.paper,
-              color: theme.palette.text.primary,
-            });
+            console.error("Error al actualizar el estado del préstamo interno:", error);
+            // Solo mostrar alerta si es un error real, no por falta de datos
+            swal.error("Error al actualizar el estado del préstamo interno");
           }
         }
       }
@@ -326,7 +268,7 @@ export function Loan() {
 
   // Ejecutar la verificación de préstamos cuando cambie la lista de préstamos
   useEffect(() => {
-    if (loans.length > 0) {
+    if (loans && loans.length > 0) {
       updateLoanStatus();
     }
   }, [loans]);

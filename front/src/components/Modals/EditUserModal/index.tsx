@@ -3,10 +3,6 @@ import { IUser } from "../../../interfaces/userInterface";
 import {
   Typography,
   TextField,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Button,
   Stack,
   Box,
@@ -15,7 +11,6 @@ import {
   Divider,
   IconButton,
   CircularProgress,
-  FormHelperText,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
@@ -58,7 +53,6 @@ export const UserEditModal = ({
 }: UserEditModalProps) => {
   const [loading, setLoading] = useState(false);
   const [checkingEmail, setCheckingEmail] = useState(false);
-  const [emailError, setEmailError] = useState("");
   const [errors, setErrors] = useState({
     name: false,
     lastname: false,

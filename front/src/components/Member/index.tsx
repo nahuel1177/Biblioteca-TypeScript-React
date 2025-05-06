@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   Stack,
-  useTheme,
   Chip,
   Box,
 } from "@mui/material";
@@ -39,28 +38,18 @@ export function Member() {
   const handleCloseCreateModal = () => setOpenCreateModal(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMembers, setFilteredMembers] = useState<IMember[]>([]);
-  const theme = useTheme();
   const swal = useSweetAlert();
-
-  // Configure SweetAlert2 theme based on app theme
-  useEffect(() => {
-    // Set SweetAlert2 theme based on the app's current theme
-    document
-      .querySelector(".swal2-container")
-      ?.setAttribute("data-theme", theme.palette.mode);
-  }, [theme.palette.mode]);
-
-  //const [sanctionStatus, setSanctionStatus] = useState("Sin Sancion");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await memberService.getMembers();
         if (response.success) {
-          setMembers(response.result);
+          // Si la respuesta es exitosa, establecer los socios (incluso si es un array vacío)
+          setMembers(response.result || []);
 
           // Check for expired sanctions to remove them
-          for (const member of response.result) {
+          for (const member of response.result || []) {
             if (
               member.sanctionDate != null &&
               member.limitSanctionDays != null
@@ -69,32 +58,29 @@ export function Member() {
                 const memberToUpdate = member;
                 if (memberToUpdate) {
                   memberToUpdate.isSanctioned = false;
-                  //setSanctionStatus("Sin Sancion");
-                  (member.sanctionDate = null),
-                    await memberService.sanctionMember(memberToUpdate);
+                  memberToUpdate.sanctionDate = null;
+                  await memberService.sanctionMember(memberToUpdate);
                 }
               }
             }
           }
+        } else if (!response.result || response.result.length === 0) {
+          // Si no hay socios, simplemente establecer un array vacío sin mostrar error
+          setMembers([]);
         } else {
-          swal.fire({
-            toast: true,
-            position: "top-end",
-            text: "Error al cargar los socios",
-            icon: "error",
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          // Solo mostrar error si hay un problema real (no simplemente una colección vacía)
+          swal.toast("Error al cargar los socios", "error");
         }
 
         // Get all loans to check for expired ones
         const response2 = await loanService.getLoans();
         if (response2.success) {
-          setLoans(response2.result);
+          // Si la respuesta es exitosa, establecer los préstamos (incluso si es un array vacío)
+          setLoans(response2.result || []);
 
           // Check for expired loans and sanction members automatically
           const currentDate = new Date();
-          for (const loan of response2.result) {
+          for (const loan of response2.result || []) {
             const loanDateLimit = new Date(loan.dateLimit);
 
             // If loan is expired and still active
@@ -102,7 +88,7 @@ export function Member() {
               // Only sanction for external loans, not internal ones
               if (loan.type === "external") {
                 // Find the member to sanction
-                const memberToSanction = response.result.find(
+                const memberToSanction = response.result?.find(
                   (m) => m._id === loan.memberId
                 );
 
@@ -115,14 +101,19 @@ export function Member() {
                   // Update the members list after sanctioning
                   const updatedResponse = await memberService.getMembers();
                   if (updatedResponse.success) {
-                    setMembers(updatedResponse.result);
+                    setMembers(updatedResponse.result || []);
                   }
                 }
               }
             }
           }
+        } else if (!response2.result || response2.result.length === 0) {
+          // Si no hay préstamos, simplemente establecer un array vacío sin mostrar error
+          setLoans([]);
         }
       } catch (error) {
+        console.error("Error al cargar datos:", error);
+        // Solo navegar a la página de error en caso de errores graves
         navigate("/error500");
       }
     };
@@ -178,7 +169,7 @@ export function Member() {
           const response = await memberService.deleteMember(id);
           if (response.success) {
             const response = await memberService.getMembers();
-            setMembers(response.result);
+            setMembers(response.result || []);
             swal.success("El socio fue eliminado");
           }
         }
@@ -186,6 +177,7 @@ export function Member() {
         swal.error("Imposible eliminar. El socio tiene un prestamo vigente.");
       }
     } catch (error) {
+      console.error("Error al eliminar socio:", error);
       swal.error("Hubo un problema, intentelo más tarde");
     }
   };
@@ -201,7 +193,7 @@ export function Member() {
         const response = await memberService.sanctionMember(member);
         if (response.success) {
           const response = await memberService.getMembers();
-          setMembers(response.result);
+          setMembers(response.result || []);
           swal.error("El socio fue sancionado");
         }
       } else {
@@ -210,11 +202,12 @@ export function Member() {
         const response = await memberService.sanctionMember(member);
         if (response.success) {
           const response = await memberService.getMembers();
-          setMembers(response.result);
+          setMembers(response.result || []);
           swal.success("Se le quito la sancion al socio");
         }
       }
     } catch (error) {
+      console.error("Error al sancionar/quitar sanción:", error);
       swal.error("El socio no existe");
     }
   }

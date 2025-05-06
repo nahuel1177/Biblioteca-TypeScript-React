@@ -10,6 +10,11 @@ import {
   Divider,
   IconButton,
   CircularProgress,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import { IBook } from "../../../interfaces/bookInterface";
 import { bookService } from "../../../services/bookService";
@@ -104,7 +109,24 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
     const { name, value } = e.target;
-    setNewBook({ ...newBook, [name as string]: value });
+    
+    // Manejo especial para el campo loanable (convertir string a boolean)
+    if (name === 'loanable') {
+      const isLoanable = value === 'true';
+      
+      // Si loanable es false, establecer stockExt a 0
+      if (!isLoanable) {
+        setNewBook({ 
+          ...newBook, 
+          [name]: isLoanable,
+          stockExt: 0 
+        });
+      } else {
+        setNewBook({ ...newBook, [name]: isLoanable });
+      }
+    } else {
+      setNewBook({ ...newBook, [name as string]: value });
+    }
     
     // Clear error when user types
     if (name && errors[name as keyof typeof errors]) {
@@ -249,13 +271,35 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
                 (isbnError || "El ISBN debe contener exactamente 13 dígitos") : 
                 "Debe contener 13 dígitos"}
               variant="outlined"
-              sx={{ mb: 4 }}
+              sx={{ mb: 2 }}
               InputProps={{ 
                 inputMode: 'numeric',
                 inputProps: { pattern: '[0-9]*' },
                 endAdornment: checkingIsbn ? <CircularProgress size={20} /> : null
               }}
             />
+            
+            {/* Agregar botones de radio para la opción loanable */}
+            <FormControl component="fieldset" sx={{ mb: 2 }}>
+              <FormLabel component="legend">Préstamo a domicilio.</FormLabel>
+              <RadioGroup
+                row
+                name="loanable"
+                value={newBook.loanable.toString()}
+                onChange={handleNewBookInputChange}
+              >
+                <FormControlLabel 
+                  value="true" 
+                  control={<Radio />} 
+                  label="Habilitado" 
+                />
+                <FormControlLabel 
+                  value="false" 
+                  control={<Radio />} 
+                  label="Deshabilitado" 
+                />
+              </RadioGroup>
+            </FormControl>
             
             <Stack direction="row" spacing={2}>
               <TextField
@@ -286,6 +330,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
                 helperText={errors.stockExt ? "El valor debe ser mayor o igual a 0" : ""}
                 InputProps={{ inputProps: { min: 0 } }}
                 variant="outlined"
+                disabled={!newBook.loanable}
               />
             </Stack>
             
