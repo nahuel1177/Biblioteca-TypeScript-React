@@ -7,12 +7,10 @@ import {
   CardContent,
   Button,
   Stack,
-  Fab,
   useTheme,
   Chip,
   Box,
 } from "@mui/material";
-import Add from "@mui/icons-material/Add";
 import { ILoan } from "../../interfaces/loanInterface";
 import { memberService } from "../../services/memberService";
 import { IMember } from "../../interfaces/memberInterface";
@@ -280,7 +278,14 @@ export function Loan() {
           try {
             await loanService.updateLoan(updatedLoan._id, updatedLoan);
           } catch (error) {
-            console.error("Error al actualizar el estado del préstamo:", error);
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              text: "Error al actualizar el estado del préstamo",
+              showConfirmButton: true,
+              background: theme.palette.background.paper,
+              color: theme.palette.text.primary,
+            });
           }
         } else if (loan.type === "internal" && loan.isDefeated !== "Vigente") {
           // Asegurarse de que los préstamos internos siempre estén marcados como vigentes
@@ -290,7 +295,14 @@ export function Loan() {
           try {
             await loanService.updateLoan(updatedLoan._id, updatedLoan);
           } catch (error) {
-            console.error("Error al actualizar el estado del préstamo interno:", error);
+            Swal.fire({
+              position: "center",
+              icon: "error",
+              text: "Error al actualizar el estado del préstamo interno",
+              showConfirmButton: true,
+              background: theme.palette.background.paper,
+              color: theme.palette.text.primary,
+            });
           }
         }
       }

@@ -3,6 +3,7 @@ export interface IBook {
   title: string;
   author: string;
   isbn: number;
+  loanable: boolean;
   stockInt: number;
   stockExt: number;
 }

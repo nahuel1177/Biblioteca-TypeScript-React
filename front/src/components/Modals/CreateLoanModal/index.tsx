@@ -28,6 +28,7 @@ import { IBook } from "../../../interfaces/bookInterface";
 import { memberService } from "../../../services/memberService";
 import { bookService } from "../../../services/bookService";
 import { loanService } from "../../../services/loanService";
+import { useTheme } from "@mui/material/styles";
 
 const style = {
   position: "absolute",
@@ -53,12 +54,31 @@ export function CreateLoanModal({
   handleClose,
   onLoanCreated,
 }: CreateLoanModalProps) {
+  const theme = useTheme(); // Obtener el tema actual
   const [members, setMembers] = useState<IMember[]>([]);
   const [books, setBooks] = useState<IBook[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeLoans, setActiveLoans] = useState<any[]>([]);
   const [bookError, setBookError] = useState("");
   const [checkingDuplicateLoan, setCheckingDuplicateLoan] = useState(false);
+
+  // Función de utilidad para mostrar alertas con el tema actual
+const showAlert = (
+  icon: 'success' | 'error' | 'warning' | 'info' | 'question',
+  text: string,
+  options: unknown = {}
+  ) => {
+  return Swal.fire({
+  icon,
+  text,
+  background: theme.palette.background.paper,
+  color: theme.palette.text.primary,
+  confirmButtonColor: 
+  icon === 'success' ? theme.palette.success.main : 
+  icon === 'error' ? theme.palette.error.main : 
+  theme.palette.primary.main,
+...(options as Record<string, unknown>)
+  });
+  };
 
   const [formData, setFormData] = useState({
     memberId: "",
@@ -72,23 +92,31 @@ export function CreateLoanModal({
     type: false,
   });
 
-  // Remove the nested useEffect structure
   useEffect(() => {
     const fetchData = async () => {
-      const membersResponse = await memberService.getMembers();
-      if (membersResponse.success) {
-        setMembers(membersResponse.result);
+      try{
+        const membersResponse = await memberService.getMembers();
+        if (membersResponse.success) {
+          setMembers(membersResponse.result);
+        }
+      }catch(error){
+        showAlert('error', "Error al cargar los socios", {
+          position: "center",
+          title: "Error",
+          showConfirmButton: true,
+        });
       }
-
-      const booksResponse = await bookService.getBooks();
-      if (booksResponse.success) {
-        setBooks(booksResponse.result);
-      }
-
-      // Fetch active loans to check for duplicates
-      const loansResponse = await loanService.getLoans();
-      if (loansResponse.success) {
-        setActiveLoans(loansResponse.result.filter(loan => loan.isActive));
+      try{
+        const booksResponse = await bookService.getBooks();
+        if (booksResponse.success) {
+          setBooks(booksResponse.result);
+        }
+      }catch(error){
+        showAlert('error', "Error al cargar los libros", {
+          position: "center",
+          title: "Error",
+          showConfirmButton: true,
+        });
       }
     };
 
@@ -97,7 +125,6 @@ export function CreateLoanModal({
     }
   }, [open]);
 
-  // Separate useEffect for the debounced duplicate loan check
   useEffect(() => {
     const timer = setTimeout(() => {
       if (formData.memberId && formData.bookId) {
@@ -126,11 +153,14 @@ export function CreateLoanModal({
         }
       }
     } catch (error) {
-      console.error("Error checking duplicate loan:", error);
+      showAlert('error', "Error al verificar préstamos duplicados", {
+        position: "center",
+        title: "Error",
+        showConfirmButton: true,
+      });
     } finally {
       setCheckingDuplicateLoan(false);
     }
-  
   };
 
   const resetForm = () => {
@@ -186,37 +216,39 @@ export function CreateLoanModal({
         (member) => member._id === formData.memberId
       );
       if (selectedMember?.isSanctioned) {
-        Swal.fire({
+        showAlert('error', "El socio se encuentra sancionado y no puede solicitar préstamos", {
           position: "center",
-          icon: "error",
           title: "Error",
-          text: "El socio se encuentra sancionado y no puede solicitar préstamos",
           showConfirmButton: true,
-          confirmButtonColor: "#f44336",
         });
         return;
       }
 
       // Check book stock based on loan type
       const selectedBook = books.find((book) => book._id === formData.bookId);
-      if (formData.type === "internal" && selectedBook?.stockInt === 0) {
-        Swal.fire({
+      
+      // Validar si el libro no es prestable (loanable = false) y se intenta hacer un préstamo externo
+      if (formData.type === "external" && selectedBook && selectedBook.loanable === false) {
+        showAlert('error', "Este libro no puede ser prestado externamente, solo está disponible para préstamos internos", {
           position: "center",
-          icon: "error",
           title: "Error",
-          text: "No hay stock interno disponible para este libro",
           showConfirmButton: true,
-          confirmButtonColor: "#f44336",
+        });
+        return;
+      }
+      
+      if (formData.type === "internal" && selectedBook?.stockInt === 0) {
+        showAlert('error', "No hay stock disponible para este libro", {
+          position: "center",
+          title: "Error",
+          showConfirmButton: true,
         });
         return;
       } else if (formData.type === "external" && selectedBook?.stockExt === 0) {
-        Swal.fire({
+        showAlert('error', "No hay stock disponible para este libro", {
           position: "center",
-          icon: "error",
           title: "Error",
-          text: "No hay stock externo disponible para este libro",
           showConfirmButton: true,
-          confirmButtonColor: "#f44336",
         });
         return;
       }
@@ -233,32 +265,23 @@ export function CreateLoanModal({
         resetForm();
         handleClose();
         onLoanCreated();
-        Swal.fire({
+        showAlert('success', "El préstamo fue creado exitosamente", {
           position: "center",
-          icon: "success",
           title: "¡Éxito!",
-          text: "El préstamo fue creado exitosamente",
           showConfirmButton: true,
-          confirmButtonColor: "#4caf50",
         });
       } else {
-        Swal.fire({
+        showAlert('error', "Error al crear el préstamo", {
           position: "center",
-          icon: "error",
           title: "Error",
-          text: "Error al crear el préstamo",
           showConfirmButton: true,
-          confirmButtonColor: "#f44336",
         });
       }
     } catch (error) {
-      Swal.fire({
+      showAlert('error', "Ocurrió un error al procesar la solicitud", {
         position: "center",
-        icon: "error",
         title: "Error",
-        text: "Ocurrió un error al procesar la solicitud",
         showConfirmButton: true,
-        confirmButtonColor: "#f44336",
       });
     } finally {
       setLoading(false);
@@ -365,7 +388,7 @@ export function CreateLoanModal({
                 id="book-select"
                 options={books}
                 getOptionLabel={(option) =>
-                  `${option.title} - ${option.author} `
+                  `${option.title} - ${option.author}`
                 }
                 getOptionDisabled={(option: IBook): boolean => {
                   // Disable if no stock
@@ -394,7 +417,9 @@ export function CreateLoanModal({
                     {...params}
                     label="Libro"
                     error={errors.bookId}
-                    helperText={errors.bookId ? (bookError || "El libro es requerido") : ""}
+                    helperText={errors.bookId ? (bookError || "El libro es requerido") : 
+                      (formData.bookId && books.find(book => book._id === formData.bookId)?.loanable === false ? 
+                      "El libro elegido solo permite préstamos internos" : "")}
                     size="small"
                     InputProps={{
                       ...params.InputProps,
@@ -412,6 +437,7 @@ export function CreateLoanModal({
                 isOptionEqualToValue={(option, value) =>
                   option._id === value._id
                 }
+                
               />
             </FormControl>
 
@@ -427,18 +453,36 @@ export function CreateLoanModal({
                 label="Tipo de Préstamo"
                 name="type"
                 value={formData.type}
-                onChange={(e) =>
-                  handleInputChange(
-                    e as ChangeEvent<{ name?: string; value: unknown }>
-                  )
-                }
+                onChange={(e) => {
+                  const newValue = e.target.value as string;
+                  
+                  // Validar si se selecciona préstamo externo para un libro que no es prestable
+                  if (newValue === "external" && books.find(book => book._id === formData.bookId)?.loanable === false) {
+                    setErrors({
+                      ...errors,
+                      type: true
+                    });
+                  } else {
+                    handleInputChange(
+                      e as ChangeEvent<{ name?: string; value: unknown }>
+                    );
+                  }
+                }}
+                disabled={!formData.bookId} // Deshabilitar hasta que se seleccione un libro
               >
                 <MenuItem value="internal">Interno</MenuItem>
-                <MenuItem value="external">Externo</MenuItem>
+                <MenuItem 
+                  value="external" 
+                  disabled={books.find(book => book._id === formData.bookId)?.loanable === false}
+                >
+                  Externo
+                </MenuItem>
               </Select>
               {errors.type && (
-                <FormHelperText>
-                  El tipo de préstamo es requerido
+                <FormHelperText error>
+                  {formData.type === "external" && books.find(book => book._id === formData.bookId)?.loanable === false 
+                    ? "Este libro no permite préstamos externos" 
+                    : "El tipo de préstamo es requerido"}
                 </FormHelperText>
               )}
             </FormControl>

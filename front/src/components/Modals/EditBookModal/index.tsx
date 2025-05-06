@@ -12,12 +12,12 @@ import {
 } from "@mui/material";
 import { IBook } from "../../../interfaces/bookInterface";
 import { bookService } from "../../../services/bookService";
-import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import { useEffect } from "react";
+import { useSweetAlert } from "../../../hooks/useSweetAlert";
 
 const style = {
   position: "absolute",
@@ -48,6 +48,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
     stockInt: false,
     stockExt: false,
   });
+  const swal = useSweetAlert();
 
   // Corrección: Usar useEffect para actualizar el estado cuando cambia book
   useEffect(() => {
@@ -110,33 +111,12 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
       if (response.success) {
         handleClose();
         onBookUpdated();
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "¡Éxito!",
-          text: "El libro fue modificado exitosamente",
-          showConfirmButton: true,
-          confirmButtonColor: "#4caf50",
-        });
+        swal.success("El libro fue modificado exitosamente");
       } else {
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: "Error",
-          text: "Error al modificar el libro",
-          showConfirmButton: true,
-          confirmButtonColor: "#f44336",
-        });
+        swal.error("Error al modificar el libro");
       }
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: "Error",
-        text: "Ocurrió un error al procesar la solicitud",
-        showConfirmButton: true,
-        confirmButtonColor: "#f44336",
-      });
+      swal.error("Ocurrió un error al procesar la solicitud");
     } finally {
       setLoading(false);
     }

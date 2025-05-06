@@ -12,12 +12,12 @@ import {
   Box,
   CircularProgress,
 } from "@mui/material";
-import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import EditIcon from "@mui/icons-material/Edit";
 import { IMember } from "../../../interfaces/memberInterface";
+import { useSweetAlert } from "../../../hooks/useSweetAlert";
 
 const style = {
   position: "absolute",
@@ -54,6 +54,9 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
     dni: "",
     email: "",
   });
+  
+  // Usar el hook useSweetAlert en lugar de Swal directamente
+  const swal = useSweetAlert();
 
   // Actualizar el miembro editado cuando cambia el miembro original
   useEffect(() => {
@@ -208,40 +211,22 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
         return;
       }
     }
-    // Si llegamos aquí, significa que el correo no está duplicado o no ha cambiado
+
     setLoading(true);
     try {
       const response = await memberService.updateMember(editedMember._id, editedMember);
       if (response.success) {
         handleClose();
         onMemberUpdated();
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "¡Éxito!",
-          text: "El socio fue modificado exitosamente",
-          showConfirmButton: true,
-          confirmButtonColor: "#4caf50",
-        });
+        // Usar swal.success en lugar de Swal.fire
+        swal.success("El socio fue modificado exitosamente");
       } else {
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: "Error",
-          text: "Error al modificar el socio",
-          showConfirmButton: true,
-          confirmButtonColor: "#f44336",
-        });
+        // Usar swal.error en lugar de Swal.fire
+        swal.error("Error al modificar el socio");
       }
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: "Error",
-        text: "Ocurrió un error al procesar la solicitud",
-        showConfirmButton: true,
-        confirmButtonColor: "#f44336",
-      });
+      // Usar swal.error en lugar de Swal.fire
+      swal.error("Ocurrió un error al procesar la solicitud");
     } finally {
       setLoading(false);
     }
@@ -250,17 +235,17 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
   return (
     <Modal
       open={open}
-      onClose={handleModalClose} // Usar la nueva función en lugar de handleClose
+      onClose={handleModalClose}
       aria-labelledby="edit-modal-title"
       aria-describedby="edit-modal-description"
     >
       <Paper sx={style} elevation={5}>
-        <Box sx={{
-          p: 2,
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main',
+        <Box sx={{ 
+          p: 2, 
+          display: "flex", 
+          justifyContent: "space-between", 
+          alignItems: "center", 
+          bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main', 
           color: "white",
           borderTopLeftRadius: 8,
           borderTopRightRadius: 8
@@ -275,7 +260,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
             <CloseIcon />
           </IconButton>
         </Box>
-
+        
         <Box sx={{ p: 3 }}>
           <form onSubmit={handleSubmit}>
             <TextField
@@ -292,7 +277,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
               variant="outlined"
               sx={{ mb: 2 }}
             />
-
+            
             <TextField
               label="Apellidos"
               name="lastname"
@@ -306,27 +291,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
               variant="outlined"
               sx={{ mb: 2 }}
             />
-
-            <TextField
-              label="Documento"
-              name="dni"
-              value={editedMember.dni}
-              onChange={handleInputChange}
-              fullWidth
-              margin="normal"
-              type="number"
-              size="small"
-              error={errors.dni}
-              helperText={errors.dni ? 
-                (errorMessages.dni || "El documento es requerido") : ""}
-              InputProps={{ 
-                inputProps: { min: 1 },
-                endAdornment: checkingDni ? <CircularProgress size={20} /> : null
-              }}
-              variant="outlined"
-              sx={{ mb: 2 }}
-            />
-
+            
             <TextField
               label="Correo electrónico"
               name="email"
@@ -338,16 +303,38 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
               size="small"
               error={errors.email}
               helperText={errors.email ? 
-                (errorMessages.email || "El correo es requerido y debe tener un formato válido") : ""}
+                (errorMessages.email || 
+                  (editedMember.email?.trim() === "" ? "El correo es requerido" : "Formato de correo inválido")) 
+                : ""}
               variant="outlined"
-              sx={{ mb: 0 }}
-              InputProps={{ 
+              sx={{ mb: 2 }}
+              InputProps={{
                 endAdornment: checkingEmail ? <CircularProgress size={20} /> : null
               }}
             />
-
+            
+            <TextField
+              label="DNI"
+              name="dni"
+              value={editedMember.dni}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              type="number"
+              size="small"
+              error={errors.dni}
+              helperText={errors.dni ? 
+                (errorMessages.dni || "El documento es requerido") : ""}
+              variant="outlined"
+              sx={{ mb: 2 }}
+              InputProps={{
+                endAdornment: checkingDni ? <CircularProgress size={20} /> : null,
+                inputProps: { min: 1 }
+              }}
+            />
+            
             <Divider sx={{ my: 3 }} />
-
+            
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button
                 variant="outlined"
@@ -358,7 +345,7 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
               >
                 Cancelar
               </Button>
-
+              
               <Button
                 type="submit"
                 variant="contained"

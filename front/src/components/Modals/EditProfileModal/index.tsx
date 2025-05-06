@@ -43,9 +43,13 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   // Actualizar el email original cuando cambia el usuario
   useEffect(() => {
-    setFormData({ ...user });
-    setOriginalEmail(user.email);
-  }, [user]);
+    if (open) {
+      setFormData({ ...user });
+      setOriginalEmail(user.email);
+      setPassword("");
+      setErrors({});
+    }
+  }, [user, open]);
 
   // Función para manejar el cierre del modal y limpiar el formulario
   const handleModalClose = () => {
@@ -55,6 +59,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     setLoading(false);
     setCheckingEmail(false);
     setErrors({});
+    setOriginalEmail(user.email);
     
     // Llamar a la función onClose proporcionada por el componente padre
     onClose();

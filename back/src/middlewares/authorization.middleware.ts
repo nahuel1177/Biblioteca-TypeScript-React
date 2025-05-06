@@ -14,7 +14,6 @@ declare global {
 export const authorization =
   (roles: string[]) => (req: Request, res: Response, next: NextFunction) => {
     const token = getToken(req);
-    console.log("Autorization middleware");
     if (!token) {
       res.status(403).json({ message: "Unauthorized" });
       return;

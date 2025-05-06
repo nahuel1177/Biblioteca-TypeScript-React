@@ -12,12 +12,12 @@ import {
   IconButton,
   CircularProgress,
 } from "@mui/material";
-import Swal from "sweetalert2";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { IMember } from "../../../interfaces/memberInterface";
+import { useSweetAlert } from "../../../hooks/useSweetAlert";
 
 const style = {
   position: "absolute",
@@ -62,6 +62,8 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
     email: "",
     dni: "",
   });
+
+  const swal = useSweetAlert();
 
   // Add debounce for DNI and email checks
   useEffect(() => {
@@ -201,33 +203,12 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
         resetForm();
         handleClose();
         onMemberCreated();
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "¡Éxito!",
-          text: "El socio fue creado exitosamente",
-          showConfirmButton: true,
-          confirmButtonColor: "#4caf50",
-        });
+        swal.success("El socio fue creado exitosamente");
       } else {
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: "Error",
-          text: "Error al crear el socio",
-          showConfirmButton: true,
-          confirmButtonColor: "#f44336",
-        });
+        swal.error("Error al crear el socio");
       }
     } catch (error) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: "Error",
-        text: "Ocurrió un error al procesar la solicitud",
-        showConfirmButton: true,
-        confirmButtonColor: "#f44336",
-      });
+      swal.error("Ocurrió un error al procesar la solicitud");
     } finally {
       setLoading(false);
     }

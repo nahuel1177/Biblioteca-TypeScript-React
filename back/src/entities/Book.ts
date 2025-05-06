@@ -4,6 +4,7 @@ const Book = new mongoose.Schema({
   title: String,
   author: String,
   isbn: Number,
+  loanable: Boolean,
   stockInt: Number,
   stockExt: Number,
 

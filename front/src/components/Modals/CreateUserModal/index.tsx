@@ -1,5 +1,4 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from "react";
-import { userService } from "../../../services/userService";
 import {
   Typography,
   TextField,
@@ -17,11 +16,13 @@ import {
   CircularProgress,
   FormHelperText,
 } from "@mui/material";
-import Swal from "sweetalert2";
+import { userService } from "../../../services/userService";
 import CloseIcon from "@mui/icons-material/Close";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import Swal from "sweetalert2";
+import { useTheme } from "@mui/material/styles";
 
 const style = {
   position: "absolute",
@@ -47,6 +48,7 @@ export const CreateUserModal = ({
   onClose,
   onUserCreated,
 }: CreateUserModalProps) => {
+  const theme = useTheme(); // Obtener el tema actual
   const [formData, setFormData] = useState({
     name: "",
     lastname: "",
@@ -278,6 +280,8 @@ export const CreateUserModal = ({
           text: "Usuario creado exitosamente",
           showConfirmButton: true,
           confirmButtonColor: "#4caf50",
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
         });
       } else {
         Swal.fire({
@@ -285,6 +289,8 @@ export const CreateUserModal = ({
           title: "Error",
           text: "No se pudo crear el usuario",
           confirmButtonColor: "#f44336",
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
         });
       }
     } catch (error) {
@@ -293,6 +299,8 @@ export const CreateUserModal = ({
         title: "Error",
         text: "No se pudo crear el usuario",
         confirmButtonColor: "#f44336",
+        background: theme.palette.background.paper,
+        color: theme.palette.text.primary,
       });
     } finally {
       setLoading(false);
