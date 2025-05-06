@@ -19,7 +19,6 @@ import { CreateButton, EditButton, DeleteButton } from "../Buttons";
 import { ILoan } from "../../interfaces/loanInterface";
 import { loanService } from "../../services/loanService";
 
-// Remove the async keyword from the component function
 export function Book() {
   const [books, setBooks] = useState<IBook[]>([]);
   const [loans, setLoans] = useState<ILoan[]>([]);
@@ -116,7 +115,7 @@ export function Book() {
   }
 
   const findBookOnLoan = (id: string) => {
-    // Check if the member has any active loans
+    // Chequear si el libro tiene un préstamo activo
     const activeLoan = loans.find(
       (loan) => loan.bookId === id && loan.isActive === true
     );

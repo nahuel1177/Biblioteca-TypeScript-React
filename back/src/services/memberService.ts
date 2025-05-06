@@ -7,7 +7,6 @@ class MemberService {
     const members = await memberRepository.getMembers({isActive:true});
 
     if (!members.length) {
-        console.log("ENTRO AL IF")
       return {
         code: 500,
         result: {

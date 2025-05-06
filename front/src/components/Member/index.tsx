@@ -48,7 +48,7 @@ export function Member() {
           // Si la respuesta es exitosa, establecer los socios (incluso si es un array vacío)
           setMembers(response.result || []);
 
-          // Check for expired sanctions to remove them
+          // Chequear si la fecha de sanción ha pasado y desactivar la sanción si es necesario
           for (const member of response.result || []) {
             if (
               member.sanctionDate != null &&
@@ -72,33 +72,33 @@ export function Member() {
           swal.toast("Error al cargar los socios", "error");
         }
 
-        // Get all loans to check for expired ones
+        // Obtener los préstamos
         const response2 = await loanService.getLoans();
         if (response2.success) {
           // Si la respuesta es exitosa, establecer los préstamos (incluso si es un array vacío)
           setLoans(response2.result || []);
 
-          // Check for expired loans and sanction members automatically
+          // Chequear si los préstamos han vencido y aplicar la sanción si es necesario
           const currentDate = new Date();
           for (const loan of response2.result || []) {
             const loanDateLimit = new Date(loan.dateLimit);
 
-            // If loan is expired and still active
+            // Si el préstamo está activo y ha vencido la fecha de límite
             if (loanDateLimit < currentDate && loan.isActive) {
-              // Only sanction for external loans, not internal ones
+              // Solo aplicar la sanción si el préstamo es externo
               if (loan.type === "external") {
-                // Find the member to sanction
+                // Encontrar el socio asociado al préstamo
                 const memberToSanction = response.result?.find(
                   (m) => m._id === loan.memberId
                 );
 
                 if (memberToSanction && !memberToSanction.isSanctioned) {
-                  // Apply sanction
+                  // Aplicar la sanción al socio
                   memberToSanction.isSanctioned = true;
                   memberToSanction.sanctionDate = new Date();
                   await memberService.sanctionMember(memberToSanction);
 
-                  // Update the members list after sanctioning
+                  // Actualizar el estado local de los socios
                   const updatedResponse = await memberService.getMembers();
                   if (updatedResponse.success) {
                     setMembers(updatedResponse.result || []);
@@ -151,7 +151,7 @@ export function Member() {
     }
   }
   const findMemberOnLoan = (id: string) => {
-    // Check if the member has any active loans
+    // Chequear si el socio tiene un préstamo activo
     const activeLoan = loans.find(
       (loan) => loan.memberId === id && loan.isActive === true
     );
@@ -216,12 +216,12 @@ export function Member() {
     const dateNow = new Date();
     sanctionDate = new Date(sanctionDate);
 
-    // Calculate the difference in milliseconds
+    // Calcular la diferencia en días entre la fecha actual y la fecha de sanción
     const diffTime = dateNow.getTime() - sanctionDate.getTime();
-    // Convert milliseconds to days
+    // Convertir la diferencia a días y redondear al entero más cercano
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
-    // Check if the sanction period has passed
+    // Chequear si la diferencia es mayor o igual al límite de días de sanción
     if (diffDays >= limitSanctionDays) {
       return true;
     } else {
