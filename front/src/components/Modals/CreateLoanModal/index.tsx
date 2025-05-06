@@ -182,7 +182,7 @@ const showAlert = (
     const { name, value } = e.target;
     setFormData({ ...formData, [name as string]: value });
 
-    // Clear error when user types
+    // Limpiar error mientras se está escribiendo
     if (name && errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,
@@ -194,7 +194,7 @@ const showAlert = (
   const validateForm = () => {
     const newErrors = {
       memberId: formData.memberId.trim() === "",
-      bookId: formData.bookId.trim() === "" || Boolean(bookError), // Add bookError check
+      bookId: formData.bookId.trim() === "" || Boolean(bookError),
       type: formData.type.trim() === "",
     };
 
@@ -211,7 +211,7 @@ const showAlert = (
 
     setLoading(true);
     try {
-      // Check if member is sanctioned
+      // Cjhequear si el socio está sancionado
       const selectedMember = members.find(
         (member) => member._id === formData.memberId
       );
@@ -224,7 +224,7 @@ const showAlert = (
         return;
       }
 
-      // Check book stock based on loan type
+      // Cequear si el libro está disponible para el tipo de préstamo seleccionado
       const selectedBook = books.find((book) => book._id === formData.bookId);
       
       // Validar si el libro no es prestable (loanable = false) y se intenta hacer un préstamo externo

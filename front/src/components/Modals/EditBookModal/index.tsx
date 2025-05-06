@@ -77,7 +77,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
     const { name, value } = e.target;
     setEditedBook({ ...editedBook, [name as string]: value });
     
-    // Clear error when user types
+    // CLimpiar el mensaje de error mientras se escribe
     if (name && errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,

@@ -22,7 +22,6 @@ import { localStorage } from "../../services/localStorage";
 import { EditProfileModal } from "../../components/Modals/EditProfileModal";
 import { IUser } from "../../interfaces/userInterface";
 
-// Update settings to include profile edit option
 const pages = ["usuarios", "libros", "socios", "prestamos"];
 const settings = ["perfil", "salir"];
 
@@ -73,19 +72,19 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
       const name = parsedData.user.name || "";
       const lastname = parsedData.user.lastname || "";
       
-      // Create initials from name and lastname
+      // Crear las iniciales del usuario
       const initials = `${name.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
       
       setName(name);
       setLastname(lastname);
       setUserInitials(initials);
       
-      // Store the full user data for the edit modal
+      // Actualizar el estado del usuario actual
       setCurrentUser(parsedData.user || null);
     }
   }, []);
 
-  // Handle menu item clicks
+  // Handle del menu de usuario
   const handleMenuItemClick = (setting: string) => {
     handleCloseUserMenu();
     
@@ -96,16 +95,15 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
     }
   };
 
-  // Handle profile update
+  // Handle de actualizacion de perfil de usuario en el formulario
   const handleProfileUpdate = (updatedUser: IUser) => {
-    // Update local state
     setName(updatedUser.name || "");
     setLastname(updatedUser.lastname || "");
     const initials = `${updatedUser.name?.charAt(0) || ""}${updatedUser.lastname?.charAt(0) || ""}`.toUpperCase();
     setUserInitials(initials);
     setCurrentUser(updatedUser);
     
-    // Update localStorage
+    // Actulizar localStorage
     const userData = localStorage.get();
     if (userData) {
       const parsedData = typeof userData === "string" ? JSON.parse(userData) : userData;

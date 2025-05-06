@@ -1,7 +1,6 @@
 import Swal from "sweetalert2";
 import { PaletteMode } from "@mui/material";
 
-// Theme-aware SweetAlert2 function
 export const themedSwal = (mode: PaletteMode) => {
   return {
     fire: (options: any) => {
@@ -11,7 +10,6 @@ export const themedSwal = (mode: PaletteMode) => {
         color: mode === 'dark' ? '#fff' : '#545454',
       });
     },
-    // Add other Swal methods as needed
     success: (message: string, timer = 2000) => {
       return Swal.fire({
         position: "center",
@@ -47,11 +45,9 @@ export const themedSwal = (mode: PaletteMode) => {
         color: mode === 'dark' ? '#fff' : '#545454',
       });
     },
-    // You can add more specific alert types as needed
   };
 };
 
-// Hook to use in components
 export const useSweetAlert = (mode: PaletteMode) => {
   return themedSwal(mode);
 };

@@ -16,7 +16,6 @@ body.dark {
   color: var(--text-dark);
 }
 
-/* MUI overrides for dark mode */
 .dark .MuiPaper-root {
   background-color: #1e1e1e;
   color: var(--text-dark);

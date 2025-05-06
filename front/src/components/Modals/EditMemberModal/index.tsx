@@ -85,7 +85,6 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
     handleClose();
   };
 
-  // Añadir debounce para verificación de DNI
   useEffect(() => {
     if (editedMember.dni && editedMember.dni > 0 && editedMember.dni !== member.dni) {
       const timer = setTimeout(() => {
@@ -95,7 +94,6 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
     }
   }, [editedMember.dni, member.dni]);
 
-  // Añadir debounce para verificación de Email
   useEffect(() => {
     if (editedMember.email && 
         editedMember.email.trim() !== "" && 
@@ -218,14 +216,11 @@ export function EditMemberModal({ open, handleClose, member, onMemberUpdated }: 
       if (response.success) {
         handleClose();
         onMemberUpdated();
-        // Usar swal.success en lugar de Swal.fire
         swal.success("El socio fue modificado exitosamente");
       } else {
-        // Usar swal.error en lugar de Swal.fire
         swal.error("Error al modificar el socio");
       }
     } catch (error) {
-      // Usar swal.error en lugar de Swal.fire
       swal.error("Ocurrió un error al procesar la solicitud");
     } finally {
       setLoading(false);

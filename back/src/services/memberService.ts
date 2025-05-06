@@ -4,47 +4,45 @@ import { memberRepository } from "../repositories/memberRepository";
 
 class MemberService {
   async getMembers() {
-    const members = await memberRepository.getMembers({isActive:true});
-
+    const members = await memberRepository.getMembers({ isActive: true });
     if (!members.length) {
       return {
         code: 500,
         result: {
-          result: [],  
-          error: "Member not founded.",
+          result: [],
+          error: "No se encontraron socios",
           success: false,
         },
       };
     }
     return {
-        code: 200,
-        result: {
-          result: members,
-          success: true,
-        },
-      };
+      code: 200,
+      result: {
+        result: members,
+        success: true,
+      },
+    };
   }
 
   async getMemberById(req: Request) {
     const { id } = req.params;
-
     const member = await memberRepository.getMemberById(id);
     if (!member) {
-        return {
-            code: 404,
-            result: {
-              error: "Update",
-              success: false,
-            },
-          };
-    }
-    return {
-        code: 200,
+      return {
+        code: 404,
         result: {
-          result: member,
-          success: true,
+          error: "No se encontro socio",
+          success: false,
         },
       };
+    }
+    return {
+      code: 200,
+      result: {
+        result: member,
+        success: true,
+      },
+    };
   }
 
   async getMemberByDni(req: Request) {
@@ -91,53 +89,52 @@ class MemberService {
 
   async createMember(req: Request) {
     const { name, lastname, email, dni } = req.body;
-  
-      const member = new Member({
-        name: name,
-        lastname: lastname,
-        email: email,
-        dni: parseInt(dni),
-      });
-    
-      console.log("Creado", member)
-      const createdMember = await memberRepository.createMember(member);
+
+    const member = new Member({
+      name: name,
+      lastname: lastname,
+      email: email,
+      dni: parseInt(dni),
+    });
+
+    const createdMember = await memberRepository.createMember(member);
     if (!createdMember) {
-        return {
-            code: 200,
-            result: {
-              error: "Members was not created",
-              success: false,
-            },
-          };
-    }
-    return {
-        code: 201,
+      return {
+        code: 200,
         result: {
-          result: createdMember,
-          success: true,
+          error: "El Socio no fue creado",
+          success: false,
         },
       };
+    }
+    return {
+      code: 201,
+      result: {
+        result: createdMember,
+        success: true,
+      },
+    };
   }
 
   async deleteMember(req: Request) {
     const { id } = req.params;
     const updatedMember = await memberRepository.deleteMember(id);
     if (!updatedMember) {
-        return {
-            code: 200,
-            result: {
-              error: "Member was not updated",
-              success: false,
-            },
-          };
-    }
-    return {
+      return {
         code: 200,
         result: {
-          result: updatedMember,
-          success: true,
+          error: "El socio no fue eliminado",
+          success: false,
         },
       };
+    }
+    return {
+      code: 200,
+      result: {
+        result: updatedMember,
+        success: true,
+      },
+    };
   }
 
   async updateMember(req: Request) {
@@ -153,7 +150,7 @@ class MemberService {
       return {
         code: 500,
         result: {
-          error: "Member was not updated",
+          error: "El socio no fue actualizado",
           success: false,
         },
       };
@@ -169,24 +166,23 @@ class MemberService {
 
   async sanctionMember(req: Request) {
     const { _id, isSanctioned, sanctionDate } = req.body;
-    console.log("Estado: ", _id , isSanctioned);
     const sanctionMember = await memberRepository.sanctionMember(_id, isSanctioned, sanctionDate);
     if (!sanctionMember) {
-        return {
-            code: 200,
-            result: {
-              error: "Member was not updated",
-              success: false,
-            },
-          };
-    }
-    return {
+      return {
         code: 200,
         result: {
-          result: sanctionMember,
-          success: true,
+          error: "El socio no pudo se sancionado",
+          success: false,
         },
       };
+    }
+    return {
+      code: 200,
+      result: {
+        result: sanctionMember,
+        success: true,
+      },
+    };
   }
 }
 export const memberService = new MemberService();

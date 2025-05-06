@@ -45,7 +45,7 @@ export function Loan() {
       if (response2.success) {
         setMembers(response2.result || []);
 
-        // Check for expired sanctions
+        // Chequear y eliminar sanción si ha pasado el límite de sanción
         const currentDate = new Date();
         for (const member of response2.result || []) {
           if (
@@ -59,7 +59,7 @@ export function Loan() {
               sanctionEndDate.getDate() + member.limitSanctionDays
             );
 
-            // If sanction period has ended, remove the sanction
+            // Si ha expirado el límite de sanción, quitar la sanción
             if (currentDate >= sanctionEndDate) {
               const memberToUpdate = { ...member };
               memberToUpdate.isSanctioned = false;
@@ -87,10 +87,10 @@ export function Loan() {
             // Solo sancionar préstamos externos vencidos
             if (loan.type === "external") {
               if (currentDate.getTime() > loanDateLimit.getTime()) {
-                // Find the member to potentially sanction
+                // Econtrar y sancionar al miembro
                 const memberToUpdate = await memberService.getMemberById(loan.memberId);
                 if (memberToUpdate && memberToUpdate.isActive && !memberToUpdate.isSanctioned) {
-                  // Apply sanction only if not already sanctioned
+                  // Aplicar sanción al miembro
                   memberToUpdate.isSanctioned = true;
                   memberToUpdate.sanctionDate = new Date();
                   await memberService.sanctionMember(memberToUpdate);
@@ -107,7 +107,7 @@ export function Loan() {
         swal.error("Error al cargar los préstamos");
       }
 
-      // Refresh members list after potential sanctions
+      // Actualizar miembros actualizados
       const updatedMembers = await memberService.getMembers();
       if (updatedMembers.success) {
         setMembers(updatedMembers.result || []);
@@ -150,10 +150,10 @@ export function Loan() {
       const confirmResult = await swal.confirm("¿Está seguro que desea registrar la devolución?");
 
       if (!confirmResult.isConfirmed) {
-        return; // User cancelled the operation
+        return; // Usuario canceló la acción
       }
 
-      // Find the loan to check its type
+      // En
       const loan = loans.find(loan => loan._id === id);
       
       if (!loan) {

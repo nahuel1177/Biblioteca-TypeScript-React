@@ -12,13 +12,13 @@ const Loan = new mongoose.Schema({
 
   memberId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: Member, // Reference to the User model
+    ref: Member,
     required: true,
   },
 
   bookId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: Book, // Reference to the Book model
+    ref: Book,
     required: true,
   },
 

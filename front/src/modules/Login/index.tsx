@@ -26,12 +26,12 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
-    if (error) setError(""); // Clear error when user types
+    if (error) setError(""); // Limpiar error cuando el usuario escribe
   };
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
-    if (error) setError(""); // Clear error when user types
+    if (error) setError(""); // Limpiar error cuando el usuario escribe
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -54,11 +54,9 @@ export const Login: React.FC<LoginProps> = ({ onLogin }) => {
         onLogin(true, userData);
         navigate("/");
       } else {
-        // Set error message instead of showing SweetAlert
         setError(response.error || 'Credenciales incorrectas');
       }
     } catch (error) {
-      // Set generic error message
       setError('Ocurrió un error al intentar iniciar sesión');
     }
   };

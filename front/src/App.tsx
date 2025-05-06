@@ -16,7 +16,6 @@ import { Error500 } from './components/Errors/Error500';
 import { UserModule } from "./modules/User";
 import { BookModule } from "./modules/Book";
 
-//import { userService } from "./services/userService"
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<{ username: string; role: string }>({
@@ -35,7 +34,6 @@ function App() {
       setIsLoggedIn(true);
       console.log("UseEffect IsLoggedIn despues: ", isLoggedIn);
       
-      // Ensure we're extracting the role correctly
       const userData = typeof data === 'string' ? JSON.parse(data) : data;
       const userRole = userData.user?.role || "";
       const username = userData.user?.username || "";
@@ -131,10 +129,7 @@ function App() {
               )}
             </>
           )}
-          {/* Add Error500 route */}
           <Route path="/error-500" element={<Error500 />} />
-          
-          {/* This should remain the last route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

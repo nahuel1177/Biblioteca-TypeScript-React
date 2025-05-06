@@ -45,7 +45,7 @@ async function start() {
     });
   } catch (error) {
     console.error("Error initializing the application:", error);
-    process.exit(1); // Terminate the application on error
+    process.exit(1); // Terminar la aplicación en caso de error
   }
 }
 start();

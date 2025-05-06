@@ -36,23 +36,18 @@ export function User() {
   const theme = useTheme();
   const swal = useSweetAlert();
   
-  // Configure SweetAlert2 theme based on app theme
+  
   useEffect(() => {
-    // Set SweetAlert2 theme based on the app's current theme
     document.querySelector('.swal2-container')?.setAttribute('data-theme', theme.palette.mode);
   }, [theme.palette.mode]);
   
-  // Add useEffect to handle body scrolling
+  
   useEffect(() => {
     if (open || createModalOpen || viewModalOpen) {
-      // Disable scrolling when any modal is open
       document.body.style.overflow = 'hidden';
     } else {
-      // Re-enable scrolling when all modals are closed
       document.body.style.overflow = 'unset';
     }
-    
-    // Cleanup function to ensure scrolling is re-enabled when component unmounts
     return () => {
       document.body.style.overflow = 'unset';
     };
@@ -175,7 +170,7 @@ export function User() {
     if (user.name != "" && user.lastname != "" && user.email != "") {
       const updateResponse = await userService.updateUser(user._id, user);
       if (updateResponse.success) {
-        await fetchUsers(); // Fetch updated users list
+        await fetchUsers();
         setUser(initialUserState);
         handleClose();
         swal.success("El usuario fue modificado");

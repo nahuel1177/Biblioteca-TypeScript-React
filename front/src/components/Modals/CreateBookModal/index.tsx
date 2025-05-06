@@ -128,14 +128,14 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
       setNewBook({ ...newBook, [name as string]: value });
     }
     
-    // Clear error when user types
+    // Limpiar el error si el campo está siendo editado
     if (name && errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,
         [name]: false,
       });
       
-      // Clear ISBN error message
+      // Limpiar el mensaje de error específico para el ISBN
       if (name === 'isbn') {
         setIsbnError("");
       }
@@ -164,7 +164,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
       return;
     }
 
-    // Final check for ISBN availability before submission
+    // Chequear si el ISBN ya está en uso
     setLoading(true);
     try {
       if (newBook.isbn) {

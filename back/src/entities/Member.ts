@@ -24,7 +24,6 @@ const Member = new mongoose.Schema({
     type: Boolean,
     default: true,
   }
-  // Add more properties as needed
 });
 
 export default mongoose.model('Member', Member);

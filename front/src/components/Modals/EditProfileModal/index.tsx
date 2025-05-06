@@ -111,7 +111,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       });
     }
 
-    // Clear error when field is edited
+    // Limpiar error mientras se escribe 
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -166,7 +166,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
     setLoading(true);
     try {
-      // Only include password in the update if it was provided
+      // Solo actualizar si se ingresa una nueva contraseña
       const dataToUpdate = {
         _id: user._id,
         name: formData.name,
@@ -182,7 +182,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       if (response && response.success) {
         swal.success("Perfil actualizado correctamente");
         
-        // Update with the new data
+        // Actualizar el estado del usuario con los datos actualizados
         const updatedUser = {
           ...user,
           ...dataToUpdate

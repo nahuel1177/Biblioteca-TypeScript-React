@@ -28,7 +28,6 @@
   -webkit-text-size-adjust: 100%;
 }
 
-/* Update existing styles to use variables */
 a {
   color: var(--link-color);
 }
@@ -40,5 +39,3 @@ a:hover {
 button {
   background-color: var(--button-bg);
 }
-
-/* Remove the media query since we're handling themes with JavaScript now */

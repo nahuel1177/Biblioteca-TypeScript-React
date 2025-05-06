@@ -13,7 +13,6 @@ const Book = new mongoose.Schema({
     default: true,
   }
 
-  // Add more properties as needed
 });
 
 export default mongoose.model('Book', Book);

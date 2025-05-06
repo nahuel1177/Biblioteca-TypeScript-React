@@ -10,12 +10,12 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 64px; /* Height of the AppBar */
+  padding-top: 64px; /* Altura de la AppBar */
 }
 
 @media (max-width: 600px) {
   .layout-container {
-    padding-top: 56px; /* Height of the AppBar on mobile */
+    padding-top: 56px; /* altura de la AppBar en mobile */
   }
 }
 

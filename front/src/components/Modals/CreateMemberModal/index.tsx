@@ -65,7 +65,7 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
 
   const swal = useSweetAlert();
 
-  // Add debounce for DNI and email checks
+  // Agregar efectos para verificar DNI y correo electrónico en tiempo real
   useEffect(() => {
     if (newMember.dni && newMember.dni > 0) {
       const timer = setTimeout(() => {
@@ -134,14 +134,14 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
     const { name, value } = e.target;
     setNewMember({ ...newMember, [name as string]: value });
     
-    // Clear error when user types
+    // Limpiar errores mientras se escribe
     if (name && errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,
         [name]: false,
       });
       
-      // Clear error messages for email and dni
+      // Limpiar mensajes de errores específicos
       if (name === 'email' || name === 'dni') {
         setErrorMessages(prev => ({
           ...prev,
@@ -173,7 +173,7 @@ export function CreateMemberModal({ open, handleClose, onMemberCreated }: Create
       return;
     }
 
-    // Final check for DNI and email availability before submission
+    // Chequear si el DNI y el correo electrónico están disponibles
     setLoading(true);
     try {
       const dniCheck = await memberService.getMemberByDni(newMember.dni || 0);

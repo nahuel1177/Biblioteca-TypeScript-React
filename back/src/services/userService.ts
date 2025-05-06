@@ -12,7 +12,7 @@ class UserService {
         code: 200,
         result: {
           result: [],
-          error: "User not founded.",
+          error: "No se encontraron usuarios.",
           success: false,
         },
       };
@@ -28,7 +28,6 @@ class UserService {
 
   async getUserById(req: Request) {
     const { id } = req.params;
-
     const user = await userRepository.getUserById(id);
     if (!user) {
       return {

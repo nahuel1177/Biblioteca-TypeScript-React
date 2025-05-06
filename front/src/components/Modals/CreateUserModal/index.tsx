@@ -92,7 +92,6 @@ export const CreateUserModal = ({
     });
   };
 
-  // Add debounce for username and email checks
   useEffect(() => {
     const timer = setTimeout(() => {
       if (formData.username && !errors.username) {
@@ -147,9 +146,9 @@ export const CreateUserModal = ({
     const { name, value } = e.target;
     setFormData({ ...formData, [name as string]: value });
 
-    // Clear error when user types
+    // Limpiar mensaje de error mientras se escribe
     if (name && errors[name as keyof typeof errors]) {
-      // For email, validate format as user types
+      // Validar el formato del correo electrónico
       if (name === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const isEmailValid = value === '' || emailRegex.test(value as string);
@@ -211,7 +210,7 @@ export const CreateUserModal = ({
         });
       }
     } else if (name === 'email') {
-      // Also validate email even if there was no previous error
+      // Validar el formato del correo electrónico
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const isEmailValid = value === '' || emailRegex.test(value as string);
 
@@ -264,7 +263,7 @@ export const CreateUserModal = ({
       return;
     }
 
-    // Final check for username and email availability before submission
+    // Enviar la solicitud de creación del usuario
     setLoading(true);
     try {
       const response = await userService.createUser(formData);

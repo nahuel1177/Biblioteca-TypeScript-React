@@ -137,7 +137,6 @@ export function Member() {
     email: "",
     dni: 0,
     isSanctioned: false,
-    // Aquí podrías establecer un valor por defecto si lo deseas
   };
 
   const [member, setMember] = useState<IMember>(initialMemberState);

@@ -7,6 +7,7 @@ export interface IBook {
   stockInt: number;
   stockExt: number;
 }
+
 export interface IResponse {
   result: IBook[];
   error?: string;

@@ -9,6 +9,7 @@ export interface IMember {
   sanctionDate?: Date | null;
   limitSanctionDays?: number,
 }
+
 export interface IResponse {
   result: IMember[];
   error?: string;
