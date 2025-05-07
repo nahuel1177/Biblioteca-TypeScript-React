@@ -6,7 +6,12 @@ import {
   Card,
   CardContent,
   Stack,
+  Chip,
+  Box,
+  Divider,
 } from "@mui/material";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import HomeIcon from "@mui/icons-material/Home";
 
 import { useNavigate } from "react-router-dom";
 import { IBook } from "../../interfaces/bookInterface";
@@ -212,26 +217,72 @@ export function Book() {
           {(filteredBooks.length > 0 ? filteredBooks : books)?.map(
             (book, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card style={{ marginTop: "5px" }}>
-                  <CardContent>
-                    <Typography component="div">{book.title}</Typography>
-
-                    <Typography variant="body2" color="text.secondary">
-                      Autor: {book.author}
+                <Card 
+                  elevation={3}
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-5px)',
+                      boxShadow: 6,
+                    },
+                    borderRadius: 2,
+                    overflow: 'hidden'
+                  }}
+                >
+                  <Box 
+                    sx={{ 
+                      bgcolor: (theme) => theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main',
+                      color: 'white',
+                      p: 1.5,
+                      pl: 2
+                    }}
+                  >
+                    <Typography variant="h6" component="div" noWrap title={book.title}>
+                      {book.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      ISBN: {book.isbn}
+                  </Box>
+                  <CardContent sx={{ flexGrow: 1, pt: 2 }}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <strong>Autor:</strong> {book.author}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Stock Interno: {book.stockInt}
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <strong>ISBN:</strong> {book.isbn}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Stock Externo: {book.stockExt}
-                    </Typography>
+                    
+                    {/* Mostrar información de stock con chips */}
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 2, mb: 1 }}>
+                      <Chip 
+                        icon={<LibraryBooksIcon />}
+                        label={`Biblioteca: ${book.stockInt}`}
+                        color={book.stockInt > 0 ? "primary" : "default"}
+                        variant={book.stockInt > 0 ? "filled" : "outlined"}
+                        size="small"
+                        sx={{ fontWeight: 'medium' }}
+                      />
+                      
+                      {/* Solo mostrar stock externo si el libro es prestable */}
+                      {book.loanable && (
+                        <Chip 
+                          icon={<HomeIcon />}
+                          label={`Domicilio: ${book.stockExt}`}
+                          color={book.stockExt > 0 ? "success" : "default"}
+                          variant={book.stockExt > 0 ? "filled" : "outlined"}
+                          size="small"
+                          sx={{ fontWeight: 'medium' }}
+                        />
+                      )}
+                    </Box>
+                    
+                    <Divider sx={{ my: 1.5 }} />
+                    
                     <Stack
                       direction="row"
-                      spacing={2}
-                      style={{ marginTop: "20px" }}
+                      spacing={1.5}
+                      justifyContent="flex-end"
+                      sx={{ mt: 1 }}
                     >
                       <EditButton
                         onClick={() => onClickUpdate(book)}

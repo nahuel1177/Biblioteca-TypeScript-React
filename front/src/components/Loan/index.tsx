@@ -9,6 +9,7 @@ import {
   Stack,
   Chip,
   Box,
+  Divider,
 } from "@mui/material";
 import { ILoan } from "../../interfaces/loanInterface";
 import { memberService } from "../../services/memberService";
@@ -21,6 +22,7 @@ import { SearchBar } from "../SearchBar";
 import { useNavigate } from "react-router-dom";
 import { CreateLoanModal } from "../Modals/CreateLoanModal";
 import { CreateButton } from "../Buttons";
+import { AssignmentReturn } from "@mui/icons-material";
 
 export function Loan() {
   const [loans, setLoans] = useState<ILoan[]>([]);
@@ -282,7 +284,7 @@ export function Loan() {
           onLoanCreated={fetchData}
         />
 
-        <Card style={{ marginTop: "20px" }}>
+        <Card style={{ marginTop: "20px", marginBottom: "15px" }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
               Préstamos
@@ -310,15 +312,68 @@ export function Loan() {
         </Card>
         <Grid container spacing={2}>
           {(filteredLoans.length > 0 ? filteredLoans : loans).map(
-            (loan, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card style={{ marginTop: "20px" }}>
-                  <CardContent>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                      <Typography component="div">
-                        {books.find((book) => book._id === loan.bookId)?.title}
+            (loan, index) => {
+              const book = books.find((book) => book._id === loan.bookId);
+              const member = members.find((member) => member._id === loan.memberId);
+              const isExpired = loan.isDefeated === "Vencido";
+              
+              return (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Card 
+                    elevation={3}
+                    sx={{
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-5px)',
+                        boxShadow: 6,
+                      },
+                      borderRadius: 2,
+                      overflow: 'hidden',
+                      border: isExpired ? '1px solid' : 'none',
+                      borderColor: 'error.main'
+                    }}
+                  >
+                    <Box 
+                      sx={{ 
+                        bgcolor: (theme) => loan.type === "external" 
+                          ? (theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main')
+                          : (theme.palette.mode === 'dark' ? 'secondary.dark' : 'secondary.main'),
+                        color: 'white',
+                        p: 1.5,
+                        pl: 2
+                      }}
+                    >
+                      <Typography variant="h6" component="div" noWrap title={book?.title}>
+                        {book?.title}
                       </Typography>
-                      <Stack direction="row" spacing={1}>
+                      <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                        {book?.author}
+                      </Typography>
+                    </Box>
+                    <CardContent sx={{ flexGrow: 1, pt: 2 }}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="body2" color="text.secondary" gutterBottom>
+                          <strong>Prestado a:</strong> {member?.name} {member?.lastname}
+                        </Typography>
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                          <Typography variant="body2" color="text.secondary">
+                            <strong>Préstamo:</strong> {new Date(loan.createdAt).toLocaleDateString()}
+                          </Typography>
+                          <Typography 
+                            variant="body2" 
+                            color={isExpired ? "error.main" : "text.secondary"}
+                            fontWeight={isExpired ? "bold" : "normal"}
+                          >
+                            <strong>Entrega:</strong> {new Date(loan.dateLimit).toLocaleDateString()}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      
+                      <Stack direction="row" spacing={1} mb={2}>
                         <Chip 
                           label={loan.type === "external" ? "Externo" : "Interno"} 
                           color={loan.type === "external" ? "primary" : "secondary"}
@@ -330,53 +385,35 @@ export function Loan() {
                           size="small"
                         />
                       </Stack>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {books.find((book) => book._id === loan.bookId)?.author}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Prestado a:{" "}
-                      {
-                        members.find((member) => member._id === loan.memberId)
-                          ?.name
-                      }{" "}
-                      {
-                        members.find((member) => member._id === loan.memberId)
-                          ?.lastname
-                      }
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Fecha Inicial:{" "}
-                      {new Date(loan.createdAt).toLocaleDateString()}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Fecha de Entrega{" "}
-                      {new Date(loan.dateLimit).toLocaleDateString()}
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      style={{ marginTop: "20px" }}
-                    >
-                      <Button
-                        variant="contained"
-                        color="success"
-                        onClick={() =>
-                          onClickDelete(
-                            loan._id,
-                            members.find(
-                              (member) => member._id === loan.memberId
-                            )
-                          )
-                        }
+                      
+                      <Divider sx={{ my: 1.5 }} />
+                      
+                      <Stack
+                        direction="row"
+                        spacing={2}
+                        justifyContent="flex-end"
+                        sx={{ mt: 1 }}
                       >
-                        <Typography fontSize={13}>Devolver</Typography>
-                      </Button>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Grid>
-            )
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="small"
+                          startIcon={<AssignmentReturn />}
+                          onClick={() => onClickDelete(loan._id, members.find((member) => member._id === loan.memberId))}
+                          sx={{ 
+                            borderRadius: 2,
+                            textTransform: 'none',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          Devolver
+                        </Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            }
           )}
         </Grid>
       </Container>

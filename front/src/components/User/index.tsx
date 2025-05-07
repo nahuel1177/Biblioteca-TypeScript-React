@@ -12,6 +12,8 @@ import {
   Stack,
   useTheme,
   Chip,
+  Box,
+  Divider,
 } from "@mui/material";
 import { SearchBar } from '../SearchBar';
 import { UserEditModal } from '../Modals/EditUserModal';
@@ -202,6 +204,7 @@ export function User() {
           user={user}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
+          resetUser={() => setUser(initialUserState)}
         />
         
         <CreateUserModal
@@ -216,7 +219,7 @@ export function User() {
           user={user}
         />
         
-        <Card style={{ marginTop: "20px" }}>
+        <Card style={{ marginTop: "20px" , marginBottom: "15px" }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
               Usuarios
@@ -247,32 +250,64 @@ export function User() {
         <Grid container spacing={2}>
           {(filteredUsers.length > 0 ? filteredUsers : users).map((user, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card style={{ marginTop: "20px" }}>
-                <CardContent>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Typography component="div">
-                      {user.username}
-                    </Typography>
-                    {user.role && (
-                      <Chip 
-                        label={user.role === "admin" ? "Administrador" : "Usuario"} 
-                        color={user.role === "admin" ? "primary" : "success"}
-                        size="small"
-                      />
-                    )}
-                  </Stack>
-
-                  <Typography variant="body2" color="text.secondary">
-                    {user.lastname}
-                    {", "} {user.name}
+              <Card 
+                elevation={3}
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: 6,
+                  },
+                  borderRadius: 2,
+                  overflow: 'hidden'
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    bgcolor: (theme) => user.role === "admin" 
+                      ? (theme.palette.mode === 'dark' ? 'primary.dark' : 'primary.main')
+                      : (theme.palette.mode === 'dark' ? 'success.dark' : 'success.main'),
+                    color: 'white',
+                    p: 1.5,
+                    pl: 2,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Typography variant="h6" component="div" noWrap title={user.username}>
+                    {user.username}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Correo: {user.email}
+                  <Chip 
+                    label={user.role === "admin" ? "Administrador" : "Usuario"} 
+                    color={user.role === "admin" ? "primary" : "success"}
+                    size="small"
+                    variant="filled"
+                    sx={{ 
+                      bgcolor: 'white', 
+                      color: user.role === "admin" ? 'steelblue' : 'darkgreen',
+                      fontWeight: 'bold' 
+                    }}
+                  />
+                </Box>
+                <CardContent sx={{ flexGrow: 1, pt: 2 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <strong>Nombre:</strong> {user.lastname}, {user.name}
                   </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    <strong>Correo:</strong> {user.email}
+                  </Typography>
+                  
+                  <Divider sx={{ my: 1.5 }} />
+                  
                   <Stack
                     direction="row"
-                    spacing={2}
-                    style={{ marginTop: "20px" }}
+                    spacing={1.5}
+                    justifyContent="flex-end"
+                    sx={{ mt: 1 }}
                   >
                     {user.role === "admin" ? (
                       <ViewButton

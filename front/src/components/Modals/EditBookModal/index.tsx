@@ -9,6 +9,11 @@ import {
   Paper,
   Divider,
   IconButton,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@mui/material";
 import { IBook } from "../../../interfaces/bookInterface";
 import { bookService } from "../../../services/bookService";
@@ -75,9 +80,26 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
     e: ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>
   ) => {
     const { name, value } = e.target;
-    setEditedBook({ ...editedBook, [name as string]: value });
     
-    // CLimpiar el mensaje de error mientras se escribe
+    // Manejo especial para el campo loanable (convertir string a boolean)
+    if (name === 'loanable') {
+      const isLoanable = value === 'true';
+      
+      // Si loanable es false, establecer stockExt a 0
+      if (!isLoanable) {
+        setEditedBook({ 
+          ...editedBook, 
+          [name]: isLoanable,
+          stockExt: 0 
+        });
+      } else {
+        setEditedBook({ ...editedBook, [name]: isLoanable });
+      }
+    } else {
+      setEditedBook({ ...editedBook, [name as string]: value });
+    }
+    
+    // Limpiar el mensaje de error mientras se escribe
     if (name && errors[name as keyof typeof errors]) {
       setErrors({
         ...errors,
@@ -179,8 +201,30 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
               error={errors.author}
               helperText={errors.author ? "El autor es requerido" : ""}
               variant="outlined"
-              sx={{ mb: 4 }}
+              sx={{ mb: 2 }}
             />
+            
+            {/* Agregar botones de radio para la opción loanable */}
+            <FormControl component="fieldset" sx={{ mb: 2 }}>
+              <FormLabel component="legend">Préstamo en domicilio:</FormLabel>
+              <RadioGroup
+                row
+                name="loanable"
+                value={editedBook.loanable.toString()}
+                onChange={handleInputChange}
+              >
+                <FormControlLabel 
+                  value="true" 
+                  control={<Radio />} 
+                  label="Habilitado" 
+                />
+                <FormControlLabel 
+                  value="false" 
+                  control={<Radio />} 
+                  label="Deshabilitado" 
+                />
+              </RadioGroup>
+            </FormControl>
             
             <Stack direction="row" spacing={2}>
               <TextField
@@ -209,6 +253,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
                 helperText={errors.stockExt ? "El valor debe ser mayor o igual a 0" : ""}
                 InputProps={{ inputProps: { min: 0 } }}
                 variant="outlined"
+                disabled={!editedBook.loanable}
               />
             </Stack>
             

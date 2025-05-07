@@ -10,6 +10,7 @@ import {
   Stack,
   Chip,
   Box,
+  Divider,
 } from "@mui/material";
 
 import { loanService } from "../../services/loanService";
@@ -234,7 +235,8 @@ export function Member() {
         `${member.name} ${member.lastname}`
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        member.email?.toLowerCase().includes(searchTerm.toLowerCase())
+        member.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        member.dni?.toString().includes(searchTerm)
     );
     setFilteredMembers(filtered);
   };
@@ -263,7 +265,7 @@ export function Member() {
             }
           }}
         />
-        <Card style={{ marginTop: "20px" }}>
+        <Card style={{ marginTop: "20px", marginBottom: "15px" }}>
           <CardContent>
             <Typography variant="h6" gutterBottom>
               Socios
@@ -293,28 +295,72 @@ export function Member() {
           {(filteredMembers.length > 0 ? filteredMembers : members)?.map(
             (member, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card style={{ marginTop: "20px" }}>
-                  <CardContent>
-                    <Box sx={{ position: "relative", mb: 1 }}>
-                      <Stack direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography component="div">
-                          {member.lastname}, {member.name}
-                        </Typography>
-                        <Chip
-                          label={member.isSanctioned ? "Sancionado" : "Sin Sanción"}
-                          color={member.isSanctioned ? "error" : "success"}
-                          size="small"
-                          variant="filled"
-                        />
-                      </Stack>
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      Correo: {member.email}
+                <Card 
+                  elevation={3}
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-5px)',
+                      boxShadow: 6,
+                    },
+                    borderRadius: 2,
+                    overflow: 'hidden'
+                  }}
+                >
+                  <Box 
+                    sx={{ 
+                      bgcolor: (theme) => member.isSanctioned 
+                        ? theme.palette.error.main 
+                        : (theme.palette.mode === 'dark' ? 'success.dark' : 'success.main'),
+                      color: 'white',
+                      p: 1.5,
+                      pl: 2,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <Typography variant="h6" component="div" noWrap>
+                      {member.lastname}, {member.name}
                     </Typography>
+                    <Chip
+                      label={member.isSanctioned ? "Sancionado" : "Activo"}
+                      color={member.isSanctioned ? "error" : "success"}
+                      size="small"
+                      variant="filled"
+                      sx={{ 
+                        bgcolor: 'white', 
+                        color: member.isSanctioned ? 'error.main' : 'darkgreen',
+                        fontWeight: 'bold'
+                      }}
+                    />
+                  </Box>
+                  <CardContent sx={{ flexGrow: 1, pt: 2 }}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <strong>Correo:</strong> {member.email}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      <strong>DNI:</strong> {member.dni}
+                    </Typography>
+                    
+                    {member.isSanctioned && member.sanctionDate && (
+                      <Box sx={{ mt: 1, mb: 1 }}>
+                        <Typography variant="body2" color="error.main">
+                          <strong>Fecha de sanción:</strong> {new Date(member.sanctionDate).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+                    )}
+                    
+                    <Divider sx={{ my: 1.5 }} />
+                    
                     <Stack
                       direction="row"
-                      spacing={2}
-                      style={{ marginTop: "20px" }}
+                      spacing={1.5}
+                      justifyContent="flex-end"
+                      sx={{ mt: 1 }}
                     >
                       <EditButton
                         onClick={() => onClickUpdate(member)}

@@ -281,7 +281,7 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
             
             {/* Agregar botones de radio para la opción loanable */}
             <FormControl component="fieldset" sx={{ mb: 2 }}>
-              <FormLabel component="legend">Préstamo a domicilio.</FormLabel>
+              <FormLabel component="legend">Préstamo en domicilio:</FormLabel>
               <RadioGroup
                 row
                 name="loanable"
