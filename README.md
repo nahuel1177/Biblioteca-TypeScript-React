@@ -1,7 +1,15 @@
 # Biblioteca-TypeScript-React
 
 ## Descripción de la Aplicación
-Esta aplicación es un sistema de gestión de biblioteca desarrollado con TypeScript y React. Permite administrar el catálogo de libros, gestionar préstamos, devoluciones y usuarios. La aplicación facilita la búsqueda de libros por diferentes criterios, el seguimiento de préstamos activos y el mantenimiento de un registro de usuarios.
+Sistema integral de gestión bibliotecaria desarrollado con TypeScript y React, diseñado para optimizar las operaciones diarias de bibliotecas de cualquier tamaño. Esta aplicación proporciona una interfaz moderna e intuitiva que permite a los usuarios del sistema administrar eficientemente el catálogo de libros, socios, préstamos y usuarios del sistema.
+
+### Características Principales
+- **Gestión de Catálogo**: Registro completo de libros con información detallada, incluyendo título, autor, ISBN, disponibilidad y
+- **Administración de Socios**: Registro y seguimiento de socios, con gestión de sanciones.
+- **Sistema de Préstamos**: Control de préstamos internos y externos, con seguimiento de fechas límite y notificaciones de vencimiento en pantalla.
+- **Gestión de Usuarios**: Administración de permisos y roles para el personal de la biblioteca.
+- **Búsqueda Avanzada**: Localización rápida de libros y socios mediante múltiples criterios de búsqueda.
+- **Interfaz Responsiva**: Diseño adaptable para su uso en diferentes dispositivos.
 
 ## Tecnologías Utilizadas
 ### Frontend
@@ -10,16 +18,15 @@ Esta aplicación es un sistema de gestión de biblioteca desarrollado con TypeSc
 - **Estilos**: CSS/SCSS
 - **Gestión de Estado**: Redux/Context API
 - **Enrutamiento**: React Router
-- **Estilizado**: Styled Components/Material-UI
-- **Construcción**: Webpack/Vite
+- **Estilizado**: Material-UI
+- **Construcción**: Vite
 
 ### Backend
 - **Lenguaje**: Node.js
 - **Framework**: Express.js
 - **Base de Datos**: MongoDB
-- **ORM**: Sequelize
+- **ORM**: Mongoose
 - **Autenticación**: JWT (JSON Web Tokens)
-- **Migraciones**: Sequelize Migrations
 
 ### Herramientas de Desarrollo
 - **Control de Versiones**: Git
@@ -40,6 +47,10 @@ Para acceder a la aplicación, puedes utilizar las siguientes credenciales:
 ## Instalación y Ejecución
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/nahuel1177/Biblioteca-TypeScript-React.git
+cd Biblioteca-TypeScript-React
+
 # Instalar dependencias
 npm install
 

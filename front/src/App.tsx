@@ -86,18 +86,6 @@ function App() {
                     path="/usuarios"
                     element={<UserModule roleType={user?.role} />}
                   />
-                  <Route
-                    path="/socios"
-                    element={<MemberModule roleType={user?.role} />}
-                  />
-                  <Route
-                    path="/libros"
-                    element={<BookModule roleType={user?.role} />}
-                  />
-                  <Route
-                    path="/prestamos"
-                    element={<LoanModule roleType={user?.role} />}
-                  />
                 </>
               )}
               {user?.role === "employee" && (

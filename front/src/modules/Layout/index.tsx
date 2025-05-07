@@ -183,7 +183,7 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
                   <div>
                     {pages
                       .filter(
-                        (page) => page !== "usuarios" && page !== "socios"
+                        (page) => page !== "usuarios"
                       )
                       .map((page) => (
                         <Button
@@ -208,11 +208,12 @@ export const LayoutModule: React.FC<{ roleType: string | undefined }> = ({
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {roleType === "admin" && (
                 <>
-                  {pages.map((page) => (
+                  {pages.filter((page) => page !== "libros" && page!== "socios" && page!== "prestamos")
+                  .map((page) => (
                     <Button
                       key={page}
                       onClick={handleCloseNavMenu}
-                      sx={{ my: 2, color: "black", display: "block" }}
+                      sx={{ my: 2, color: "white", display: "block" }}
                     >
                       <Link
                         style={{ textDecoration: "none", color: "white" }}
