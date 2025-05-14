@@ -155,7 +155,7 @@ export function Loan() {
         return; // Usuario canceló la acción
       }
 
-      // En
+      // Encontrar el préstamo en el estado actual
       const loan = loans.find(loan => loan._id === id);
       
       if (!loan) {
@@ -169,8 +169,9 @@ export function Loan() {
           const updatedLoans = await loanService.getLoans();
           setLoans(updatedLoans.result || []);
           return swal.success("El libro ha sido devuelto");
+        } else {
+          return swal.error("Error al eliminar el préstamo");
         }
-        return;
       }
       
       // A partir de aquí solo se procesan préstamos externos
@@ -190,8 +191,11 @@ export function Loan() {
           setLoans(updatedLoans.result || []);
           return swal.success("El libro ha sido devuelto");
         }
+      } else {
+        return swal.error("Error al eliminar el préstamo");
       }
     } catch (error) {
+      console.error("Error al procesar la devolución:", error);
       swal.error("Error al procesar la devolución");
     }
   };

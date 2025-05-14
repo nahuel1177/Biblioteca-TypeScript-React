@@ -285,16 +285,16 @@ export function CreateBookModal({ open, handleClose, onBookCreated }: CreateBook
               <RadioGroup
                 row
                 name="loanable"
-                value={newBook.loanable.toString()}
+                value={newBook.loanable}
                 onChange={handleNewBookInputChange}
               >
                 <FormControlLabel 
-                  value="true" 
+                  value={true} 
                   control={<Radio />} 
                   label="Habilitado" 
                 />
                 <FormControlLabel 
-                  value="false" 
+                  value={false} 
                   control={<Radio />} 
                   label="Deshabilitado" 
                 />

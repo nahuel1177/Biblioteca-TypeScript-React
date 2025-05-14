@@ -92,12 +92,13 @@ class BookService {
   }
 
   async createBook(req: Request) {
-    const { title, author, isbn, stockInt, stockExt } = req.body;
+    const { title, author, isbn, loanable, stockInt, stockExt } = req.body;
 
     const book = new Book({
       title: title,
       author: author,
       isbn: isbn,
+      loanable: loanable,
       stockInt: stockInt,
       stockExt: stockExt,
     });
@@ -144,14 +145,16 @@ class BookService {
   }
 
   async updateBook(req: Request) {
-    const { title, author, stockInt, stockExt } = req.body;
+    const { title, author, loanable, stockInt, stockExt } = req.body;
     const { id } = req.params;
     const book = new Book({
       title: title,
       author: author,
+      loanable: loanable,
       stockInt: stockInt,
       stockExt: stockExt,
     });
+    console.log("Actualizado", book);
     const updatedBook = await bookRepository.updateBook(id, book);
     if (!updatedBook) {
       return {

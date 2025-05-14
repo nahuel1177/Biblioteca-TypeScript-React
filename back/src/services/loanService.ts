@@ -8,7 +8,6 @@ class LoanService {
     const loans = await loanRepository.getLoans({ isActive: true });
 
     if (!loans.length) {
-      console.log("ENTRO AL IF");
       return {
         code: 500,
         result: {
@@ -30,7 +29,6 @@ class LoanService {
     const loans = await loanRepository.getLoans();
 
     if (!loans.length) {
-      console.log("ENTRO AL IF");
       return {
         code: 500,
         result: {
@@ -85,7 +83,6 @@ class LoanService {
     const takenBook = await bookRepository.getBookById(bookId);
 
     if (takenBook == null) {
-      console.log("Entro al IF 1");
       return {
         code: 500,
         result: {
@@ -95,14 +92,13 @@ class LoanService {
       };
     }
     if (type == "external") {
-      if (takenBook?.stockExt != undefined && takenBook.stockExt > 0) {
+      if (takenBook?.stockExt !== undefined && takenBook.stockExt > 0) {
         takenBook.stockExt--;
       } else {
-        console.log("Entro al else 2");
         return {
           code: 500,
           result: {
-            error: "No hay ejemplares para el prestamo en biblioteca.",
+            error: "No hay ejemplares para el préstamo en biblioteca.",
             success: false,
           },
         };
@@ -110,14 +106,13 @@ class LoanService {
     }
 
     if (type == "internal") {
-      if (takenBook?.stockInt != undefined && takenBook.stockInt > 0) {
+      if (takenBook?.stockInt !== undefined && takenBook.stockInt > 0) {
         takenBook.stockInt--;
       } else {
-        console.log("Entro al else 2");
         return {
           code: 500,
           result: {
-            error: "No hay ejemplares para el prestamo en biblioteca.",
+            error: "No hay ejemplares para el préstamo en biblioteca.",
             success: false,
           },
         };
@@ -167,7 +162,7 @@ class LoanService {
       return {
         code: 500,
         result: {
-          error: "Préstamo realizado con éxito.",
+          error: "Error al crear el préstamo.",
           success: false,
         },
       };
@@ -189,8 +184,9 @@ class LoanService {
       const book = await bookRepository.getBookById(loan.bookId.toString());
       if (book) {
         if (loan.type == "external") {
-          if (book != null && book.stockExt) {
+          if (book != null && book.stockExt !== undefined) {
             book.stockExt++;
+            await bookRepository.updateBook(book.id, book);
           } else {
             return {
               code: 500,
@@ -202,8 +198,9 @@ class LoanService {
           }
         }
         if (loan.type == "internal") {
-          if (book != null && book.stockInt != null) {
+          if (book != null && book.stockInt !== undefined) {
             book.stockInt++;
+            await bookRepository.updateBook(book.id, book);
           } else {
             return {
               code: 500,

@@ -83,6 +83,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
     
     // Manejo especial para el campo loanable (convertir string a boolean)
     if (name === 'loanable') {
+      // Convertir el valor string a booleano
       const isLoanable = value === 'true';
       
       // Si loanable es false, establecer stockExt a 0
@@ -210,7 +211,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
               <RadioGroup
                 row
                 name="loanable"
-                value={editedBook.loanable.toString()}
+                value={editedBook.loanable}
                 onChange={handleInputChange}
               >
                 <FormControlLabel 
@@ -219,7 +220,7 @@ export function EditBookModal({ open, handleClose, book, onBookUpdated }: EditBo
                   label="Habilitado" 
                 />
                 <FormControlLabel 
-                  value="false" 
+                  value="false"
                   control={<Radio />} 
                   label="Deshabilitado" 
                 />

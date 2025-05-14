@@ -25,6 +25,7 @@ class BookRepository {
     return Book.findByIdAndUpdate(id, {
       title: book.title,
       author: book.author,
+      loanable: book.loanable,
       stockInt: book.stockInt,
       stockExt: book.stockExt,
     }).exec();
